@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class FamilyMember extends Model
+{
+    use HasFactory;
+
+
+    protected $fillable = ['family_id', 'birth_date', 'name', 'age', 'gender', 'relation', 'personal_image', 'phone_number', 'national_number', 'health_insurance_number', 'health_insurance_start_date', 'health_insurance_end_date'];
+
+    public function family() {
+        return $this->belongsTo(Family::class);
+    }
+    
+    public function medicalTreatment() {
+        return $this->hasOne(MedicalTreatment::class);
+    }
+
+    public function medicalTreatments() {
+        return $this->hasMany(MedicalTreatment::class)->orderByDESC('id');
+    }
+
+    public function student() {
+        return $this->hasOne(Student::class);
+    }
+}
