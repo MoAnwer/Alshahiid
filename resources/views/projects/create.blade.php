@@ -1,4 +1,4 @@
-@include('components.header', ['page_title' => 'بيانات اسرة  الشهيد'])
+@include('components.header', ['page_title' => 'مشروع جديد '])
 
  <div id="wrapper">
 
@@ -87,7 +87,7 @@
             <button type="submit" class="btn btn-success py-2 mt-3">
               انشاء
             </button>
-            <a class="btn btn-info py-2 mt-3" href="{{ route('families.show', $family->id) }}">رجوع</a>
+            <a class="btn btn-info py-2 mt-3" href="{{ route('families.socialServices', $family->id) }}">رجوع</a>
         </form>
       </div>
       

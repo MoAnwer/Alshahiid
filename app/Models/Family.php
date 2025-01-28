@@ -46,4 +46,12 @@ class Family extends Model
     public function assistances() {
         return $this->hasMany(Assistance::class)->orderByDESC('created_at');
     }
+
+    public function bails() {
+        return $this->hasMany(Bail::class)->orderByDESC('created_at');
+    }
+
+    public function documents() {
+        return $this->hasMany(Document::class)->orderByDESC('created_at');
+    }
 }

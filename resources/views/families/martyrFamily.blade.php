@@ -15,23 +15,37 @@
 
       <div class="container-fluid mt-4">
 
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb breadcrumb-style2">
+            <li class="breadcrumb-item">
+              <a href="{{ route('martyrs.index') }}">الشهداء</a>
+              /               
+            </li>
+            <li class="breadcrumb-item active" >
+              اسرة الشهيد {{ $family->martyr->name}}
+            </li>
+          </ol>
+        </nav>
+
         <x-alert/>
+
+        <hr/>
 
         <div class="d-flex justify-content-between align-items-center px-3">
           <div>
             <h4>اسرة الشهيد {{ $family->martyr->name }}</h4>
             <span>عدد افراد الاسرة {{ $family->family_size }} , و تم اضافة {{ $family->loadMissing('familyMembers')->familyMembers->count() }} منهم الى النظام</span>
-          </div>
+            
+            <div>
+              <a href="{{ route('families.edit', $family->id) }}" class="btn btn-success p-2 fa-sm">
+              <i class="fa fa-edit"></i>
+            </a>
+            <a href="{{ route('families.delete', $family->id) }}" class="btn btn-danger p-2 fa-sm">
+              <i class="fa fa-trash"></i>
+            </a>
+            </div>
 
-          <div>
-            <a href="{{ route('families.edit', $family->id) }}" class="btn btn-success p-2 fa-sm">
-            <i class="fa fa-edit"></i>
-          </a>
-          <a href="{{ route('families.delete', $family->id) }}" class="btn btn-danger p-2 fa-sm">
-            <i class="fa fa-trash"></i>
-          </a>
           </div>
-
           @if ($family->loadMissing('familyMembers')->familyMembers->count() < $family->family_size)
             <a class="btn btn-primary active" href="{{ route('familyMembers.create', $family) }}">اضافة فرد جديد</a>
           @endif
@@ -160,7 +174,7 @@
           </x-slot:head>
 
           <x-slot:body>
-          @isset($family->addresses)
+          @if($family->addresses->isNotEmpty())
 			      @foreach($family->addresses as $address)
               <tr>
                <td>{{ $address->sector }}</td>
@@ -181,179 +195,55 @@
               <tr>
                 <td colspan="5">لا يوجد سكن</td>
               </tr>
-            @endisset
+            @endif
           </x-slot:body>
         </x-table>
 
         <hr>
 
-        <!--/ Address  -->
+      <!--/ Address  -->
 
-        <!-- Services -->
-        <h4>الخدمات الاجتماعية</h4>  
-        <hr/>
-          
-        {{-- Assistances --}}
+      <div class="row mb-3">
 
-        <div class="d-flex justify-content-between align-items-center px-3">
-          <h5>المساعدات</h5>
-          <a class="btn btn-primary active" href="{{ route('assistances.create', $family->id) }}">اضافة مساعدة جديد</a>
-        </div>
-
-         <x-table>
-            <x-slot:head>
-              <th>النوع</th>
-              <th>الحالة</th>
-              <th>التقديري</th>
-              <th>من  داخل المنظمة</th>
-              <th>من  خارج المنظمة</th>
-			        <th>المبلغ المؤمن</th>
-              <th>ملاحظات</th>
-              <th>عمليات</th>
-            </x-slot:head>
-
-            <x-slot:body>
-			      @isset($family->assistances)			
-             @foreach($family->assistances as $assistance)
-                <tr>
-                  <td>{{ $assistance->type }}</td>
-                  <td>{{ $assistance->status }}</td>
-                  <td>{{ number_format($assistance->budget) }}</td>
-                  <td>{{ number_format($assistance->budget_from_org) ?? '-' }}</td>
-                  <td>{{ number_format($assistance->budget_out_of_org) ?? '-' }}</td>
-				          <td>{{ number_format($assistance->budget_from_org + $assistance->budget_out_of_org) }}</td>
-                  <td>{{ $assistance->notes ?? 'لايوجد' }}</td>
-                  <td>
-                    <a href="{{ route('assistances.edit', ['family' => $family->id, 'id' => $assistance->id])}}" class="btn btn-success p-2 fa-sm">
-                      <i class="fa fa-edit"></i>
-                    </a>
-                    <a href="{{ route('assistances.delete', $assistance->id)}}" class="btn btn-danger p-2 fa-sm">
-                      <i class="fa fa-trash"></i>
-                    </a>
-                  </td>
-                </tr>
-              @endforeach
-			       @else
-				      <tr>
-					       <td colspan="10">لا توجد مساعدات</td>
-				      </tr>
-			       @endisset
-            </x-slot:body>
-          </x-table>
-
-        {{-- / Assistances --}}
-
-
-          <!-- Porjects -->
-          <div class="d-flex justify-content-between align-items-center px-3">
-            <h5>المشاريع </h5>
-            <a class="btn btn-primary active" href="{{ route('projects.create', $family->id) }}">اضافة مشروع جديد</a>
+        <div class="col-md-6 col-lg-4">
+          <div class="card text-center py-3">
+            <div class="card-body">
+              <i class="fas fa-file fs-1 text-info mb-4"></i>
+              <h5 class="card-title mb-3"> خطابات اسرة </h5>
+              <p class="card-text mb-3">خطابات تأكيد الاستشهاد و الاعلام الشرعي و التوكيل و قطعة الارض</p>
+              <a href="{{ route('documents.show', $family->id) }}" class="btn btn-primary active">عرض الخطابات</a>
+            </div>
           </div>
-          
-          <x-table>
-            <x-slot:head>
-              <th>اسم المشروع</th>
-              <th>النوع</th>
-              <th>الحالة</th>
-              <th>الحالة التشغيلية</th>
-              <th>التقديري</th>
-              <th>المدير</th>
-              <th>من  داخل المنظمة</th>
-              <th>من  خارج المنظمة</th>
-              <th>المبلغ المؤمن</th>
-              <th>ملاحظات</th>
-              <th>عمليات</th>
-            </x-slot:head>
-
-          <x-slot:body>
-			     @if($family->loadMissing('projects')->projects->count() > 0)
-             @foreach($family->loadMissing('projects')->projects as $project)
-              <tr>
-                <td>{{ $project->project_name }}</td>
-                <td>{{ $project->project_type }}</td>
-                <td>{{ $project->status }}</td>
-                <td>{{ $project->work_status }}</td>
-                <td>{{ number_format($project->budget) }}</td>
-                <td>{{ !empty($project->manager_name) ? $project->manager_name : '-' }}</td>
-                <td>{{ number_format($project->budget_from_org) ?? '-' }}</td>
-                <td>{{ number_format($project->budget_out_of_org ) ?? '-' }}</td>
-                <td>{{ number_format($project->budget_from_org + ($project->budget_out_of_org ?? 0)) }}</td>
-                <td>{{ $project->notes ?? 'لايوجد' }}</td>
-                <td>
-                  <a href="{{ route('projects.edit', ['family' => $family->id, 'project' => $project->id]) }}" class="btn btn-success p-2 fa-sm">
-                    <i class="fa fa-edit"></i>
-                  </a>
-                  <a href="{{ route('projects.delete', $project->id) }}" class="btn btn-danger p-2 fa-sm">
-                    <i class="fa fa-trash"></i>
-                  </a>
-                  </td>
-                </tr>
-              @endforeach
-			         @else
-			          <tr>
-				           <td colspan="10">لا توجد مشاريع</td>
-			          </tr>
-			       @endif
-            </x-slot:body>
-          </x-table>
-          <hr>
-
-        <!--/ Porjects -->
-
-        <!-- Homes -->
-		
-  		<div class="d-flex justify-content-between align-items-center px-3">
-        <h5>مشاريع السكن</h5>
-          <a class="btn btn-primary active" href="{{ route('homes.create', $family->id) }}">اضافة مشروع جديد</a>
         </div>
 
-         <x-table>
-            <x-slot:head>
-              <th>النوع</th>
-              <th>الحالة</th>
-			        <th>المدير</th>
-              <th>التقديري</th>
-              <th>من  داخل المنظمة</th>
-              <th>من  خارج المنظمة</th>
-			        <th>المبلغ المؤمن</th>
-              <th>ملاحظات</th>
-              <th>عمليات</th>
-            </x-slot:head>
+        <div class="col-md-6 col-lg-4">
+          <div class="card text-center py-3">
+            <div class="card-body">
+              <i class="fas fa-tools fs-1 text-info mb-4"></i>
+              <h5 class="card-title mb-3"> الخدمات الاجتماعية </h5>
+              <p class="card-text mb-3">الخدمات الاجتماعية </p>
+              <a href="{{ route('families.socialServices', $family->id)}}" class="btn btn-primary active">عرض</a>
+            </div>
+          </div>
+        </div>
 
-            <x-slot:body>
-			       @isset($family->homeService)			
-             @foreach($family->homeServices as $homeService)
-                <tr>
-                  <td>{{ $homeService->type }}</td>
-                  <td>{{ $homeService->status }}</td>
-				          <td>{{ $homeService->manager_name }}</td>
-                  <td>{{ number_format($homeService->budget) }}</td>
-                  <td>{{ number_format($homeService->budget_from_org) ?? '-' }}</td>
-                  <td>{{ number_format($homeService->budget_out_of_org) ?? '-' }}</td>
-				          <td>{{ number_format($homeService->budget_from_org + $homeService->budget_out_of_org) }}</td>
-                  <td>{{ $homeService->notes ?? 'لايوجد' }}</td>
-                  <td>
-                    <a href="{{ route('homes.edit', $homeService->id)}}" class="btn btn-success p-2 fa-sm">
-                      <i class="fa fa-edit"></i>
-                    </a>
-                    <a href="{{ route('homes.delete',  ['home' => $homeService->id])}}" class="btn btn-danger p-2 fa-sm">
-                      <i class="fa fa-trash"></i>
-                    </a>
-                  </td>
-                </tr>
-              @endforeach
-			       @else
-				      <tr>
-					       <td colspan="10">لا توجد مشاريع</td>
-				      </tr>
-			       @endisset
-            </x-slot:body>
-          </x-table>
-          <hr>
-        <!--/ Homes -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card text-center py-3">
+            <div class="card-body">
+              <i class="fas fa-dollar-sign fs-1 text-info mb-4"></i>
+              <h5 class="card-title mb-3">  الكفالات الشهرية  </h5>
+              <p class="card-text mb-3">الكفالات الشهرية  </p>
+              <a href="{{ route('families.bails', $family->id)}}" class="btn btn-primary active">عرض</a>
+            </div>
+          </div>
+        </div>
 
         </div>
+
       </div>
+
+      
+  
     </div>
 
   @include('components.footer')

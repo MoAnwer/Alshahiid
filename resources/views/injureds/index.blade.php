@@ -71,6 +71,8 @@
           </x-slot:body>
         </x-table>
 
+        {{ $injureds->links('vendor.pagination.bootstrap-5') }}
+
         </div>
       </div>
     </div>

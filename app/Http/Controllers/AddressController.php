@@ -39,7 +39,7 @@ class AddressController extends Controller
 
         } catch(Exception $e) {
 
-            return abort(404);
+            return $e->getMessage();
 
         } 
     }

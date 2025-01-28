@@ -55,7 +55,7 @@
               <td>
                 {{ isset($report->get('شهداء الكرامة')[0]->count) ?  round(($report->get('شهداء الكرامة')[0]->count / $totalCount) * 100, 1).'%':0 }} 
               </td>
-              <td>{{ $totalCount.'%'}}</td>
+              <td>100%</td>
             </tr>
 			    </x-slot:body>
 

@@ -19,7 +19,9 @@ class FamilyController extends Controller
      */
     public function create(int $martyr)
     {
-        return view('families.create', ['martyr' => Martyr::findOrFail($martyr)]);
+        return view('families.create', ['martyr' => 
+            Martyr::findOrFail($martyr)
+        ]);
     }
 
     /**
@@ -114,7 +116,16 @@ class FamilyController extends Controller
 	 
     public function destroy($id)
     {
-        
+        try {
+            $family = Family::findOrFail($id);
+            $martyrId = $family->martyr->id;
+            $family->addresses()->delete();
+            $family->delete();
+
+            return to_route('martyrs.index', $martyrId)->with('success', 'تم حذف الاسرة بنجاح');
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     public function createSupervisor($family) 
@@ -169,6 +180,17 @@ class FamilyController extends Controller
         } catch (Exception $e) {
             return $e->getMessage();
         }
+    }
+
+
+    public function socialServices($family) 
+    {
+        return view('families.socialServices', ['family' => Family::findOrFail($family)]);
+    }
+
+    public function monthlyBails($family)
+    {
+        return view('families.bails',  ['family' => Family::findOrFail($family)]);
     }
 
     public function categoriesReport() 

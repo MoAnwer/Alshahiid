@@ -62,7 +62,7 @@
             <button type="submit" class="btn btn-success py-2 mt-3">
               تعديل
             </button>
-            <a class="btn btn-info py-2 mt-3" href="{{ route('families.show', $home->family->id) }}">رجوع</a>
+            <a class="btn btn-info py-2 mt-3" href="{{ route('families.socialServices', $home->family->id) }}">رجوع</a>
         </form>
       </div>
       

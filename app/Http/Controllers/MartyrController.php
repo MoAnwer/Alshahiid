@@ -7,6 +7,7 @@ use App\Http\Requests\MartyrRequest;
 use Illuminate\Http\Request;
 use App\Models\Martyr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class MartyrController extends Controller
 {
@@ -14,7 +15,9 @@ class MartyrController extends Controller
     {
         
         return view('martyrs.martyrs', [
-            'martyrs' => Martyr::with('family.familyMembers.medicalTreatments')->orderByDESC('id')->paginate(15)
+            'martyrs' => Cache::remember('martyrs_list_' . request('page', 1) , now()->addMinutes(10), function () {
+                return Martyr::with('family.familyMembers.medicalTreatments')->orderByDESC('id')->paginate();
+            })
         ]);
 
     }
@@ -32,7 +35,7 @@ class MartyrController extends Controller
         try {
             Martyr::create($data);
         } catch (Exception $e) {
-            return abort(404, $e->getMessage());
+            return $e->getMessage();
         }
 
         return to_route('martyrs.index');
@@ -41,7 +44,7 @@ class MartyrController extends Controller
 
     public function edit($id) 
     {
-        $martyr  = Martyr::findOrFail($id);
+        $martyr = Martyr::findOrFail($id);
         return view('martyrs.edit', compact('martyr'));
     }
 
@@ -119,20 +122,26 @@ class MartyrController extends Controller
 
     public function destroy(int $id)
     {
-        $martyr = Martyr::findOrFail($id);
+        try {
+             $martyr = Martyr::findOrFail($id);
+             if(isset($martyr->family) && $martyr->family->addresses->isNotEmpty()) {
+                $martyr->family->addresses()->delete();
+             }
+                $martyr->delete();
 
-        $martyr->family->addresses()->delete();
-
-        $martyr->delete();
-
-        return to_route('martyrs.index')->with('success', 'تم حذف بيانات الشهيد بنجاح');
+            return to_route('martyrs.index')->with('success', 'تم حذف بيانات الشهيد بنجاح');   
+        } catch (Exception $e) {
+            return  $e->getMessage();
+        }
     }
 
     public function report() 
     {
-        $report = Martyr::selectRaw('`force`, COUNT(*) as count')->groupBy('force')->get();
+        $report = Cache::remember('martryrs_report', now()->addMinutes(10), function () {
+                return Martyr::selectRaw('`force`, COUNT(*) as count')->groupBy('force')->get();
+            });
         $report = $report->groupBy('force');
-        $totalCount = Martyr::count();
+        $totalCount = Cache::remember('martyrs_count_for_report',  now()->addMinutes(10), fn() => Martyr::count());
         return view('martyrs.report', compact('report', 'totalCount'));
     }
 }

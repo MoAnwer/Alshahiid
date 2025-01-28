@@ -73,6 +73,7 @@
         </a>
      </li>
 
+
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#injureds"
             aria-expanded="true" aria-controls="injureds">
@@ -89,6 +90,13 @@
     </li>
 
 
+     <li class="nav-item mb-0">
+       <a class="nav-link pb-2" href="{{ route('reports.bails') }}">
+            <i class="bi bi-newspaper ml-2"></i>
+            <span>الكفالات</span>
+		</a>
+        </a>
+     </li>
 
 
 	<li class="nav-item">
@@ -132,7 +140,6 @@
         </a>
     </li>
 
-
 	<li class="nav-item mb-2">
         	<a class="nav-link pb-2" href="{{ route('reports.medicalTreatment') }}">
             	<i class="bi bi-newspaper ml-2"></i>
@@ -140,8 +147,9 @@
 			</a>
         </a>
     </li>
-
     
+    <hr class="sidebar-divider mb-1">
+
     @can('isModerate')
     <li class="nav-item mb-0">
         	<a class="nav-link pb-2" href="{{ route('users.index') }}">
@@ -158,8 +166,8 @@
     </li>
     @endcan
 
-    <hr class="sidebar-divider mb-4">
-    <button id="customBtnToggle" class="btn btn-primary active mx-2">
+   
+    <button id="customBtnToggle" class="btn btn-primary active m-2">
         اغلاق
     </button>
 </ul>

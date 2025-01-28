@@ -11,23 +11,17 @@
 
       
       <div class="container-fluid mt-4">
-        <h4>حذف مشروع سكن </h4>
+        <h4>حذف بيانات كفالة #{{  $bail->id }} </h4>
         <hr />
         
-        @if($errors->any())
-          @foreach($errors->all() as $error)
-            <div class="alert alert-danger"> {{ $error }} </div>
-          @endforeach
-        @endif
-        <x-alert />
-        <form action="{{ route('homes.destroy', $home->id ) }}" method="POST">
-          <h5>هل تريد حذف المشروع  حقاً ؟</h5>
+        <form action="{{ route('bails.destroy', $bail->id ) }}" method="POST">
+          <h5>حذف بيانات كفالة #{{  $bail->id }} </h5>
           @csrf
           @method('DELETE')
             <button type="submit" class="btn btn-danger py-2 mt-3">
               حذف
             </button>
-            <a class="btn btn-info py-2 mt-3" href="{{ route('families.socialServices', $home->family->id) }}">رجوع</a>
+            <a class="btn btn-info py-2 mt-3" href="{{ route('families.bails', $bail->family->id) }}">رجوع</a>
         </form>
       </div>
       

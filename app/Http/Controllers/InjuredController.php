@@ -7,6 +7,7 @@ use PDOException;
 use Illuminate\Http\Request;
 use App\Models\Injured;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 
 class InjuredController extends Controller
@@ -18,7 +19,9 @@ class InjuredController extends Controller
      */
     public function index()
     {
-		    $injureds = Injured::orderByDESC('id')->paginate();
+		    $injureds = Cache::remember('injureds_page_'. request('page', 1), now()->addMinutes(10), function() {
+          return Injured::orderByDESC('id')->paginate();
+        });
 		
         return view('injureds.index', compact('injureds'));
     }
@@ -41,7 +44,8 @@ class InjuredController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+
+      $data = $request->validate([
           'name'		   		 => 'required|string',
           'type'		   		 => 'required|string',
           'injured_date' 	     => 'required|date',
@@ -50,22 +54,22 @@ class InjuredController extends Controller
           'health_insurance_number' => 'nullable|unique:injureds,health_insurance_number',
           'health_insurance_start_date' => 'nullable',
           'health_insurance_end_date' => 'nullable'
-		  ], [
-			  'name'		   		 => 'اسم المصاب مطلوب',
-			  'type'		   		 => 'نوع الاصابة مطلوب',
-			  'injured_percentage' => 'نسبة الاصابة ضرورية',
-			  'injured_date' 		 => 'تاريخ الاصابة مطلوب',
-        'health_insurance_number.unique' => 'رقم التأمين موجود بالفعل'
-		]);
+      ], [
+          'name'		   		 => 'اسم المصاب مطلوب',
+          'type'		   		 => 'نوع الاصابة مطلوب',
+          'injured_percentage' => 'نسبة الاصابة ضرورية',
+          'injured_date' 		 => 'تاريخ الاصابة مطلوب',
+          'health_insurance_number.unique' => 'رقم التأمين موجود بالفعل'
+      ]);
 		
 		try {
-			Injured::create($data);
-			return back()->with('success', 'تم اضافة بيانات المصاب بنجاح   ✅👍🏼');
-		} catch (PDOException $e) {
-			return $e->getMessage();
-		} catch (Exception $e) {
-			return $e->getMessage();
-		}
+			  Injured::create($data);
+			  return back()->with('success', 'تم اضافة بيانات المصاب بنجاح   ✅👍🏼');
+		  } catch (PDOException $e) {
+  			return $e->getMessage();
+		  } catch (Exception $e) {
+  			return $e->getMessage();
+		  }
     }
 
     /**
@@ -76,7 +80,7 @@ class InjuredController extends Controller
      */
     public function show($id)
     {
-		return view('injureds.show', ['injured' => Injured::findOrFail($id)]);
+		return view('injureds.show', ['injured' =>  Cache::remember('injured_show', '10', fn() => Injured::findOrFail($id)) ]);
     }
 
     /**

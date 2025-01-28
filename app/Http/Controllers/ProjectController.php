@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Family;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ProjectController extends Controller
 {
@@ -33,7 +34,7 @@ class ProjectController extends Controller
             'budget'            => 'numeric|required',
             'budget_from_org'   => 'nullable|numeric',
             'budget_out_of_org' => 'nullable|numeric',           
-            'manager_name'      => 'string|required',
+            'manager_name'      => 'required',
             'notes'             => 'nullable|string',
             'provider'          => 'in:من داخل المنظمة,من خارج المنظمة',
             'monthly_budget'    => 'nullable|numeric',
@@ -41,7 +42,8 @@ class ProjectController extends Controller
             'work_status'       => 'required'
         ], [
 			'project_name' 		=> 'اسم المشروع اجباري',
-			'budget'			=> 'حقل المبلغ التقديري اجباري',
+			'budget'			=> 'حقل المبلغ مطلوب',
+            'manager_name'  => 'اسم مدير المشروع مطلوب'
 		]);
 
         $data['family_id'] = $request->family_id;
@@ -108,7 +110,7 @@ class ProjectController extends Controller
                 'work_status'       => 'required'
             ], [
                 'manager_name'     => 'حقل اسم المدير اجباري',
-                'budget'           => 'خقل  الميزانية اجباري',
+                'budget'           => 'حقل المبلغ مطلوب',
                 'project_name'     => 'حقل  اسم المشروع اجباري'
             ]);
 
@@ -151,7 +153,7 @@ class ProjectController extends Controller
 
             $project->delete();
             
-            return to_route('families.show', $familyId)->with('success', 'تم حذف المشروع بنجاح ');
+            return to_route('families.socialServices', $familyId)->with('success', 'تم حذف المشروع بنجاح ');
 
         } catch(Exception $e) {
 
@@ -166,7 +168,9 @@ class ProjectController extends Controller
         $reportQuery = null;
 
         if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
-                $reportQuery = collect(DB::select('
+            $reportQuery = 
+            Cache::remember('projects_reports_sector_'.$sector.'_locality_'.$locality, now()->addMinutes(10), function () use($sector, $locality) {
+                    return collect(DB::select('
                             SELECT 
                                 SUM(projects.budget) as totalBudget,
                                 projects.status, 
@@ -194,9 +198,12 @@ class ProjectController extends Controller
                                 projects.project_type, projects.status, addresses.sector,addresses.locality
 
                             ', [$sector, $locality]
-                ));
+                    ));
+            });
         } else  {
-            $reportQuery = collect(DB::select('
+            $reportQuery = 
+             Cache::remember('project_report_without_search', now()->addMinutes(10), function () {
+                return collect(DB::select('
                             SELECT 
                                 SUM(budget) as totalBudget,
                                 status, 
@@ -209,9 +216,9 @@ class ProjectController extends Controller
                                 projects
                             GROUP BY 
                                 projects.project_type, projects.status
-
                             '
-            ));
+                ));
+            });
         }
  
 
@@ -294,57 +301,71 @@ class ProjectController extends Controller
     {
 
         if(($sector = request()->query('sector')) && ($locality = request()->query('locality'))) {
-                $work = DB::select('
-                            SELECT 
-                                COUNT(projects.work_status) as count,
-                                addresses.sector,
-                                addresses.locality
-                            FROM
-                                projects
-                            INNER JOIN
-                                addresses
-                            ON 
-                                addresses.family_id = projects.family_id
-                            WHERE
-                                projects.work_status = "يعمل"
+                $work = 
+                Cache::remember('work_' .$sector.'_locality_'.$locality , now()->addMinutes(10), function () use ($sector, $locality){
+                    return DB::select('
+                                SELECT 
+                                    COUNT(projects.work_status) as count,
+                                    addresses.sector,
+                                    addresses.locality
+                                FROM
+                                    projects
+                                INNER JOIN
+                                    addresses
+                                ON 
+                                    addresses.family_id = projects.family_id
+                                WHERE
+                                    projects.work_status = "يعمل"
+    
+                                and addresses.sector = ? AND addresses.locality = ?
+    
+                                GROUP BY
+                                    addresses.sector, addresses.locality, projects.work_status
+                    ', [$sector, $locality]);
+                });
 
-                            and addresses.sector = ? AND addresses.locality = ?
+            $doesNotWork = 
 
-                            GROUP BY
-                                addresses.sector, addresses.locality, projects.work_status
-            ', [$sector, $locality]);
+            Cache::remember('doesNotWork_' .$sector.'_locality_'.$locality , now()->addMinutes(10), function () use ($sector, $locality){
+                return DB::select('
+                     SELECT 
+                         COUNT(projects.work_status) as count,
+                         addresses.sector,
+                         addresses.locality
+                     FROM
+                         projects
+                     INNER JOIN
+                         addresses
+                     ON 
+                         addresses.family_id = projects.family_id
+                     WHERE
+                        projects.work_status = "لا يعمل"
+     
+                     and addresses.sector = ? AND addresses.locality = ?
+     
+                     GROUP BY
+                         addresses.sector, addresses.locality, projects.work_status
+                ', [$sector, $locality]);
+            });
 
-            $doesNotWork = DB::select('
-                SELECT 
-                    COUNT(projects.work_status) as count,
-                    addresses.sector,
-                    addresses.locality
-                FROM
-                    projects
-                INNER JOIN
-                    addresses
-                ON 
-                    addresses.family_id = projects.family_id
-                WHERE
-                   projects.work_status = "لا يعمل"
-
-                and addresses.sector = ? AND addresses.locality = ?
-
-                GROUP BY
-                    addresses.sector, addresses.locality, projects.work_status
-            ', [$sector, $locality]);
-
-        $report = collect([
-            'work'        => (@$work[0]->count) ?? 0,
-            'doesNotWork' => (@$doesNotWork[0]->count) ?? 0,
-            'total'       => (@$doesNotWork[0]->count ?? 0) + (@$work[0]->count ?? 0)
-        ]);
+            $report = collect([
+                'work'        => (@$work[0]->count) ?? 0,
+                'doesNotWork' => (@$doesNotWork[0]->count) ?? 0,
+                'total'       => (@$doesNotWork[0]->count ?? 0) + (@$work[0]->count ?? 0)
+            ]);
 
             return view('reports.projectsWorkStatusReport', compact('report'));
         }
 
-        $work = DB::table('projects')->where('work_status', 'يعمل')->count();
-        $doesNotWork = DB::table('projects')->where('work_status', 'لا يعمل')->count();
+        $work = 
+        Cache::remember('work', now()->addMinutes(10), function () {
+            return DB::table('projects')->where('work_status', 'يعمل')->count();
+        });
+
+        $doesNotWork = 
+        Cache::remember('doesNotWork', now()->addMinutes(10), function () {
+            return DB::table('projects')->where('work_status', 'لا يعمل')->count();
+        });
 
         $report = collect([
             'work'        => $work,

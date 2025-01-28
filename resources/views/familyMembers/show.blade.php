@@ -21,6 +21,7 @@
         </div>
 
 	     <hr/>
+       
         <x-table>
           <x-slot:head>
             <th>اسم</th>

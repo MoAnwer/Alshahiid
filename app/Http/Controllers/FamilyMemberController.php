@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Family;
 use App\Models\FamilyMember;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+
 
 class FamilyMemberController extends Controller
 {
@@ -100,13 +102,16 @@ class FamilyMemberController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(int $member)
+    public function show(int $id)
     {
         try {
-            $member = FamilyMember::findOrFail($member);
+            $member = Cache::remember('member', now()->addMinutes(10), function() use ($id) {
+                return FamilyMember::findOrFail($id);
+            });
             return view('familyMembers.show', compact('member'));
 
         } catch (Exception $e) {
+            return $e->getMessage();
             return abort(404);
         }
     }
@@ -122,7 +127,9 @@ class FamilyMemberController extends Controller
         try {
 
             $family = Family::findOrFail($family);
-            $familyMember = $family->familyMembers->find($member);
+            $familyMember = Cache::remember('familyMember_forEdit', now()->addMinutes(10), function() use ($member) {
+                return $family->familyMembers->find($member);
+            });
             return view('familyMembers.edit', compact('familyMember'));
 
         } catch (Exception $e) {
@@ -227,7 +234,12 @@ class FamilyMemberController extends Controller
             $familyMember = FamilyMember::find($id);
             
             if($request->hasFile('personal_image')) {
-                $imageName = str()->orderedUuid() . '.' . $request->file('personal_image')->getClientOriginalExtension();
+
+                unlink(public_path('uploads/images/'.$familyMember->personal_image));
+                
+
+                $imageName = str()->orderedUuid() . '.' . $request->file('personal_image')->getClientOriginalExtension();                
+
                 $request->file('personal_image')->move(public_path('uploads/images'), $imageName);
 
                 $data['personal_image'] = $imageName;
@@ -250,7 +262,9 @@ class FamilyMemberController extends Controller
 	
 	public function delete(int $id) 
 	{
-		return view('familyMembers.delete', ['member' => FamilyMember::find($id)]);
+		return view('familyMembers.delete', ['member' => 
+            FamilyMember::findOrFail($id)
+        ]);
 	}
 
     /**
@@ -264,6 +278,7 @@ class FamilyMemberController extends Controller
         try {
             $familyMember = FamilyMember::findOrFail($id);
             $familyId = $familyMember->family->id;
+            unlink(public_path('uploads/images/'.$familyMember->personal_image));
             $familyMember->delete();
             return to_route('families.show', $familyId)->with('success', 'تم حذف الفرد بنجاح');
         } catch (Exception $e) {
@@ -278,34 +293,42 @@ class FamilyMemberController extends Controller
         $report = null;
 
         if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
-            $report = collect(DB::select('
-                            SELECT 
-                                m.relation, 
-                                COUNT(m.id) as count,
-                                a.sector,
-                                a.locality 
-                            FROM
-                                family_members m
-                            INNER JOIN
-                                addresses  a
-                            ON
-                                a.family_id = m.family_id 
-                            WHERE 
-                                a.sector = ?
-                            AND 
-                                a.locality = ?
-                            GROUP BY
-                                m.relation, a.sector, a.locality
-                    ', [$sector, $locality]
-            ));
+            $report = 
+            Cache::remember('report_sector_' .$sector.'_locality_'.$locality , now()->addMinutes(10), function () use ($sector, $locality) {
+                return collect(DB::select('
+                                SELECT 
+                                    m.relation, 
+                                    COUNT(m.id) as count,
+                                    a.sector,
+                                    a.locality 
+                                FROM
+                                    family_members m
+                                INNER JOIN
+                                    addresses  a
+                                ON
+                                    a.family_id = m.family_id 
+                                WHERE 
+                                    a.sector = ?
+                                AND 
+                                    a.locality = ?
+                                GROUP BY
+                                    m.relation, a.sector, a.locality
+                        ', [$sector, $locality]
+                ));
+            });
         } else {
-            $report = FamilyMember::selectRaw('relation, count(id) as count')->groupBy('relation')->get();
+            $report = Cache::remember('report', now()->addMinutes(10), function() {
+                return FamilyMember::selectRaw('relation, count(id) as count')->groupBy('relation')->get();
+            });
         }
         
         $report = $report->groupBy('relation');
 
 
-        $totalCount = FamilyMember::count();
+        $totalCount = Cache::remember('count', now()->addMinutes(10), function() {
+            return FamilyMember::count();
+        });
+        
 
         return view('reports.familyMemebersCountReport', compact('report', 'totalCount'));
     }

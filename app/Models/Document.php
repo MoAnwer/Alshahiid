@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bail extends Model
+class Document extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['provider', 'status', 'budget', 'type', 'notes', 'family_id',  'budget_from_org', 'budget_out_of_org'];
+    protected $fillable = ['type', 'storage_path', 'family_id', 'notes'];
 
-    public function family() {
+    public function family()
+    {
         return $this->belongsTo(Family::class);
     }
 }

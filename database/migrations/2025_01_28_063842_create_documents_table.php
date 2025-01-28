@@ -13,8 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('family_records', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->id();
+            $table->enum('type', ['اعلام شرعي', 'تأكيد الاستشهاد', 'التوكيل']);
+            $table->string('storage_path', 500);
+            $table->text('notes')->nullable();
+            $table->foreignId('family_id')->constrained('families');
             $table->timestamps();
         });
     }
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('family_records');
+        Schema::dropIfExists('documents');
     }
 };

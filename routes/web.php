@@ -63,6 +63,11 @@ Route::middleware('auth')->group(function() {
 		Route::put('update/{id}', 'update')->name('families.update');
 		Route::get('delete/{id}', 'delete')->name('families.delete');
 		Route::delete('destroy/{id}', 'destroy')->name('families.destroy');
+		
+		
+		Route::get('{id}/social-services', 'socialServices')->name('families.socialServices');
+		Route::get('{id}/monthly-bails', 'monthlyBails')->name('families.bails');
+		
 
 		Route::get('supervisor/create/{id}', 'createSupervisor')->name('families.createSupervisor');
 		Route::post('supervisor/store/{id}', 'storeSupervisor')->name('families.storeSupervisor');
@@ -199,6 +204,8 @@ Route::middleware('auth')->group(function() {
 		Route::get('delete/{id}', 'delete')->name('supervisors.delete');
 		Route::delete('destory/{id}', 'destory')->name('supervisors.destory');
 
+		Route::get('supervisor/{id}/families', 'families')->name('supervisors.families');
+
 	});
 
 	Route::controller(AssistancesController::class)->prefix('assistances')->group(function() {
@@ -212,7 +219,31 @@ Route::middleware('auth')->group(function() {
 	
 	});
 
-	// خليها هنا ما تدحلها مع اخوانا لانو بتجيب صفحة فاضية مع اخوانا
+	// خليها هنا ما تدخلها مع اخوانا لانو بتجيب صفحة فاضية مع اخوانا
 	Route::get('assistances-reports', 'AssistancesController@getReport')->name('reports.assistances');
+
+
+	Route::controller(BailController::class)->prefix('bails')->group(function () {
+		Route::get('{family}/create', 'create')->name('bails.create');
+		Route::get('edit/{id}', 'edit')->name('bails.edit');
+		Route::put('update/{id}', 'update')->name('bails.update');
+		Route::post('store/{family}', 'store')->name('bails.store');
+		Route::get('delete/{id}', 'delete')->name('bails.delete');
+		Route::delete('destroy/{id}', 'destroy')->name('bails.destroy');
+
+		Route::get('report', 'report')->name('reports.bails');
+	});
+
+	Route::controller(DocumentController::class)->prefix('documents')->group(function () {
+		Route::get('{family}/family-documents', 'familyDocuments')->name('documents.show');
+		Route::get('{family}/create', 'create')->name('documents.create');
+		Route::post('store/{family}', 'store')->name('documents.store');
+		Route::get('edit/{id}', 'edit')->name('documents.edit');
+		Route::put('update/{id}', 'update')->name('documents.update');
+		Route::get('delete/{id}', 'delete')->name('documents.delete');
+		Route::delete('destroy/{id}', 'destroy')->name('documents.destroy');
+	});
+
+	
 
 });

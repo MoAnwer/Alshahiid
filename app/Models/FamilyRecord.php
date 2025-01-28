@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class FamilyRecord extends Model
 {
     use HasFactory;
+
+    protected $faillable = ['martyrdom_confrmination', 'illam_sharaii', 'factorization'];
 }

@@ -41,9 +41,8 @@
 			    <label>الرتبة</label>
 				  <div class="form-group">
 					<select class="form-select" name="rank">
-						<option value="{{ $martyr->rank  }}">{{ $martyr->rank }}</option>
 						@foreach(['جندي','جندي أول','عريف','وكيل عريف','رقيب','رقيب أول','مساعد','مساعد أول','ملازم','ملازم أول','نقيب','رائد','مقدم','عقيد','عميد','لواء','فريق','فريق أول','مشير'] as $rank)
-							<option value="{{ $rank  }}">{{ $rank }}</option>
+							<option value="{{ $rank  }}" @selected($martyr->rank == $rank)>{{ $rank }}</option>
 						@endforeach
 
 					</select>
@@ -86,7 +85,7 @@
 				<label>النمرة العسكرية</label>
 
 				<div class="form-group">
-					<input name="militarism_number" type="number" class="form-control py-4" value="{{ old('militarism_number') }}"/>
+					<input name="militarism_number" type="number" class="form-control py-4" placeholder="{{$martyr->militarism_number}}" value="{{ old('militarism_number') }}"/>
 				</div>
 				
 			  </div>
@@ -94,7 +93,7 @@
 			  <div class="col-3">
 			  <label>رقم السجل</label>
 				<div class="form-group">
-					<input name="record_number" type="number" class="form-control py-4" value="{{ old('record_number')}}" />
+					<input name="record_number" type="number" class="form-control py-4" placeholder="{{$martyr->record_number}}" value="{{ old('record_number')}}" />
 				</div>
 			  </div>
 			  

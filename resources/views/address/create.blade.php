@@ -28,17 +28,17 @@
           <label>القطاع :</label>
             <div class="form-group">
               <select name="sector" class="form-select">
-                <option value="القاش">القاش</option>
-                <option value="اروما">اروما</option>
-                <option value="حلفا">حلفا</option>
+              <option value="القطاع الشرقي">القطاع الشرقي</option>
+              <option value="القطاع الشمالي">القطاع الشمالي</option>
+              <option value="القطاع الغربي">القطاع الغربي</option>
               </select>
             </div>
 
             <label>المحلية: </label>
             <div class="form-group">
               <select name="locality" class="form-select">
-			@foreach(['كسلا','خشم القربة','همشكوريب','تلكوك',' شمال الدلتا','جنوب الدلتا','ريفي كسلا','غرب كسلا','ود الحليو','نهر عطبرة','ريفي غرب كسلا','حلفا الجديدة'] as $locality)
-					<option value="{{ $locality }}">{{ $locality }}</option>
+			          @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
+					     <option value="{{ $locality }}">{{ $locality }}</option>
                 @endforeach
               </select>
             </div>

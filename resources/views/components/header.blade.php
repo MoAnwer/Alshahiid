@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ asset('asset/css/icons.css')}}">
   <link rel="stylesheet" href="{{ asset('asset/css/backend.min.css') }}">
   <link rel="stylesheet" href="{{ asset('asset/css/bootstrap-icons.css')}}" />
+  <link rel="stylesheet" href="{{ asset('asset/css/bootstrap.rtl.css')}}" />
   <link rel="shortcut icon" href="{{ asset('asset/images/rome.svg') }}" />
   <title>{{ $app_name . ' | ' . $page_title}}</title>
   <style>

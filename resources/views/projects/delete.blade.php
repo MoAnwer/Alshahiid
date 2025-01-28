@@ -27,7 +27,7 @@
             <button type="submit" class="btn btn-danger py-2 mt-3">
               حذف
             </button>
-            <a class="btn btn-info py-2 mt-3" href="{{ route('families.show', $project->family->id) }}">رجوع</a>
+            <a class="btn btn-info py-2 mt-3" href="{{ route('families.socialServices', $project->family->id) }}">رجوع</a>
         </form>
       </div>
       
