@@ -25,19 +25,21 @@
         <form action="{{ route('homes.update', ['family' => $home->family->id, 'home' => $home->id]) }}" method="POST">
           @csrf
           @method('PUT')
+            <label> <span class="text-danger fs-5">*</span> اسم مدير المشروع</label>
             <div class="form-group">
               <input type="text" class="p-4 form-control" name="manager_name" placeholder="اسم مدير المشروع" value="{{ $home->manager_name }}">
             </div>
             
             <div class="form-group">
+             <label>نوع المشروع</label>
               <select name="type" class="form-select">
-                <option value="{{ $home->type }}">{{ $home->type }}</option>
-                <option value="تشييد">تشييد</option>
-                <option value="اكمال التشييد">اكمال التشييد</option>
+                <option value="تشييد" @selected('تشييد' ==  $home->type)>تشييد</option>
+                <option value="اكمال التشييد" @selected('اكمال التشييد'  ==  $home->type)>اكمال التشييد</option>
               </select>
             </div>
 
             <div class="form-group">
+             <label>الحالة</label>
               <select name="status" class="form-select">
                 <option value="مطلوب" @selected($home->status == 'مطلوب')>مطلوب</option>
                 <option value="منفذ" @selected($home->status == 'منفذ')>منفذ</option>
@@ -45,13 +47,16 @@
             </div>
 
             <div class="form-group">
-              <input name="budget" type="number" class="p-4 form-control" placeholder="ميزانية المشروع" value="{{ $home->budget }}"/>
+              <label>المبلغ التقديري <span class="text-danger fs-5">*</span></label>
+              <input name="budget" type="number" class="p-4 form-control" placeholder="المبلغ التقديري" value="{{ $home->budget }}"/>
             </div>
 
             <div class="form-group">
+              <label> المبلغ المقدم من داخل المنظمة</label>
               <input name="budget_from_org" type="number" class="p-4 form-control" placeholder="المبلغ المقدم من داخل المنظمة" value="{{ $home->budget_from_org }}"/>
             </div>
 
+            <label> المبلغ المقدم من خارج المنظمة</label>
             <div class="form-group">
               <input name="budget_out_of_org" type="number" class="p-4 form-control" placeholder="المبلغ المقدم من خارج المنظمة" value="{{ $home->budget_out_of_org }}"/>
             </div>

@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\EducationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class EducationServiceController extends Controller
 {
@@ -157,7 +158,12 @@ class EducationServiceController extends Controller
         //     );
         // }
 
-        $report  = EducationService::selectRaw('type, status, count(*) as count, SUM(budget) as budget, SUM(budget_from_org) as budget_from_org, SUM(budget_out_of_org) as budget_out_of_org')->groupBy(['type', 'status'])->get();
+        $report  = 
+        Cache::remember('educationServices_report', now()->addMinutes(3), function ()
+        {
+            return EducationService::selectRaw('type, status, count(*) as count, SUM(budget) as budget, SUM(budget_from_org) as budget_from_org, SUM(budget_out_of_org) as budget_out_of_org')->groupBy(['type', 'status'])->get();     
+        });
+       
 
 		$report = $report->groupBy(['type', 'status']);
 

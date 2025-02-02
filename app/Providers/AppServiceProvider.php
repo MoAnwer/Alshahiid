@@ -24,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        //ini_set('max_execution_time', 300);
         app()->setLocale('ar');
         View::share('app_name', trans('messages.app_name'));
     }

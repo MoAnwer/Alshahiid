@@ -113,13 +113,19 @@
                 <td>الاجمالي</td>  
                 <td>{{ ($report->get('member')['need'][0]->count ?? 0) + ($report->get('team')['need'][0]->count ?? 0) }}</td>
                 <td>{{ ($report->get('member')['done'][0]->count ?? 0) + ($report->get('team')['done'][0]->count ?? 0)}}</td>
-                <td>{{ 
-                 round( (
+                <td>
+                  @if(@$report->get('member')['done'][0]->count > 0) 
+                  {{ 
+                  round( (
                     ( ($report->get('member')['done'][0]->count ?? 0) + ($report->get('team')['done'][0]->count ?? 1) )
                     / 
                     ( ($report->get('member')['need'][0]->count ?? 0) + ($report->get('team')['need'][0]->count ?? 1) )
-                  ) * 100, 1)
-                 . '%'}}
+                   ) * 100, 1)
+                  . '%'
+                 }}
+                 @else 
+                 0%
+                 @endif
                </td>
 
                 <td>{{ number_format( ($report->get('totals')['total_budget'] ?? 0) ) }}</td>

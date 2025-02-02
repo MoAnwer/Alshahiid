@@ -1,4 +1,4 @@
-@include('components.header', ['page_title' => 'بيانات اسرة  الشهيد'])
+@include('components.header', ['page_title' => 'بيانات اسرة  الشهيد ' . $family->martyr->name])
 
  <div id="wrapper">
 
@@ -16,12 +16,12 @@
       <div class="container-fluid mt-4">
 
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb breadcrumb-style2">
+          <ol class="breadcrumb breadcrumb-style">
             <li class="breadcrumb-item">
               <a href="{{ route('martyrs.index') }}">الشهداء</a>
               /               
             </li>
-            <li class="breadcrumb-item active" >
+            <li class="breadcrumb-item active mr-1" >
               اسرة الشهيد {{ $family->martyr->name}}
             </li>
           </ol>
@@ -53,27 +53,31 @@
 
         <x-table>
           <x-slot:head>
+            <th>#</th>
             <th>اسم</th>
             <th>النوع</th>
             <th>العمر</th>
             <th>العلاقة</th>
+            <th>الرقم الوطني</th>
             <th>الصورة الشخصية</th>
             <th>رقم التأمين الصحي</th>
             <th>بداية التأمين الصحي</th>
             <th>نهاية التأمين الصحي</th>
             <th>رقم الهاتف</th>
-            <th>الرقم الوطني</th>
             <th>عمليات</th>
           </x-slot:head>
 
           <x-slot:body>
-          @if($family->loadMissing('familyMembers')->familyMembers->count() > 0)
+          @if($family->familyMembers->isNotEmpty())
             @foreach($family->loadMissing('familyMembers')->familyMembers as $familyMember)
               <tr>
+                <td>{{ $familyMember->id }}</td>
                 <td>{{ $familyMember->name }}</td>
                 <td>{{ $familyMember->gender }}</td>
                 <td>{{ $familyMember->age }}</td>
                 <td>{{ $familyMember->relation }}</td>
+                <td>{{ $familyMember->national_number }}</td>
+
                 <td>
                   @if(!is_null($familyMember->personal_image))
                   <a href="{{ url("uploads/images/{$familyMember->personal_image}") }}">
@@ -87,7 +91,6 @@
                 <td>{{ $familyMember->health_insurance_start_date }}</td>
                 <td>{{ $familyMember->health_insurance_end_date }}</td>
                 <td>{{ $familyMember->phone_number }}</td>
-                <td>{{ $familyMember->national_number }}</td>
                 <td>
                     <a href="{{ route('familyMembers.edit', ['family' => $family->id, 'member' => $familyMember->id]) }}" class="btn btn-success p-2 fa-sm">
                       <i class="fa fa-edit"></i>
@@ -104,7 +107,7 @@
 
             @else
               <tr>
-                <td colspan="11"> 
+                <td colspan="12"> 
                   لا يوجد افراد
                   <b> [ مطلوب افراد {{ $family->family_size }} ]</b>
                 </td>
@@ -145,7 +148,7 @@
               <tr>
                 <td colspan="5">
                   <a href="{{ route('families.createSupervisor', $family->id) }}" class="btn btn-success">
-                    <i class="fas fa-plus"></i>
+                    <i class="fas fa-plus ml-2"></i>
                     إضافة مشرف
                   </a>
                 </td>
@@ -175,7 +178,7 @@
 
           <x-slot:body>
           @if($family->addresses->isNotEmpty())
-			      @foreach($family->addresses as $address)
+			      @foreach($family->loadMissing('addresses')->addresses as $address)
               <tr>
                <td>{{ $address->sector }}</td>
                <td>{{ $address->locality }}</td>
@@ -201,25 +204,85 @@
 
         <hr>
 
+        
+      <div class="d-flex justify-content-between align-items-center px-3">
+        <h4>التواصل مع اسرة الشهيد {{ $family->martyr->name }}</h4>
+        <a class="btn btn-primary active " href="{{ route('tazkiia.communicate.create', $family->id) }}">اضافة</a>
+      </div>
+       <x-table>
+          <x-slot:head>
+            <th>رقم الهاتف</th>
+            <th>اتمام التواصل</th>
+            <th>الحالة</th>
+            <th>التقديري</th>
+            <th>من  داخل المنظمة</th>
+            <th>من  خارج المنظمة</th>
+            <th>ملاحظات</th>
+            <th>عمليات</th>
+          </x-slot:head>
+
+          <x-slot:body>
+          @if($family->communicate->isNotEmpty())
+			      @foreach($family->communicate as $communicate)
+              <tr>
+               <td>{{ $communicate->phone }}</td>
+               <td>{{ $communicate->isCom }}</td>
+               <td>{{ $communicate->status }}</td>
+               <td>{{ number_format($communicate->budget) }}</td>                
+               <td>{{ number_format($communicate->budget_from_org) }}</td>
+               <td>{{ number_format($communicate->budget_out_of_org) }}</td>
+               <td>{{ $communicate->notes }}</td>
+               <td>
+                  <a href="{{ route('tazkiia.communicate.edit', $communicate->id) }}" class="btn btn-success p-2 fa-sm">
+                    <i class="fa fa-edit"></i>
+                  </a>
+                  <a href="{{ route('tazkiia.communicate.delete', $communicate->id) }}" class="btn btn-danger p-2 fa-sm">
+                    <i class="fa fa-trash"></i>
+                  </a>
+              </td>
+            </tr>
+			     @endforeach
+            @else
+              <tr>
+                <td colspan="8">لم يتم التواصل</td>
+              </tr>
+            @endif
+          </x-slot:body>
+        </x-table>
+
       <!--/ Address  -->
 
-      <div class="row mb-3">
+      <hr>
+      <div class="row mb-3 py-3">
 
-        <div class="col-md-6 col-lg-4">
-          <div class="card text-center py-3">
+        <div class="col-sm-12 col-6  col-lg-3">
+          <div class="card text-center py-3 border border-warning">
             <div class="card-body">
-              <i class="fas fa-file fs-1 text-info mb-4"></i>
-              <h5 class="card-title mb-3"> خطابات اسرة </h5>
-              <p class="card-text mb-3">خطابات تأكيد الاستشهاد و الاعلام الشرعي و التوكيل و قطعة الارض</p>
-              <a href="{{ route('documents.show', $family->id) }}" class="btn btn-primary active">عرض الخطابات</a>
+              <i class="fas fa-star fs-1 text-warning mb-4"></i>
+              <h5 class="card-title mb-3"> توثيق سيرة الشهيد {{ $family->martyr->name }} </h5>
+              <p class="card-text mb-3">السيرة الذاتية للشهيد</p>
+              <a href="{{ route('tazkiia.martyrDocs.index', $family->martyr->id) }}" class="btn btn-primary active">عرض</a>
             </div>
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
-          <div class="card text-center py-3">
+        <div class="col-lg-3 col-6 col-sm-12">
+
+          <div class="card text-center py-3 border border-info">
             <div class="card-body">
-              <i class="fas fa-tools fs-1 text-info mb-4"></i>
+              <i class="fas fa-file fs-1 text-info mb-4"></i>
+              <h5 class="card-title mb-3"> خطابات اسرة </h5>
+              <p class="card-text mb-3"> تأكيد الاستشهاد، الاعلام الشرعي، التوكيل ...</p>
+              <a href="{{ route('documents.show', $family->id) }}" class="btn btn-primary active">عرض</a>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-lg-3 col-6 col-sm-12">
+          <div class="card text-center py-3 border border-danger">
+            <div class="card-body">
+              <i class="bi bi-hearts fs-1 text-danger mb-4"></i>
               <h5 class="card-title mb-3"> الخدمات الاجتماعية </h5>
               <p class="card-text mb-3">الخدمات الاجتماعية </p>
               <a href="{{ route('families.socialServices', $family->id)}}" class="btn btn-primary active">عرض</a>
@@ -227,17 +290,17 @@
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
-          <div class="card text-center py-3">
+        <div class="col-lg-3 col-6 col-sm-12">
+          <div class="card text-center py-3 border border-success">
             <div class="card-body">
-              <i class="fas fa-dollar-sign fs-1 text-info mb-4"></i>
+              <i class="fas fa-dollar-sign fs-1 text-success mb-4"></i>
               <h5 class="card-title mb-3">  الكفالات الشهرية  </h5>
               <p class="card-text mb-3">الكفالات الشهرية  </p>
               <a href="{{ route('families.bails', $family->id)}}" class="btn btn-primary active">عرض</a>
             </div>
           </div>
         </div>
-
+        
         </div>
 
       </div>

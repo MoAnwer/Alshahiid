@@ -28,26 +28,26 @@
           @csrf
           @method('PUT')
             <div class="form-group">
-              <input type="text" class="p-4 form-control" name="project_name" placeholder="اسم المشروع" value="{{ $project->project_name }}">
+            <label>اسم المشروع <span class="text-danger fs-5">*</span></label>
+              <input type="text" class="p-4 form-control" name="project_name" value="{{ $project->project_name }}">
             </div>
 
             <div class="form-group">
-              <input type="text" class="p-4 form-control" name="manager_name" placeholder="اسم مدير المشروع" value="{{ $project->manager_name }}">
+            <label> اسم مدير المشروع<span class="text-danger fs-5">*</span></label>
+              <input type="text" class="p-4 form-control" name="manager_name" placeholder="" value="{{ $project->manager_name }}">
             </div>
             
             <div class="form-group">
               <select name="project_type" class="form-select">
-                <option value="{{ $project->project_type }}">{{ $project->project_type }}</option>
-                <option value="فردي">فردي</option>
-                <option value="جماعي">جماعي</option>
+                <option value="فردي" @selected($project->project_type == 'فردي')>فردي</option>
+                <option value="جماعي" @selected($project->project_type == 'جماعي')>جماعي</option>
               </select>
             </div>
 
             <div class="form-group">
               <select name="status" class="form-select">
-                <option value="{{ $project->status }}">{{ $project->status }}</option>
-                <option value="مطلوب">مطلوب</option>
-                <option value="منفذ">منفذ</option>
+                <option value="مطلوب" @selected($project->status == 'مطلوب')>مطلوب</option>
+                <option value="منفذ" @selected($project->status == 'منفذ')>منفذ</option>
               </select>
             </div>
 
@@ -58,7 +58,7 @@
               </select>
             </div>
 
-            <label>ميزانية المشروع</label>
+            <label>ميزانية المشروع <span class="text-danger fs-5">*</span></label>
             <div class="form-group">
               <input name="budget" type="number" class="p-4 form-control" placeholder="ميزانية المشروع" value="{{ $project->budget }}"/>
             </div>

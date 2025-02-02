@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['اعلام شرعي', 'تأكيد الاستشهاد', 'التوكيل']);
+            $table->enum('type', ['اعلام شرعي', 'تأكيد الاستشهاد', 'التوكيل', 'عقد قطعة الارض']);
             $table->string('storage_path', 500);
             $table->text('notes')->nullable();
             $table->foreignId('family_id')->constrained('families');

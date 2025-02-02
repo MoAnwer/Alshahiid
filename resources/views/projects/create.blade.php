@@ -27,13 +27,16 @@
         <form action="{{ route('projects.store') }}" method="POST">
           @csrf
             <div class="form-group">
+              <span class="text-danger">*</span>
               <input type="text" class="p-4 form-control" name="project_name" placeholder="اسم المشروع" value="{{ old('project_name') }}">
             </div>
 
             <div class="form-group">
+              <span class="text-danger">*</span>
               <input type="text" class="p-4 form-control" name="manager_name" placeholder="اسم مدير المشروع" value="{{ old('manager_name') }}">
             </div>
             
+            <label>النوع</label>
             <div class="form-group">
               <select name="project_type" class="form-select">
                 <option value="فردي">فردي</option>
@@ -41,6 +44,7 @@
               </select>
             </div>
 
+            <label>حالة التنفيذ</label>
             <div class="form-group">
               <select name="status" class="form-select">
                 <option value="مطلوب">مطلوب</option>
@@ -48,6 +52,7 @@
               </select>
             </div>
 
+            <label>الحالة التشغيلية</label>
             <div class="form-group">
               <select name="work_status" class="form-select">
                 <option value="يعمل">يعمل</option>
@@ -57,6 +62,7 @@
 
 
             <div class="form-group">
+              <span class="text-danger">*</span>
               <input name="budget" type="number" class="p-4 form-control" placeholder="ميزانية المشروع" value="{{ old('budget') }}"/>
             </div>
 

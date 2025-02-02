@@ -16,6 +16,21 @@
 
         <x-alert/>
 
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb breadcrumb-style">
+            <li class="breadcrumb-item">
+              <a href="{{ route('families.show', $student->familyMember->family->id) }}"> اسرة الشهيد {{ $student->familyMember->family->martyr->name}} </a>
+            </li>
+            <li class="breadcrumb-item">
+              /
+              <a href="{{ route('familyMembers.show', $student->familyMember->id) }}"> {{ $student->familyMember->name }}  </a>
+            </li>
+            <li  class="breadcrumb-item active">ملف {{ $student->familyMember->name }} التعليمي</li>
+          </ol>
+        </nav>
+
+        <hr>
+
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>ملف {{ $student->familyMember->name }} التعليمي </h4>
         </div>

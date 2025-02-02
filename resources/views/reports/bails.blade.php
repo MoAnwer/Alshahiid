@@ -271,7 +271,7 @@
               <td>{{ $totalNeed }}</td>
               <td>{{ $totalDone }}</td>
               <td>
-                @if($totalDone > 0)
+                @if($totalDone > 0 && $totalNeed > 0)
                   {{ round(($totalDone / $totalNeed) * 100, 1) . '%' }}
                 @else
                   0%
@@ -296,3 +296,5 @@
           </x-table>
     </div>
   </div>
+
+  @include('components.footer')

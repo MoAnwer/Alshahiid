@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Family;
 use App\Models\HomeService;
@@ -31,7 +32,7 @@ class HomeServiceController extends Controller
 			return view('homesServices.create', compact('family'));
 			
 		} catch(Exception $e) {
-			return abort(404);
+			return $e->getMessage();
 		}
 
     }
@@ -74,16 +75,6 @@ class HomeServiceController extends Controller
 		
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -179,7 +170,7 @@ class HomeServiceController extends Controller
 
         } catch(Exception $e) {
 
-            return abort(404);
+            return $e->getMessage();
 
         }
     }

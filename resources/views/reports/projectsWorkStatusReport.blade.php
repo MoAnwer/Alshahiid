@@ -75,21 +75,35 @@
             <tr>
               <td>النسبة</td>
               <td>
-                @if($report['work'] > 0)
+                @if($report['work'] > 0 &&  $report['total'] > 0)
                   {{ round(($report['work'] / $report['total']) * 100, 1) . '%'}}
                 @else
                   0
                 @endif
               </td>
               <td>
-                @if($report['doesNotWork'] > 0)
+                @if($report['doesNotWork'] > 0 &&  $report['total'] > 0)
                   {{ round(($report['doesNotWork'] / $report['total']) * 100, 1) . '%'}}
                 @else
                   0
                 @endif
               </td>
-              <td>100%</td>
+              <td>
+                @if ($report['total'] > 0)
+                  100%
+                @else
+                  0%
+                @endif
+              </td>
             </tr>
+
+            <caption>
+              @empty(!request()->query('sector'))
+                {{ request()->query('sector') . ' - ' . request()->query('locality')}}
+              @else
+              كل القطاعات بالولاية
+              @endempty
+            </caption>
 
            </x-slot:body>
 

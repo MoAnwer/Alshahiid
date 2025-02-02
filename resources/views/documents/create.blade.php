@@ -32,12 +32,13 @@
                 <option value="اعلام شرعي">اعلام شرعي</option>
                 <option value="تأكيد الاستشهاد">تأكيد الاستشهاد</option>
                 <option value="التوكيل">التوكيل</option>
+                <option value="عقد قطعة الارض">عقد قطعة الارض</option>
               </select>
             </div>
 
             <label>ملف الخطاب</label>
             <div class="for-group">
-              <input type="file" name="storage_path"  class="form-control"/>
+              <input type="file" name="storage_path"  class="form-control" accept=".pdf"/>
             </div>
 
             <label>الملاحظات</label>

@@ -26,13 +26,25 @@
 		
         <form action="{{ route('injureds.update', $injured->id) }}" method="POST">
           @csrf
-		  @method('PUT')
+		        @method('PUT')
+            <label><span class="text-danger fs-5">*</span>اسم المصاب</label>
             <div class="form-group">
               <input type="text" class="p-4 form-control" name="name" placeholder="اسم المصاب" value="{{ $injured->name }}" />
             </div>
 
+            <label><span class="text-danger fs-5">*</span>نوع الاصابة</label>
             <div class="form-group">
               <input type="text" class="p-4 form-control" name="type"  placeholder="نوع الاصابة" max-length="2" value="{{ $injured->type }}"/>
+            </div>
+            
+			<label>تاريخ الاصابة<span class="text-danger fs-5">*</span</label>
+            <div class="form-group">
+              <input  type="date" class="p-4 form-control" name="injured_date" value="{{ $injured->injured_date }}" />
+            </div>
+
+			<label>نسبة الاصابة<span class="text-danger fs-5">*</span</label>
+            <div class="form-group">
+              <input name="injured_percentage" type="number" class="p-4 form-control" value="{{ $injured->injured_percentage }}"/>
             </div>
 
             <label>رقم بطاقة التأمين الصحي</label>
@@ -52,15 +64,6 @@
               <input name="health_insurance_end_date" type="date" class="p-4 form-control" value="{{  $injured->health_insurance_end_date }}"/>
             </div>
 
-			<label>تاريخ الاصابة</label>
-            <div class="form-group">
-              <input  type="date" class="p-4 form-control" name="injured_date" value="{{ $injured->injured_date }}" />
-            </div>
-
-			<label>نسبة الاصابة</label>
-            <div class="form-group">
-              <input name="injured_percentage" type="number" class="p-4 form-control" value="{{ $injured->injured_percentage }}"/>
-            </div>
             
             <label>ملاحظات: </label>
             <textarea name="notes" class="form-control w-100">{{ $injured->notes }}</textarea>

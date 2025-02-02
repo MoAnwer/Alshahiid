@@ -54,4 +54,9 @@ class Family extends Model
     public function documents() {
         return $this->hasMany(Document::class)->orderByDESC('created_at');
     }
+
+    public function communicate() {
+        return $this->hasMany(Communicate::class);
+    }
+
 }

@@ -109,6 +109,7 @@ class SupervisorController extends Controller
         } catch (Exception $e) {
             return $e->getMessage();
         }
+        
         return to_route('supervisors.index')->with('success', 'تم حذف بيانات المشرف بنجاح');
     }
 

@@ -26,38 +26,38 @@
           @csrf
           @method('PUT')
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input type="text" class="p-4 form-control" name="name" placeholder="الاسم" value="{{ $familyMember->name }}">
             </div>
 
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input type="number" class="p-4 form-control" name="age" placeholder="العمر" value="{{ $familyMember->age }}">
             </div>
             
             <div class="form-group">
               <select name="gender" class="form-select">
-                <option value="{{ $familyMember->gender }}">{{ $familyMember->gender }}</option>
-                <option value="ذكر">ذكر</option>
-                <option value="أنثى">أنثى</option>
+                <option value="ذكر" @selected( $familyMember->gender == 'ذكر')>ذكر</option>
+                <option value="أنثى" @selected( $familyMember->gender == 'أنثى')>أنثى</option>
               </select>
             </div>
 
             <div class="form-group">
               <select name="relation" class="form-select">
-                <option value="{{ $familyMember->relation }}">{{ $familyMember->relation }}</option>
-                <option value="ابن">ابن</option>
-                <option value="ابنة">ابنة</option>
-                <option value="اخ">اخ</option>
-                <option value="اخت">اخت</option>
-                <option value="اب">اب</option>
-                <option value="ام">ام</option>
-                <option value="زوجة">زوجة</option>
+                <option value="ابن" @selected($familyMember->relation == 'ابن')>ابن</option>
+                <option value="ابنة" @selected($familyMember->relation == 'ابنة')>ابنة</option>
+                <option value="اخ" @selected($familyMember->relation == 'اخ')>اخ</option>
+                <option value="اخت" @selected($familyMember->relation == 'اخت')>اخت</option>
+                <option value="اب" @selected($familyMember->relation == 'اب')>اب</option>
+                <option value="ام" @selected($familyMember->relation == 'ام')>ام</option>
+                <option value="زوجة" @selected($familyMember->relation == 'زوجة')>زوجة</option>
               </select>
             </div>
 
 
 
 
-            <label>الرقم الوطني</label>
+            <label> <span class="text-danger fs-5">*</span> الرقم الوطني</label>
             <div class="form-group">
               <input name="national_number" type="number" class="p-4 form-control" placeholder="{{ $familyMember->national_number }}"/>
             </div>
@@ -66,7 +66,7 @@
               <input name="phone_number" type="text" class="p-4 form-control" placeholder="رقم الهاتف" value="{{ $familyMember->phone_number }}"/>
             </div>
 
-            <label>تاريخ الميلاد</label>
+            <label> <span class="text-danger fs-5">*</span> تاريخ الميلاد </label>
             <div class="form-group">
               <input name="birth_date" type="date" class="p-4 form-control" value="{{ $familyMember->birth_date }}"/>
             </div>

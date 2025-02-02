@@ -12,21 +12,7 @@ use Illuminate\Support\Facades\Cache;
 
 class FamilyMemberController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(int $family)
     {  
         try {
@@ -37,7 +23,7 @@ class FamilyMemberController extends Controller
 
         } catch(Exception $e) {
 
-            return abort(404);
+            return $e->getMessage();
         }
         
     }
@@ -96,60 +82,36 @@ class FamilyMemberController extends Controller
      
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(int $id)
     {
         try {
-            $member = Cache::remember('member', now()->addMinutes(10), function() use ($id) {
-                return FamilyMember::findOrFail($id);
-            });
+            $member = FamilyMember::findOrFail($id);
             return view('familyMembers.show', compact('member'));
-
         } catch (Exception $e) {
             return $e->getMessage();
             return abort(404);
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit(int $family, int $member)
     {
         try {
 
             $family = Family::findOrFail($family);
-            $familyMember = Cache::remember('familyMember_forEdit', now()->addMinutes(10), function() use ($member) {
-                return $family->familyMembers->find($member);
-            });
+            $familyMember = $family->familyMembers->find($member);
             return view('familyMembers.edit', compact('familyMember'));
 
         } catch (Exception $e) {
-            return abort(404);
+            return $e->getMessage();
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $data = [];
 
         if(isset($request->national_number) && isset($request->health_insurance_number)) {
-		$data = $request->validate([
+		    $data = $request->validate([
                 "name" => 'string|required',
                 "age" => 'integer|required',
                 "gender" => "in:ذكر,أنثى",
@@ -235,7 +197,7 @@ class FamilyMemberController extends Controller
             
             if($request->hasFile('personal_image')) {
 
-                unlink(public_path('uploads/images/'.$familyMember->personal_image));
+                @unlink(public_path('uploads/images/'.$familyMember->personal_image));
                 
 
                 $imageName = str()->orderedUuid() . '.' . $request->file('personal_image')->getClientOriginalExtension();                
@@ -262,9 +224,7 @@ class FamilyMemberController extends Controller
 	
 	public function delete(int $id) 
 	{
-		return view('familyMembers.delete', ['member' => 
-            FamilyMember::findOrFail($id)
-        ]);
+		return view('familyMembers.delete', ['member' => FamilyMember::findOrFail($id)]);
 	}
 
     /**
@@ -278,11 +238,11 @@ class FamilyMemberController extends Controller
         try {
             $familyMember = FamilyMember::findOrFail($id);
             $familyId = $familyMember->family->id;
-            unlink(public_path('uploads/images/'.$familyMember->personal_image));
+            @unlink(public_path('uploads/images/'.$familyMember->personal_image));
             $familyMember->delete();
             return to_route('families.show', $familyId)->with('success', 'تم حذف الفرد بنجاح');
         } catch (Exception $e) {
-            return abort(404);
+            return $e->getMessage();
         }
     }
 
@@ -294,7 +254,7 @@ class FamilyMemberController extends Controller
 
         if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
             $report = 
-            Cache::remember('report_sector_' .$sector.'_locality_'.$locality , now()->addMinutes(10), function () use ($sector, $locality) {
+            Cache::remember('report_sector_' .$sector.'_locality_'.$locality , now()->addMinutes(1), function () use ($sector, $locality) {
                 return collect(DB::select('
                                 SELECT 
                                     m.relation, 
@@ -317,7 +277,7 @@ class FamilyMemberController extends Controller
                 ));
             });
         } else {
-            $report = Cache::remember('report', now()->addMinutes(10), function() {
+            $report = Cache::remember('report', now()->addMinutes(1), function() {
                 return FamilyMember::selectRaw('relation, count(id) as count')->groupBy('relation')->get();
             });
         }
@@ -325,7 +285,7 @@ class FamilyMemberController extends Controller
         $report = $report->groupBy('relation');
 
 
-        $totalCount = Cache::remember('count', now()->addMinutes(10), function() {
+        $totalCount = Cache::remember('count_of_members_cache', now()->addMinutes(1), function() {
             return FamilyMember::count();
         });
         
@@ -339,13 +299,15 @@ class FamilyMemberController extends Controller
         $request = request();
 
         $report = null;
+        $moreTenMembersQuery = null;
 
         if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
             $report = collect(DB::select('
                             SELECT 
                                 a.sector,
                                 a.locality,
-                                f.family_size
+                                f.family_size,
+                                count(f.family_size) as count
                             FROM
                                 families f
                             INNER JOIN
@@ -356,17 +318,158 @@ class FamilyMemberController extends Controller
                                 a.sector = ?
                             AND
                                 a.locality = ?
-                            GROUP BY family_size
+                            GROUP BY f.family_size, a.locality,  a.sector
 
                     '
-            ), [$sector, $locality]);
+            , [$sector, $locality]));
+
+
+        $moreTenMembersQuery = collect(DB::select('
+                            SELECT 
+                                a.sector,
+                                a.locality,
+                                f.family_size,
+                                count(f.family_size) as count
+                            FROM
+                                families f
+                            INNER JOIN
+                                addresses  a
+                            ON
+                                a.family_id = f.id 
+                            WHERE
+                                a.sector = ?
+                            AND
+                                a.locality = ?
+                            AND 
+                                f.family_size > 10
+                            GROUP BY f.family_size, a.locality,  a.sector
+                    '
+            , [$sector, $locality]));
+
+
         } else {
             $report = Family::selectRaw('family_size, count(family_size) as count')->groupBy('family_size')->get();
+            $moreTenMembersQuery = 
+            collect(Family::selectRaw('family_size, count(family_size) as count')->where('family_size', '>', 10)->groupBy('family_size')->get());
+        }
+
+        $moreTenMembersCount = 0;
+
+        foreach ($moreTenMembersQuery as $value) {
+            $moreTenMembersCount++;
         }
 
         $report = $report->groupBy('family_size');
 
-        return view('reports.familyMembersCountByCategoryReport', compact('report'));
+        return view('reports.familyMembersCountByCategoryReport', compact('report', 'moreTenMembersCount'));
     }
+
+
+    public function orphanReport()
+    {
+        $request = request();
+
+        $report = null;
+        $orphanReportQuery = null;
+
+        if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
+            $report = collect(DB::select('
+                            SELECT 
+                                a.sector,
+                                a.locality,
+                                f.gender,
+                                COUNT(CASE WHEN f.age < 5 THEN 1 END)  AS "ander5",
+                                COUNT(CASE WHEN f.age BETWEEN 6 AND 12 THEN 1 END) AS "from6To12",
+                                COUNT(CASE WHEN f.age BETWEEN 13 AND 16 THEN 1 END) AS "from13To16",
+                                COUNT(CASE WHEN f.age BETWEEN 17 AND 18 THEN 1 END) AS "from17To18",
+                                COUNT(CASE WHEN f.gender = "ذكر" AND f.relation = "ابن" AND f.age <= 18 THEN 1 END) AS "countOfMales",
+                                COUNT(CASE WHEN f.gender = "أنثى" AND f.relation = "ابنة" AND f.age <= 18 THEN 1 END) AS "countOfFemales",
+                                COUNT(CASE WHEN f.gender = "أنثى" AND f.relation = "زوجة" THEN 1 END) AS "countOfWidow"
+                            FROM
+                                family_members f
+                            INNER JOIN 
+                                addresses a
+                            ON
+                                a.family_id = f.family_id 
+                            WHERE
+                                a.sector = ?
+                            AND
+                                a.locality = ?
+                            AND (
+                                f.relation = "ابن"
+                            OR
+                                f.relation = "ابنة"
+                            )
+                            GROUP BY 
+                                a.locality,  a.sector, f.gender
+
+                    '
+            , [$sector, $locality]));
+
+            $report = $report->groupBy('gender');
+
+
+            $countOfWidow = DB::select(
+                'SELECT 
+                    a.sector,
+                    a.locality,
+                    COUNT(CASE WHEN f.gender = "أنثى" AND f.relation = "زوجة" THEN 1 END) AS "countOfWidow"  
+                FROM 
+                    family_members f
+                INNER JOIN 
+                    addresses a
+                ON
+                    a.family_id = f.family_id 
+                WHERE
+                    a.sector = ?
+                AND
+                    a.locality = ?
+                GROUP BY 
+                    a.locality,  a.sector
+                
+            ', [$sector, $locality]);
+
+            $countOfWidow = (@$countOfWidow[0]->countOfWidow ?? 0);
+
+            //dd($countOfWidow);
+
+
+            $totalCountOfMembers = 
+                (@$report->get('ذكر')[0]->countOfMales  ?? 0) + (@$report->get('أنثى')[0]->countOfFemales ?? 0) + ($countOfWidow);
+
+
+            return view('reports.orphanReport', compact('report', 'countOfWidow', 'totalCountOfMembers'));
+        }
+
+        $report = collect(DB::select('
+                            SELECT 
+                                f.gender,
+                                COUNT(CASE WHEN f.age < 5 THEN 1 END)  AS "ander5",
+                                COUNT(CASE WHEN f.age BETWEEN 6 AND 12 THEN 1 END) AS "from6To12",
+                                COUNT(CASE WHEN f.age BETWEEN 13 AND 16 THEN 1 END) AS "from13To16",
+                                COUNT(CASE WHEN f.age BETWEEN 17 AND 18 THEN 1 END) AS "from17To18",
+                                COUNT(CASE WHEN f.gender = "ذكر" AND f.relation = "ابن" AND f.age <= 18 THEN 1 END) AS "countOfMales",
+                                COUNT(CASE WHEN f.gender = "أنثى" AND f.relation = "ابنة" AND f.age <= 18 THEN 1 END) AS "countOfFemales"
+                            FROM
+                                family_members f
+                            WHERE
+                                f.relation = "ابن"
+                            OR
+                                f.relation = "ابنة"
+                            GROUP BY f.gender'
+        ));
+
+        $report = $report->groupBy('gender');
+
+        $countOfWidow = DB::select('SELECT COUNT(CASE WHEN f.gender = "أنثى" AND f.relation = "زوجة" THEN 1 END) AS "countOfWidow"  FROM family_members f');
+        $countOfWidow = $countOfWidow[0]->countOfWidow;
+
+        
+        $totalCountOfMembers = (@$report->get('ذكر')[0]->countOfMales  ?? 0) + (@$report->get('أنثى')[0]->countOfFemales ?? 0) + ($countOfWidow);
+
+        return view('reports.orphanReport', compact('report', 'countOfWidow',  'totalCountOfMembers'));
+
+    }
+
 
 }

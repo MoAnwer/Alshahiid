@@ -23,6 +23,43 @@
           </a>
         </div>
 
+
+          <div class="search-form">
+          <form action="{{ URL::current() }}" method="GET">
+
+            <div class="row">
+              
+              <div class="col-6">
+                <label>بحث باستخدام :</label>
+                <div class="form-group">
+                    <select name="search" class="form-select">
+                      <option value="name" @selected(request('search') == 'name')>اسم الشهيد</option>
+                      <option value="militarism_number" @selected(request('search') == 'militarism_number')>النمرة العسكرية</option>
+                      <option value="record_number" @selected(request('search') == 'record_number')> رقم السجل</option>
+                    </select>
+                  </div>
+              </div>
+
+              <div class="col-5">
+                <label>القيمة: </label>
+                <div class="form-group">
+                  <input name="needel" type="text" maxlength="60" class="form-control py-4" value="{{ old('needel') ??  request('needel')}}" />
+                </div>
+              </div>
+
+              <div class="col-1 mt-3 d-flex align-items-center flex-column justify-content-center">
+                <button class="btn py-4 btn-primary active form-control ">
+                  <i class="fas fa-search ml-2"></i>
+                  بحث 
+                </button>
+              </div>
+
+              </form>
+
+            </div>
+        </div> {{-- search form --}}
+
+
         <x-alert />
 
         <x-table>
@@ -42,7 +79,7 @@
           </x-slot:head>
 
           <x-slot:body>
-            @foreach ($martyrs as $martyr)
+            @forelse ($martyrs as $martyr)
               <tr>
                 <td>{{ $martyr->name }}</td>
                 <td>{{ $martyr->force }}</td>
@@ -72,11 +109,13 @@
                   </a>
                 </td>
               </tr>
-            @endforeach
+            @empty
+              <tr><td colspan="12"> لا توجد نتائج </td></tr>
+            @endforelse
           </x-slot:body>
         </x-table>
 
-      {{ $martyrs->links('vendor.pagination.bootstrap-5') }}
+      {{ $martyrs->withQueryString()->appends(['search' => 1])->links('vendor.pagination.bootstrap-5') }}
 
       </div>
 

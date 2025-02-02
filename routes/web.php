@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MartyrController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,10 +17,8 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', function () {
-    return Auth::check() ? to_route('home') : to_route('login');
+    return Auth::check() ? to_route('martyrs.index') : to_route('login');
 });
-
-Route::view('/home', 'home')->name('home');
 
 Route::controller(AuthController::class)->group(function() {
     Route::get('login', 'login')->name('login');
@@ -102,17 +100,15 @@ Route::middleware('auth')->group(function() {
 		Route::delete('destroy/{id}', 'destroy')->name('familyMembers.destroy');
 
 		Route::get('reports/family-members-count', 'familyMembersCountReport')->name('reports.familyMembersCount');
-		Route::get(
-			'reports/family-members-count-by-category', 
-			'familyMembersCountByCategoryReport'
-		)
+		Route::get('reports/family-members-count-by-category', 'familyMembersCountByCategoryReport')
 		->name('reports.familyMembersCountByCategory');
+		Route::get('reports/orphans', 'orphanReport')->name('reports.orphanReport');
 	});
     
   Route::controller(AddressController::class)->prefix('address')->group(function() {
 		Route::get('{family}/create', 'create')->name('address.create');
 		Route::get('edit/{address}', 'edit')->name('address.edit');
-		Route::put('{family}/update/{address}', 'update')->name('address.update');
+		Route::put('update/{address}', 'update')->name('address.update');
 		Route::post('{family}/store', 'store')->name('address.store');
 		Route::get('delete/{address}', 'delete', 'delete')->name('address.delete');
 		Route::delete('destroy/{id}', 'destroy')->name('address.destroy');
@@ -244,6 +240,130 @@ Route::middleware('auth')->group(function() {
 		Route::delete('destroy/{id}', 'destroy')->name('documents.destroy');
 	});
 
-	
 
+	
+	Route::controller(FamilyMemberDocumentController::class)->prefix('member-documents')->group(function () {
+
+		Route::get('{member}/create', 'create')->name('familyMemberDocuments.create');
+		Route::post('store/{member}', 'store')->name('familyMemberDocuments.store');
+		Route::get('edit/{id}', 'edit')->name('familyMemberDocuments.edit');
+		Route::put('update/{id}', 'update')->name('familyMemberDocuments.update');
+		Route::get('delete/{id}', 'delete')->name('familyMemberDocuments.delete');
+		Route::delete('destroy/{id}', 'destroy')->name('familyMemberDocuments.destroy');
+
+	});
+
+	Route::controller(MarryAssistanceController::class)->prefix('marry-assistances')->group(function () {
+
+		Route::get('{member}/create', 'create')->name('marryAssistances.create');
+		Route::post('store/{member}', 'store')->name('marryAssistances.store');
+		Route::get('edit/{id}', 'edit')->name('marryAssistances.edit');
+		Route::put('update/{id}', 'update')->name('marryAssistances.update');
+		Route::get('delete/{id}', 'delete')->name('marryAssistances.delete');
+		Route::delete('destroy/{id}', 'destroy')->name('marryAssistances.destroy');
+
+		Route::get('report', 'report')->name('marryAssistances.report');
+
+	});
+	
+		// التزكية الروحية
+
+		Route::view('tazkiia', 'tazkiia.index')->name('tazkiia.index');
+
+		Route::controller(HagController::class)->prefix('tazkiia/hag-and-ommrah')->group(function () {
+
+			Route::get('{member}/create', 'create')->name('tazkiia.hagAndOmmrah.create');
+			Route::post('store/{member}', 'store')->name('tazkiia.hagAndOmmrah.store');
+			Route::get('edit/{id}', 'edit')->name('tazkiia.hagAndOmmrah.edit');
+			Route::put('{id}/update', 'update')->name('tazkiia.hagAndOmmrah.update');
+			Route::get('delete/{id}', 'delete')->name('tazkiia.hagAndOmmrah.delete');
+			Route::delete('destroy/{id}', 'destroy')->name('tazkiia.hagAndOmmrah.destroy');
+
+		});
+
+		Route::controller(SessionController::class)->prefix('tazkiia/sessions')->group(function () {
+
+			Route::get('', 'index')->name('tazkiia.sessions.index');
+			Route::get('create', 'create')->name('tazkiia.sessions.create');
+			Route::post('store', 'store')->name('tazkiia.sessions.store');
+			Route::get('edit/{id}', 'edit')->name('tazkiia.sessions.edit');
+			Route::put('{id}/update', 'update')->name('tazkiia.sessions.update');
+			Route::get('delete/{id}', 'delete')->name('tazkiia.sessions.delete');
+			Route::delete('destroy/{id}', 'destroy')->name('tazkiia.sessions.destroy');
+
+		});
+
+
+
+		Route::controller(CampController::class)->prefix('tazkiia/camps')->group(function () {
+
+			Route::get('', 'index')->name('tazkiia.camps.index');
+			Route::get('create', 'create')->name('tazkiia.camps.create');
+			Route::post('store', 'store')->name('tazkiia.camps.store');
+			Route::get('edit/{id}', 'edit')->name('tazkiia.camps.edit');
+			Route::put('{id}/update', 'update')->name('tazkiia.camps.update');
+			Route::get('delete/{id}', 'delete')->name('tazkiia.camps.delete');
+			Route::delete('destroy/{id}', 'destroy')->name('tazkiia.camps.destroy');
+
+		});
+
+
+
+		Route::controller(MartyrCommunicateController::class)->prefix('tazkiia/martyr-family-communicate')->group(function () {
+
+			Route::get('', 'index')->name('tazkiia.communicate.index');
+			Route::get('{family}/create', 'create')->name('tazkiia.communicate.create');
+			Route::post('{family}/store', 'store')->name('tazkiia.communicate.store');
+			Route::get('edit/{id}', 'edit')->name('tazkiia.communicate.edit');
+			Route::put('{id}/update', 'update')->name('tazkiia.communicate.update');
+			Route::get('delete/{id}', 'delete')->name('tazkiia.communicate.delete');
+			Route::delete('destroy/{id}', 'destroy')->name('tazkiia.communicate.destroy');
+
+		});
+
+
+
+		Route::controller(LectureController::class)->prefix('tazkiia/lectures')->group(function () {
+			Route::get('', 'index')->name('tazkiia.lectures.index');
+			Route::get('create', 'create')->name('tazkiia.lectures.create');
+			Route::post('store', 'store')->name('tazkiia.lectures.store');
+			Route::get('edit/{id}', 'edit')->name('tazkiia.lectures.edit');
+			Route::put('{id}/update', 'update')->name('tazkiia.lectures.update');
+			Route::get('delete/{id}', 'delete')->name('tazkiia.lectures.delete');
+			Route::delete('destroy/{id}', 'destroy')->name('tazkiia.lectures.destroy');
+		});
+
+
+		Route::controller(MartyrDocController::class)->prefix('tazkiia/martyr-documentions')->group(function () {
+			Route::get('{martyr}', 'index')->name('tazkiia.martyrDocs.index');
+			Route::get('{martyr}/create', 'create')->name('tazkiia.martyrDocs.create');
+			Route::post('{martyr}/store', 'store')->name('tazkiia.martyrDocs.store');
+			Route::get('edit/{id}', 'edit')->name('tazkiia.martyrDocs.edit');
+			Route::put('{id}/update', 'update')->name('tazkiia.martyrDocs.update');
+			Route::get('delete/{id}', 'delete')->name('tazkiia.martyrDocs.delete');
+			Route::delete('destroy/{id}', 'destroy')->name('tazkiia.martyrDocs.destroy');
+		});
+
+
+		Route::get('tazkiia/martyrs-documnentions', 'TaskiiaController@martyrsDocsList')->name('tazkiia.martyrsDocsList');
+		Route::get('tazkiia/hag-services', 'TaskiiaController@hagsMembersList')->name('tazkiia.hagsMembersList');
+		Route::get('tazkiia/report', 'TaskiiaController@report')->name('tazkiia.report');
+
+		Route::get('reports/gross', 'GrossController@gross')->name('reports.gross');
+
+
+
+	Route::controller(ProfileController::class)->prefix('profile')->group(function () {
+		Route::get('', 'profile')->name('profile');
+		Route::put('update', 'update')->name('profile.update');
+	});
+	
+	
+	Route::controller(SettingController::class)->prefix('settings')->group(function () {
+		Route::get('', 'settingPage')->name('settings.index');
+		Route::post('backup', 'backup')->name('settings.backup');
+		Route::get('/backup/download', 'downloadBackup')->name('settings.downloadBackup');
+	});
+	Route::post('/backup/restore', 'SettingController@importBackup')->name('backup.restore');
+	
 });

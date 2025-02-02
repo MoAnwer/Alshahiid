@@ -27,11 +27,7 @@
           @csrf
           @method('PUT')
 
-            <a href="{{ asset("uploads/documents/{$document->storage_path}") }}">
-              <img src="{{ asset("uploads/documents/{$document->storage_path}") }}" width="150" />
-            </a>
-
-            <br>
+          <br>
 
            <label>نوع الخطاب</label>
             <div class="form-group">
@@ -44,7 +40,7 @@
             <label>ملف الخطاب</label>
             <span>(دعه فارغ اذا لم ترغب يالتعديل عليه)</span>
             <div class="for-group">
-              <input type="file" name="storage_path"  class="form-control"/>
+              <input type="file" name="storage_path"  class="form-control" accept=".pdf"/>
             </div>
 
             <label>الملاحظات</label>

@@ -27,6 +27,7 @@
         <form action="{{ route('injuredServices.store', $injured->id) }}" method="POST">
           @csrf
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input type="text" class="p-4 form-control" name="name" placeholder="اسم الخدمة" value="{{ old('name') }}" />
             </div>
 			
@@ -58,6 +59,7 @@
             </div>
 			
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input  type="number" class="p-4 form-control" placeholder="المبلغ" name="budget" value="{{ old('budget') }}" />
             </div>
 			

@@ -394,10 +394,10 @@
               <td>{{ $totalNeed }}</td>
               <td>{{ $totalDone }}</td>
               <td>%{{ $totalDone > 0  ? round(($totalDone / $totalNeed) * 100, 1) : 0 }}</td>
-              <td>{{ $totalBudget }}</td>
-              <td>{{ $totalBudgetFromOrg }}</td>
-              <td>{{ $totalBudgetOutOfOrg }}</td>
-              <td>{{ $totalMoney }}</td>
+              <td>{{ number_format($totalBudget) }}</td>
+              <td>{{ number_format($totalBudgetFromOrg) }}</td>
+              <td>{{ number_format($totalBudgetOutOfOrg) }}</td>
+              <td>{{ number_format($totalMoney) }}</td>
            </tr>
 
 

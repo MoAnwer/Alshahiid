@@ -27,9 +27,11 @@
         <form action="{{ route('homes.store', $family->id) }}" method="POST">
           @csrf
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input type="text" class="p-4 form-control" name="manager_name" placeholder="اسم مدير المشروع">
             </div>
             
+            <label>نوع المشروع</label>
             <div class="form-group">
               <select name="type" class="form-select">
                 <option value="تشييد">تشييد</option>
@@ -37,6 +39,7 @@
               </select>
             </div>
 
+            <label>الحالة</label>
             <div class="form-group">
               <select name="status" class="form-select">
                 <option value="مطلوب">مطلوب</option>
@@ -45,7 +48,8 @@
             </div>
 
             <div class="form-group">
-              <input name="budget" type="number" class="p-4 form-control" placeholder="ميزانية المشروع" value="{{ old('budget') }}"/>
+            <span class="text-danger fs-5">*</span>
+              <input name="budget" type="number" class="p-4 form-control" placeholder=" المبلغ التقديري" value="{{ old('budget') }}"/>
             </div>
 
             <div class="form-group">

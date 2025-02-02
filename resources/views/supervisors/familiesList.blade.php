@@ -38,7 +38,8 @@
                 <td>{{ $family->category }}</td>
                 <td>{{ $family->address->sector . ' - محلية ' . $family->address->locality  }}</td>
                 <td>
-                  <a href="{{ route('families.show', $family->id) }}">
+                  <a href="{{ route('families.show', $family->id) }}" class="btn btn-primary active p-1 px-2">
+                    <i class="fas fa-users ml-2"></i>
                     ملف الاسرة
                   </a>
                 </td>

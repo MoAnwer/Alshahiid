@@ -6,19 +6,35 @@ use Exception;
 use App\Http\Requests\MartyrRequest;
 use Illuminate\Http\Request;
 use App\Models\Martyr;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class MartyrController extends Controller
 {
     public function index()
     {
+        $request = request();
+
+        $needel = trim($request->query('needel'));
+
+        $query = Martyr::query();
+
+        if($request->query('search') == 'name') {
+            $query->where('name', 'LIKE', "%{$needel}%");
+        }
+
+        if($request->query('search') == 'record_number') {
+            $query->where('record_number', $needel);
+        }
+
+
+        if($request->query('search') == 'militarism_number') {
+            $query->where('militarism_number', $needel);
+        }
+
+
+        $martyrs = $query->orderByDESC('id')->paginate();
         
-        return view('martyrs.martyrs', [
-            'martyrs' => Cache::remember('martyrs_list_' . request('page', 1) , now()->addMinutes(10), function () {
-                return Martyr::with('family.familyMembers.medicalTreatments')->orderByDESC('id')->paginate();
-            })
-        ]);
+        return view('martyrs.martyrs', ['martyrs' => $martyrs]);
 
     }
 
@@ -137,11 +153,11 @@ class MartyrController extends Controller
 
     public function report() 
     {
-        $report = Cache::remember('martryrs_report', now()->addMinutes(10), function () {
-                return Martyr::selectRaw('`force`, COUNT(*) as count')->groupBy('force')->get();
-            });
+        $report = Martyr::selectRaw('`force`, COUNT(*) as count')->groupBy('force')->get();
         $report = $report->groupBy('force');
-        $totalCount = Cache::remember('martyrs_count_for_report',  now()->addMinutes(10), fn() => Martyr::count());
+        $totalCount = Martyr::count();
         return view('martyrs.report', compact('report', 'totalCount'));
     }
+
+
 }

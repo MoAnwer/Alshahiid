@@ -202,6 +202,13 @@
 
               </tr>
 			    </x-slot:body>
+            <caption>
+              @empty(!request()->query('sector'))
+                {{ request()->query('sector') . ' - ' . request()->query('locality')}}
+              @else
+              كل القطاعات
+              @endempty
+            </caption>
 		    </x-table>
       </div>
     </div>

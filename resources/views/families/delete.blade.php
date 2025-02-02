@@ -1,4 +1,4 @@
-@include('components.header', ['page_title' => 'حذف بيانات اسرة شهسد'])
+@include('components.header', ['page_title' => 'حذف بيانات اسرة شهيد'])
 
     <div class="mx-auto p-4 d-flex align-items-center flex-column mt-5 card w-50">
 

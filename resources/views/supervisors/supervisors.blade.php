@@ -42,7 +42,7 @@
                 <td>{{ $supervisor->families->count() }}</td>
                 <td>
                   @if ($supervisor->families->count() > 0)
-                    <a href="{{ route('supervisors.families', $supervisor->id) }}">الاسر</a>
+                    <a href="{{ route('supervisors.families', $supervisor->id) }}" class="btn btn-primary active p-1 px-2">الاسر</a>
                   @else
                     لا توجد اسر
                   @endif

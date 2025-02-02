@@ -27,4 +27,17 @@ class FamilyMember extends Model
     public function student() {
         return $this->hasOne(Student::class);
     }
+
+    public function marryAssistances() {
+        return $this->hasMany(MarryAssistance::class)->orderByDESC('id');
+    }
+
+    public function documents() {
+        return $this->hasMany(FamilyMemberDocument::class)->orderByDESC('id');
+    }
+
+    public function hags()
+    {
+        return $this->hasMany(Hag::class)->orderByDESC('id');
+    }
 }

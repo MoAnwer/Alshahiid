@@ -16,14 +16,13 @@
       <div class="container-fluid mt-4">
 
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb breadcrumb-style2">
+          <ol class="breadcrumb breadcrumb-style">
             <li class="breadcrumb-item">
               <a href="{{ route('martyrs.index') }}">الشهداء</a>
               /               
             </li>
-            <li class="breadcrumb-item">
-              <a href="{{ route('families.show', $family->id) }}">اسرة الشهيد {{ $family->martyr->name}}</a>
-              /               
+            <li class="breadcrumb-item  mx-1">
+              <a href="{{ route('families.show', $family->id) }}">اسرة الشهيد {{ $family->martyr->name}}</a>            
             </li>
             <li class="breadcrumb-item active" >
               الخدمات الاجتماعية 
@@ -48,6 +47,7 @@
 
          <x-table>
             <x-slot:head>
+              <th>#</th>
               <th>النوع</th>
               <th>الحالة</th>
               <th>التقديري</th>
@@ -60,8 +60,9 @@
 
             <x-slot:body>
 			      @if($family->assistances->isNotEmpty())			
-             @foreach($family->assistances as $assistance)
+             @foreach($family->loadMissing('assistances')->assistances as $assistance)
                 <tr>
+                  <td>{{ $assistance->id }}</td>
                   <td>{{ $assistance->type }}</td>
                   <td>{{ $assistance->status }}</td>
                   <td>{{ number_format($assistance->budget) }}</td>
@@ -81,7 +82,7 @@
               @endforeach
 			       @else
 				      <tr>
-					       <td colspan="10">لا توجد مساعدات</td>
+					       <td colspan="11">لا توجد مساعدات</td>
 				      </tr>
 			       @endif
             </x-slot:body>
@@ -100,6 +101,7 @@
           
           <x-table>
             <x-slot:head>
+              <th>#</th>
               <th>اسم المشروع</th>
               <th>النوع</th>
               <th>الحالة</th>
@@ -108,7 +110,7 @@
               <th>المدير</th>
               <th>من  داخل المنظمة</th>
               <th>من  خارج المنظمة</th>
-              <th>المبلغ المؤمن</th>
+              <th>الدخل الشهري</th>
               <th>المصروفات</th>
               <th>عمليات</th>
             </x-slot:head>
@@ -117,6 +119,7 @@
 			     @if($family->projects->isNotEmpty())
              @foreach($family->loadMissing('projects')->projects as $project)
               <tr>
+                <td>{{ $project->id }}</td>
                 <td>{{ $project->project_name }}</td>
                 <td>{{ $project->project_type }}</td>
                 <td>{{ $project->status }}</td>
@@ -125,7 +128,7 @@
                 <td>{{ !empty($project->manager_name) ? $project->manager_name : '-' }}</td>
                 <td>{{ number_format($project->budget_from_org) ?? '-' }}</td>
                 <td>{{ number_format($project->budget_out_of_org ) ?? '-' }}</td>
-                <td>{{ number_format($project->budget_from_org + ($project->budget_out_of_org ?? 0)) }}</td>
+                <td>{{ number_format($project->monthly_budget) }}</td>
                 <td>{{ number_format($project->expense) }}</td>
                 <td>
                   <a href="{{ route('projects.edit', ['family' => $family->id, 'project' => $project->id]) }}" class="btn btn-success p-2 fa-sm">
@@ -139,7 +142,7 @@
               @endforeach
 			         @else
 			          <tr>
-				           <td colspan="11">لا توجد مشاريع</td>
+				           <td colspan="12">لا توجد مشاريع</td>
 			          </tr>
 			       @endif
             </x-slot:body>
@@ -157,6 +160,7 @@
 
          <x-table>
             <x-slot:head>
+              <th>#</th>
               <th>النوع</th>
               <th>الحالة</th>
 			        <th>المدير</th>
@@ -170,8 +174,9 @@
 
           <x-slot:body>
 			     @if($family->homeServices->isNotEmpty())			
-              @foreach($family->homeServices as $homeService)
+              @foreach($family->loadMissing('homeServices')->homeServices as $homeService)
                 <tr>
+                  <td>{{ $homeService->id }}</td>
                   <td>{{ $homeService->type }}</td>
                   <td>{{ $homeService->status }}</td>
 				          <td>{{ $homeService->manager_name }}</td>
@@ -192,12 +197,11 @@
               @endforeach
 			       @else
 				      <tr>
-					      <td colspan="10">لا توجد مشاريع</td>
+					      <td colspan="10">لا توجد مشاريع السكن</td>
 				      </tr>
 			       @endif
             </x-slot:body>
           </x-table>
-          <hr>
         <!--/ Homes -->
 
         </div>

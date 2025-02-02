@@ -1,11 +1,11 @@
 <ul class="navbar-nav p-0 bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home') }}">
-        <div class="sidebar-brand-icon">
-            <img src="{{ asset('asset/images/rome.svg') }}" alt="" width="30">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('martyrs.index') }}">
+        <div class="sidebar-brand-icon bg-light p-1" style="border-radius: 50%;">
+            <img src="{{ asset('asset/images/logo.jpg')  }}" style="border-radius: 25%;" alt="logo" width="27">
         </div>
-        <div class="sidebar-brand-text mx-2">{{ $app_name }}</div>
+        <div class="sidebar-brand-text mx-3">{{ $app_name }}</div>
     </a>
 	
 	<li class="nav-item mb-0">
@@ -33,11 +33,39 @@
         </a>
     </li>
 
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#taskiia"
+            aria-expanded="true" aria-controls="taskiia">
+            <i class="bi bi-hearts text-danger ml-2"></i>
+            <span>التزكية الروحية</span>
+        </a>
+        <div id="taskiia" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('tazkiia.index') }}">كل الخدمات</a>
+                <a class="collapse-item" href="{{ route('tazkiia.camps.index') }}">المعسكرات  التربوية</a>
+                <a class="collapse-item" href="{{ route('tazkiia.lectures.index') }}"> المحاضرات و الندوات</a>
+                <a class="collapse-item" href="{{ route('tazkiia.sessions.index') }}">حلقات</a>
+                <a class="collapse-item" href="{{ route('tazkiia.martyrsDocsList') }}">توثيق سير الشهداء</a>
+                <a class="collapse-item" href="{{ route('tazkiia.hagsMembersList') }}">حج و عمرة</a>
+                <a class="collapse-item" href="{{ route('tazkiia.report') }}">تواصل مع اسر الشهداء</a>
+                <a class="collapse-item" href="{{ route('tazkiia.report') }}">التقارير</a>
+            </div>
+        </div>
+    </li>
+
 	<hr class="sidebar-divider">
 	
 	<div class="sidebar-heading">
 		تقاير محور الرعاية
 	</div>
+
+    <li class="nav-item mb-0">
+       <a class="nav-link pb-2" href="{{ route('reports.gross') }}">
+            <i class="bi bi-newspaper ml-2"></i>
+            <span>الإجمالي العام</span>
+		</a>
+        </a>
+     </li>
 	
 	<li class="nav-item mb-0">
        <a class="nav-link pb-2" href="{{ route('reports.projects') }}">
@@ -98,6 +126,14 @@
         </a>
      </li>
 
+     <li class="nav-item mb-0">
+       <a class="nav-link pb-2" href="{{ route('marryAssistances.report') }}">
+            <i class="bi bi-newspaper ml-2"></i>
+            <span>الزواج</span>
+		</a>
+        </a>
+     </li>
+
 
 	<li class="nav-item">
 		<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#money"
@@ -110,7 +146,7 @@
 				<a class="collapse-item" href="{{ route('reports.familiesCategories') }}">تصنيف الأسر</a>
 				<a class="collapse-item" href="{{ route('reports.familyMembersCount') }}">عدد افراد الأسر</a>
 				<a class="collapse-item" href="{{ route('reports.familyMembersCountByCategory') }}">عدد افراد الاسر <br>حسب الشرائح المكفولة</a>
-				<a class="collapse-item" href="">احصائيات الايتام</a>
+				<a class="collapse-item" href="{{ route('reports.orphanReport') }}">احصائيات الايتام</a>
 			</div>
 		</div>
 	</li>
@@ -159,7 +195,7 @@
         </a>
     </li>
     <li class="nav-item mb-0">
-    	<a class="nav-link pb-2" href="{{ route('reports.medicalTreatment') }}">
+    	<a class="nav-link pb-2" href="{{ route('settings.index') }}">
         	<i class="bi bi-gear text-light ml-2"></i>
         	<span>الاعدادات</span>
 	    </a>

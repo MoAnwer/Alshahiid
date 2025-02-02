@@ -43,7 +43,7 @@
               </select>
             </div>
 
-            <label>الحي: </label>
+            <label>الحي <span class="text-danger fs-5">*</span> </label>
             <div class="form-group">
               <input class="form-control py-4" name="neighborhood" value="{{ old('neighborhood') }}"/>
             </div>

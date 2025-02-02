@@ -72,7 +72,7 @@ class DocumentController extends Controller
                     'notes' => 'nullable|string'
                 ]);
 
-                unlink(public_path('uploads/documents/'.$document->storage_path));
+                @unlink(public_path('uploads/documents/'.$document->storage_path));
 
                 $documentFile = str()->orderedUuid() . '.' . $request->file('storage_path')->getClientOriginalExtension();
     
@@ -110,7 +110,7 @@ class DocumentController extends Controller
         try {
             $document = Document::findOrFail($id);
 
-            unlink(public_path('uploads/documents/'.$document->storage_path));
+            @unlink(public_path('uploads/documents/'.$document->storage_path));
 
             $document->delete();
 

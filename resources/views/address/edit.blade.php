@@ -22,7 +22,7 @@
           @endforeach
         @endif
         <x-alert />
-        <form action="{{ route('address.update', ['family' => $address->family->id, 'address' => $address->id]) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('address.update', $address->id) }}" method="POST" enctype="multipart/form-data">
           @csrf
           @method('PUT')
           <label>القطاع :</label>
@@ -43,7 +43,7 @@
             </select>
             </div>
 
-            <label>الحي: </label>
+            <label>الحي <span class="text-danger fs-6">*</span>  </label>
             <div class="form-group">
               <input class="form-control py-4" name="neighborhood" value="{{ $address->neighborhood }}"/>
             </div>

@@ -16,7 +16,7 @@
       <div class="container-fluid mt-4">
 
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb breadcrumb-style2">
+          <ol class="breadcrumb breadcrumb-style">
             <li class="breadcrumb-item">
               <a href="{{ route('martyrs.index') }}">الشهداء</a>
               /               

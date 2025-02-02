@@ -27,13 +27,26 @@
         <form action="{{ route('injureds.store') }}" method="POST">
           @csrf
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input type="text" class="p-4 form-control" name="name" placeholder="اسم المصاب" value="{{ old('name') }}" />
             </div>
 
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input type="text" class="p-4 form-control" name="type"  placeholder="نوع الاصابة" max-length="2" value="{{ old('type') }}"/>
             </div>
 
+			      <label>تاريخ الاصابة <span class="text-danger fs-5">*</span></label>
+      
+            <div class="form-group">
+              <input  type="date" class="p-4 form-control" name="injured_date" value="{{ old('injured_date') }}" />
+            </div>
+
+			      <label>نسبة الاصابة <span class="text-danger fs-5">*</span></label>
+            <div class="form-group">
+              <input name="injured_percentage" type="number" class="p-4 form-control" value="{{ old('injured_percentage') }}"/>
+            </div>
+            
             <div class="form-group">
               <input name="health_insurance_number" type="number" class="p-4 form-control" placeholder="رقم بطاقة التأمين الصحي" value="{{ old('health_insurance_number') }}"/>
             </div>
@@ -49,16 +62,6 @@
               <input name="health_insurance_end_date" type="date" class="p-4 form-control" value="{{ old('health_insurance_end_date') }}"/>
             </div>
 
-			<label>تاريخ الاصابة</label>
-            <div class="form-group">
-              <input  type="date" class="p-4 form-control" name="injured_date" value="{{ old('injured_date') }}" />
-            </div>
-
-			<label>نسبة الاصابة</label>
-            <div class="form-group">
-              <input name="injured_percentage" type="number" class="p-4 form-control" value="{{ old('injured_percentage') }}"/>
-            </div>
-            
             <label>ملاحظات: </label>
             <textarea name="notes" class="form-control w-100">{{ old('note')}}</textarea>
 

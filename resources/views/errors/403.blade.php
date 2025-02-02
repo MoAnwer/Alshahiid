@@ -1,4 +1,4 @@
-@include('components.header', ['page_title' => '404'])
+@include('components.header', ['page_title' => '403'])
  <div id="wrapper vh-100">
 
     <!-- Content Wrapper -->

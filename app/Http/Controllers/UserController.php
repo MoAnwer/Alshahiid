@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
 use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -50,7 +51,7 @@ class UserController extends Controller
             User::create($data);
             return back()->with('success', 'تم اضافة المستخدم بنجاح');
 
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $e->getMessage();
         }
     }
@@ -88,6 +89,59 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $this->authorize('isModerate');
+
+        $data = [];
+
+        if(empty($request->username) && !empty($request->password)) {
+            $data = $request->validate([
+                'full_name'  =>  'string|required',
+                'password'   =>  'min:6',
+                'role'       =>  'in:user,admin,moderate'
+            ], [
+                'password.min' => 'كلمة السر يجب ان تكون من 6 احرف على الاقل',
+                'full_name' => 'الاسم الرباعي مطلوب',
+                'role'  => 'الرجاء تعيين  وظيفة '
+            ]);
+
+            $data['password'] = bcrypt($request->password);
+              //dd($data);
+            User::findOrFail($id)->update($data);
+
+          
+            return to_route('users.index')->with('success', 'تم تعديل المستخدم بنجاح');
+
+        } else if (empty($request->password) && !empty($request->username)) {
+            
+           $data = $request->validate([
+                'username'   =>  'unique:users,username',
+                'full_name'  =>  'string|required',
+                'role'       =>  'in:user,admin,moderate'
+            ], [
+                'full_name' => 'الاسم الرباعي مطلوب',
+                'username.required'  => 'اسم المستخدم ضروري',
+                'username.unique'   => 'اسم المستخدم هذا غير متاح, جرب اسم اخر',
+                'role'  => 'الرجاء تعيين  وظيفة '
+            ]);
+
+            User::findOrFail($id)->update($data);
+
+            //dd($data);
+            return to_route('users.index')->with('success', 'تم تعديل المستخدم بنجاح');
+
+        } else if (empty($request->password) && empty($request->username)) {
+
+            $data = $request->validate([
+                'full_name'  =>  'string|required',
+                'role'       =>  'required|in:user,admin,moderate'
+            ], [ 
+                'full_name' => 'الاسم الرباعي مطلوب',
+                'role'  => 'الرجاء تعيين  وظيفة '
+            ]);
+
+              //dd($data);
+            User::findOrFail($id)->update($data);
+            return to_route('users.index')->with('success', 'تم تعديل المستخدم بنجاح');
+        }
     }
 
     public function delete($id)

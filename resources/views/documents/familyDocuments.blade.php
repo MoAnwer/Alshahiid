@@ -16,17 +16,15 @@
       <div class="container-fluid mt-4">
 
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb breadcrumb-style2">
+          <ol class="breadcrumb breadcrumb-style">
             <li class="breadcrumb-item">
               <a href="{{ route('martyrs.index') }}">الشهداء</a>
               / 
-              
             </li>
-            <li class="breadcrumb-item">
+            <li class="breadcrumb-item  mr-1">
               <a href="{{ route('families.show', $family->id) }}"> اسرة الشهيد {{ $family->martyr->name}} </a>
-              /
             </li>
-            <li  class="breadcrumb-item active">خطابات</li>
+            <li  class="breadcrumb-item active  mr-1">خطابات</li>
           </ol>
         </nav>
 
@@ -50,9 +48,9 @@
               <div class="row row-cols-1 row-cols-md-3 g-6 mb-6">
                 @foreach ($family->documents as $doc)
                   <div class="col">
-                  <div class="card h-100">
-                    <a href="{{ asset("uploads/documents/{$doc->storage_path}") }}">
-                      <img class="card-img-top" src='{{ asset("uploads/documents/{$doc->storage_path}") }}' alt="{{ $doc->type }}" />
+                  <div class="card h-100 text-center">
+                    <a href="{{ asset("uploads/documents/{$doc->storage_path}") }}" class="text-center p-3  text-info" target="_blank">
+                      <i class="fas fa-file-pdf" style="font-size: 150px"></i>
                     </a>
                     <div class="card-body">
                       <h5 class="card-title">{{ $doc->type }}</h5>
@@ -60,6 +58,7 @@
                       <p class="card-text text-secondary mt-2">
                         {{ $doc->notes ?? 'لا يوجد'}}
                       </p>
+                      <hr />
                       <a href="{{ route('documents.edit', $doc->id) }}" class="btn btn-success fa-sm p-1">
                         <i class="fas fa-edit"></i>
                       </a>

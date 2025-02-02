@@ -1,38 +1,28 @@
-@include('components.header', ['page_title' => 'بيانات اسرة  الشهيد'])
+@include('components.header', ['page_title' => 'حذف مشروع ' . $project->project_name])
 
- <div id="wrapper">
+  <div class="mx-auto p-4 d-flex align-items-center flex-column mt-5 card w-50">
 
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-
-      <!-- Main Content -->
-      <div id="content">
-
-      
-      <div class="container-fluid mt-4">
-        <h4>حذف مشروع {{  $project->project_name }} </h4>
-        <hr />
-        
-        @if($errors->any())
-          @foreach($errors->all() as $error)
-            <div class="alert alert-danger"> {{ $error }} </div>
-          @endforeach
-        @endif
-        <x-alert />
-        <form action="{{ route('projects.destroy', $project->id ) }}" method="POST">
-          <h5>هل تريد حذف مشروع '{{  $project->project_name }}' حقاً ؟</h5>
-          @csrf
-          @method('DELETE')
-            <button type="submit" class="btn btn-danger py-2 mt-3">
-              حذف
-            </button>
-            <a class="btn btn-info py-2 mt-3" href="{{ route('families.socialServices', $project->family->id) }}">رجوع</a>
-        </form>
-      </div>
-      
+    <div class="card-header">
+      <h4>حذف مشروع {{  $project->project_name }} </h4>
+      <hr class="sidebar-divider" />
     </div>
 
-  </div>
+    <form action="{{ route('projects.destroy', $project->id ) }}" method="POST">
+      <h5>هل تريد حذف مشروع '{{  $project->project_name }}' حقاً ؟</h5>
+        @csrf
+        @method('DELETE')
+          <div class="d-flex gap-1">
+                <button type="submit" class="btn btn-danger py-2 mt-3 w-50">
+                <i class="fas fa-trash ml-2"></i>
+              حذف
+              </button>
+              <a class="btn btn-info py-2 mt-3 w-50" href="{{ route('families.socialServices', $project->family->id) }}">
+                <i class="fas fa-arrow-right ml-2"></i>
+                رجوع
+              </a>
+            </div>
+        </form>
+
+      </div>
 
   @include('components.footer')

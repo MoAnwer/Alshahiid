@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Models\Address;
 use App\Models\Family;
+use Illuminate\Support\Facades\DB;
 
 class AddressController extends Controller
 {
@@ -50,11 +51,11 @@ class AddressController extends Controller
 			$address = Address::findOrFail($id);
 			return view('address.edit', compact('address'));	
 		} catch (Exception $e) {
-            return abort(404);
+            return $e->getMessage();
         }
     }
 
-    public function update(Request $request, int $family, int $id) 
+    public function update(Request $request, int $id) 
     {
 
         $data = $request->validate([
@@ -68,9 +69,8 @@ class AddressController extends Controller
 		
         try {
 
-            $address = Address::find($id);
-
-            $address->where('id', $id)->update($data);
+            $address = Address::findOrFail($id);
+            $address->update($data);
 
             return back()->with('success', 'تم تعديل بيانات السكن بنجاح');
 
@@ -108,22 +108,26 @@ class AddressController extends Controller
 
     public function report()
     {
-        $report =  \DB::table('addresses')
-                    ->selectRaw('type, COUNT(id) as count')
-                    ->groupBy('type')
-                    ->get();   
+        $report =  
+                DB::table('addresses')
+                            ->selectRaw('type, COUNT(id) as count')
+                            ->groupBy('type')
+                            ->get();   
 
+
+        $report = $report->groupBy('type');
         
-        $homeServicesReport = \DB::table('home_services')
-                ->selectRaw('
-                            SUM(budget) as totalBudget,
-                            status, 
-                            COUNT(status) as count, 
-                            type,
-                            SUM(budget_from_org)  as budget_from_org,
-                            SUM(budget_out_of_org) as budget_out_of_org
-                            ')
-                            ->groupBy(['type', 'status'])->get();
+        $homeServicesReport = 
+                DB::table('home_services')
+                        ->selectRaw('
+                                    SUM(budget) as totalBudget,
+                                    status, 
+                                    COUNT(status) as count, 
+                                    type,
+                                    SUM(budget_from_org)  as budget_from_org,
+                                    SUM(budget_out_of_org) as budget_out_of_org
+                                    ')
+                                    ->groupBy(['type', 'status'])->get();
 
         $homeServicesReport = collect([
             'build' => [

@@ -117,10 +117,10 @@ class AssistancesController extends Controller
     {
         try {
             $ass = Assistance::findOrFail($id);
-            $family = $ass->family_id;
+            $family = $ass->family->id;
             $ass->delete();
 
-            return to_route('families.show', $family)->with('success', 'تم حذف المساعدة بنجاح');
+            return to_route('families.socialServices', $family)->with('success', 'تم حذف المساعدة بنجاح');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -130,10 +130,11 @@ class AssistancesController extends Controller
 
         $request = request();
 
-        $report = null;
+        $report = [];
 
         if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
-            $report = collect(DB::select('
+            $report =
+                 collect(DB::select('
                             SELECT 
                                 s.type, 
                                 s.status,
@@ -158,8 +159,11 @@ class AssistancesController extends Controller
                     ', [$sector, $locality]
             ));
 
+           
         } else {
-            $report = Assistance::selectRaw('type, status, count(id) as count, SUM(budget) as budget, SUM(budget_from_org) as budget_from_org, SUM(budget_out_of_org) as budget_out_of_org')->groupBy(['status', 'type'])->get();
+            $report = 
+                 Assistance::selectRaw('type, status, count(id) as count, SUM(budget) as budget, SUM(budget_from_org) as budget_from_org, SUM(budget_out_of_org) as budget_out_of_org')->groupBy(['status', 'type'])->get();     
+           
         }
 
         $report = $report->groupBy(['status', 'type']);

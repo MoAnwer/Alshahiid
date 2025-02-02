@@ -74,16 +74,16 @@
           </x-slot:head>
 
         <x-slot:body>
-		@if($injured->injuredServices()->count() > 0)
-			@foreach($injured->injuredServices as $injuredService)
+		@if($injured->injuredServices->isNotEmpty())
+			@foreach($injured->loadMissing('injuredServices')->injuredServices as $injuredService)
 			<tr>
 				<td>{{ $injuredService->id}} </td>
 				<td>{{ $injuredService->type }}</td>
 				<td>{{ $injuredService->status }}</td>
 				<td>{{ $injuredService->description }}</td>
-				<td>{{ $injuredService->budget }}</td>
-				<td>{{ $injuredService->budget_from_org }}</td>
-				<td>{{ $injuredService->budget_out_of_org }}</td>
+				<td>{{ number_format($injuredService->budget) }}</td>
+				<td>{{ number_format($injuredService->budget_from_org )}}</td>
+				<td>{{ number_format($injuredService->budget_out_of_org) }}</td>
 				<td>{{ $injuredService->notes }}</td>
 				<td>
 					<a href="{{ route('injuredServices.edit', $injuredService->id) }}" class="btn btn-success">

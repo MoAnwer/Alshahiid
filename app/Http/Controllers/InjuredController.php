@@ -19,9 +19,7 @@ class InjuredController extends Controller
      */
     public function index()
     {
-		    $injureds = Cache::remember('injureds_page_'. request('page', 1), now()->addMinutes(10), function() {
-          return Injured::orderByDESC('id')->paginate();
-        });
+		    $injureds = Injured::orderByDESC('id')->paginate(10);
 		
         return view('injureds.index', compact('injureds'));
     }
@@ -80,7 +78,7 @@ class InjuredController extends Controller
      */
     public function show($id)
     {
-		return view('injureds.show', ['injured' =>  Cache::remember('injured_show', '10', fn() => Injured::findOrFail($id)) ]);
+		return view('injureds.show', ['injured' =>  Injured::findOrFail($id) ]);
     }
 
     /**
@@ -163,7 +161,7 @@ class InjuredController extends Controller
     public function destroy($id)
     {
         injured::findOrFail($id)->delete();
-		return to_route('injureds.index')->with('success', 'تم حذف بيانات المصاب بنجاح');
+		  return to_route('injureds.index')->with('success', 'تم حذف بيانات المصاب بنجاح');
     }
 
   public function report() 

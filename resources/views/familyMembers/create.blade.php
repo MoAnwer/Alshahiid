@@ -26,10 +26,12 @@
         <form action="{{ route('familyMembers.store', $family->id) }}" method="POST" enctype="multipart/form-data">
           @csrf
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input type="text" class="p-4 form-control" name="name" placeholder="الاسم" value="{{ old('name') }}">
             </div>
 
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input type="number" class="p-4 form-control" name="age" placeholder="العمر" value="{{ old('age') }}">
             </div>
             
@@ -53,6 +55,7 @@
             </div>
 
             <div class="form-group">
+            <span class="text-danger fs-5">*</span>
               <input name="national_number" type="number" class="p-4 form-control" placeholder="الرقم الوطني" value="{{ old("national_number") }}"/>
             </div>
 
@@ -60,7 +63,7 @@
               <input name="phone_number" type="text" class="p-4 form-control" placeholder="رقم الهاتف" value="{{ old('phone_number') }}"/>
             </div>
 
-            <label>تاريخ الميلاد</label>
+            <label>تاريخ الميلاد <span class="text-danger fs-5">*</span></label>
             <div class="form-group">
               <input name="birth_date" type="date" class="p-4 form-control" value="{{ old("birth_date") }}"/>
             </div>

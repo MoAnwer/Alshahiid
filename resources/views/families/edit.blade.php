@@ -37,7 +37,7 @@
 				</select>
 		  </div>
 
-      <label>عدد الافراد: </label>
+      <label>عدد الافراد <span class="text-danger fs-5">*</span> </label>
       <div class="form-group">
         <input class="form-control py-4" type="number" name="family_size" value="{{ $family->family_size }}"/>
       </div>

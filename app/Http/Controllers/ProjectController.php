@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\GlobalTotalReport;
 use App\Models\Family;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 
 class ProjectController extends Controller
 {
@@ -59,16 +59,6 @@ class ProjectController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -88,7 +78,6 @@ class ProjectController extends Controller
 
         } catch(Exception $e) {
             return $e->getMessage();
-            return abort(404);
         }
 
     }
@@ -125,7 +114,7 @@ class ProjectController extends Controller
 
         } catch(Exception $e) {
 
-            return abort(404);
+            return $e->getMessage();
 
         }
 
@@ -138,7 +127,7 @@ class ProjectController extends Controller
             return view('projects.delete', compact('project'));
 
         } catch (Exception $e) {
-            return abort(404);
+            return $e->getMessage();
         }
 
     }
@@ -168,9 +157,7 @@ class ProjectController extends Controller
         $reportQuery = null;
 
         if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
-            $reportQuery = 
-            Cache::remember('projects_reports_sector_'.$sector.'_locality_'.$locality, now()->addMinutes(10), function () use($sector, $locality) {
-                    return collect(DB::select('
+            $reportQuery = collect(DB::select('
                             SELECT 
                                 SUM(projects.budget) as totalBudget,
                                 projects.status, 
@@ -199,11 +186,8 @@ class ProjectController extends Controller
 
                             ', [$sector, $locality]
                     ));
-            });
         } else  {
-            $reportQuery = 
-             Cache::remember('project_report_without_search', now()->addMinutes(10), function () {
-                return collect(DB::select('
+            $reportQuery = collect(DB::select('
                             SELECT 
                                 SUM(budget) as totalBudget,
                                 status, 
@@ -217,8 +201,7 @@ class ProjectController extends Controller
                             GROUP BY 
                                 projects.project_type, projects.status
                             '
-                ));
-            });
+            ));
         }
  
 
@@ -256,14 +239,14 @@ class ProjectController extends Controller
 
 		
         $report->prepend([
-            'member' => round((($report->get('member')['done'][0]->count ?? 0) / ($report->get('member')['need'][0]->count ?? 1)) * 100, 1),
-            'team'   => round((($report->get('team')['done'][0]->count ?? 0) / ($report->get('team')['need'][0]->count ?? 1)) * 100, 1),
+            'member' => round((($report->get('member')['done'][0]->count ?? 0) / ($report->get('member')['need'][0]->count ?? 1)) * 10, 1),
+            'team'   => round((($report->get('team')['done'][0]->count ?? 0) / ($report->get('team')['need'][0]->count ?? 1)) * 10, 1),
             'total'  => round(
                 (
                     ( ($report->get('member')['done'][0]->count ?? 0)  +  ($report->get('team')['done'][0]->count ?? 1))
                     /
                     (($report->get('member')['need'][0]->count ?? 0)  +  ($report->get('team')['need'][0]->count ?? 1))
-                ) * 100
+                ) * 10
                   
             , 1)
         ], 'precentages');
@@ -301,9 +284,7 @@ class ProjectController extends Controller
     {
 
         if(($sector = request()->query('sector')) && ($locality = request()->query('locality'))) {
-                $work = 
-                Cache::remember('work_' .$sector.'_locality_'.$locality , now()->addMinutes(10), function () use ($sector, $locality){
-                    return DB::select('
+                $work = DB::select('
                                 SELECT 
                                     COUNT(projects.work_status) as count,
                                     addresses.sector,
@@ -322,12 +303,8 @@ class ProjectController extends Controller
                                 GROUP BY
                                     addresses.sector, addresses.locality, projects.work_status
                     ', [$sector, $locality]);
-                });
 
-            $doesNotWork = 
-
-            Cache::remember('doesNotWork_' .$sector.'_locality_'.$locality , now()->addMinutes(10), function () use ($sector, $locality){
-                return DB::select('
+            $doesNotWork =  DB::select('
                      SELECT 
                          COUNT(projects.work_status) as count,
                          addresses.sector,
@@ -346,7 +323,6 @@ class ProjectController extends Controller
                      GROUP BY
                          addresses.sector, addresses.locality, projects.work_status
                 ', [$sector, $locality]);
-            });
 
             $report = collect([
                 'work'        => (@$work[0]->count) ?? 0,
@@ -357,15 +333,9 @@ class ProjectController extends Controller
             return view('reports.projectsWorkStatusReport', compact('report'));
         }
 
-        $work = 
-        Cache::remember('work', now()->addMinutes(10), function () {
-            return DB::table('projects')->where('work_status', 'يعمل')->count();
-        });
+        $work = DB::table('projects')->where('work_status', 'يعمل')->count();
 
-        $doesNotWork = 
-        Cache::remember('doesNotWork', now()->addMinutes(10), function () {
-            return DB::table('projects')->where('work_status', 'لا يعمل')->count();
-        });
+        $doesNotWork = DB::table('projects')->where('work_status', 'لا يعمل')->count();
 
         $report = collect([
             'work'        => $work,

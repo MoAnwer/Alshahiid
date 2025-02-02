@@ -16,7 +16,7 @@
                 <i class="fas fa-trash ml-2"></i>
               حذف
               </button>
-              <a class="btn btn-info py-2 mt-3 w-50" href="{{ route('families.show',  $assistance->family->id) }}">
+              <a class="btn btn-info py-2 mt-3 w-50" href="{{ route('families.socialServices',  $assistance->family->id) }}">
                 <i class="fas fa-arrow-right ml-2"></i>
                 رجوع
               </a>

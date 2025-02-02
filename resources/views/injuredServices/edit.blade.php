@@ -28,6 +28,7 @@
           @csrf
 		  @method('PUT')
             <div class="form-group">
+            <label><span class="text-danger fs-5">*</span>اسم الخدمة</label>
               <input type="text" class="p-4 form-control" name="name" placeholder="اسم الخدمة" value="{{ $injuredService->name }}" />
             </div>
 			
@@ -47,27 +48,31 @@
               </select>
             </div>
 			
-			<label>حالة الخدمة</label>
-			<div class="form-group">
-              <select name="status" class="form-select">
-			  <option value="{{ $injuredService->status }}" selected>{{  $injuredService->status }}</option>
-                <option value="مطلوب">مطلوب</option>
-                <option value="منفذ">منفذ</option>
-              </select>
-            </div>
+	  		<label>حالة الخدمة</label>
+  			<div class="form-group">
+          <select name="status" class="form-select">
+            <option value="مطلوب" @selected($injuredService->status == 'مطلوب')>مطلوب</option>
+            <option value="منفذ" @selected($injuredService->status == 'منفذ')>منفذ</option>
+          </select>
+        </div>
 			
-			<div class="form-group">
+			  <div class="form-group">
+	  		<label>وصف الخدمة</label>
               <input type="text" class="p-4 form-control" name="description" placeholder="وصف الخدمة" value="{{ $injuredService->description }}" />
             </div>
 			
+	  		<label><span class="text-danger fs-5">*</span> المبلغ</label>
             <div class="form-group">
               <input  type="number" class="p-4 form-control" placeholder="المبلغ" name="budget" value="{{ $injuredService->budget }}" />
             </div>
 			
+	  		<label> من داخل المنظمة</label>
             <div class="form-group">
               <input  type="number" class="p-4 form-control" placeholder="من داخل المنظمة" name="budget_from_org" value="{{ $injuredService->budget_from_org }}" />
             </div>
 			
+	  		<label> من خارج المنظمة</label>
+
             <div class="form-group">
               <input  type="number" class="p-4 form-control" placeholder="من خارج المنظمة" name="budget_out_of_org" value="{{$injuredService->budget_out_of_org }}" />
             </div>

@@ -2,83 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Martyr;
+use App\Models\Hag;
+use Illuminate\Support\Facades\DB;
 
 class TaskiiaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    public function martyrsDocsList()
     {
-        //
+        return view('tazkiia.martyrsDocsList', ['martyrs' => Martyr::with('martyrDoc')->orderByDESC('id')->paginate()]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function hagsMembersList()
     {
-        //
+        return view('tazkiia.hagsMembersList', ['hags' => Hag::where('family_member_id', '!=', null)->orderByDESC('id')->paginate()]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function taskiiaReportOf($table)
     {
-        //
+        $report = DB::table($table)->selectRaw('
+                status,
+                SUM(budget) as budget,
+                SUM(budget_from_org) as budget_from_org,
+                SUM(budget_out_of_org) as budget_out_of_org,
+                SUM(budget_out_of_org + budget_from_org) as totalBudget,
+                count(id) as count
+                '
+        )->groupBy('status')->get();
+                
+        $report = $report->groupBy('status');
+
+        return $report;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+    public function report() {
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+        $report = collect([
+            'sessions'      => $this->taskiiaReportOf('sessions'),
+            'camps'         => $this->taskiiaReportOf('camps'),
+            'lectures'      => $this->taskiiaReportOf('lectures'),
+            'hags'          => $this->taskiiaReportOf('hags'),
+            'martyrsDocs'   => $this->taskiiaReportOf('martyr_docs'),
+            'martyrCom'     => $this->taskiiaReportOf('communicates')
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return view('reports.tazkiia', compact('report'));
     }
 }
