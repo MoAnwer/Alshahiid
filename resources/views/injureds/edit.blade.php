@@ -32,17 +32,48 @@
               <input type="text" class="p-4 form-control" name="name" placeholder="اسم المصاب" value="{{ $injured->name }}" />
             </div>
 
+           <label>القطاع :</label>
+            <div class="form-group">
+                <select name="sector" class="form-select">
+                  <option value="القطاع الشرقي"  @selected($injured->sector == 'القطاع الشرقي')>القطاع الشرقي</option>
+                  <option value="القطاع الشمالي" @selected($injured->sector == 'القطاع الشمالي')>القطاع الشمالي</option>
+                  <option value="القطاع الغربي"  @selected($injured->sector == 'القطاع الغربي')>القطاع الغربي</option>
+                </select>
+              </div>
+
+              <label>المحلية: </label>
+              <div class="form-group">
+                <select name="locality" class="form-select">
+                  @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
+                    <option value="{{ $locality }}" @selected($injured->locality == $locality)>{{ $locality }}</option>
+                    @endforeach
+                  </select>
+              </div>
+
+              <div class="form-group">
+                <label>رقم الهاتف</label>
+                <span class="text-danger fs-5">*</span>
+              <input name="phone" type="text" class="p-4 form-control" placeholder="{{ $injured->phone }}" maxlength="15"/>
+            </div>
+
+             <div class="form-group">
+              <label>الرقم الوطني</label>
+               <span class="text-danger fs-5">*</span>
+              <input name="national_number" type="number" class="p-4 form-control"  maxlength="20" placeholder="{{ $injured->national_number }}"/>
+            </div>
+
+
             <label><span class="text-danger fs-5">*</span>نوع الاصابة</label>
             <div class="form-group">
               <input type="text" class="p-4 form-control" name="type"  placeholder="نوع الاصابة" max-length="2" value="{{ $injured->type }}"/>
             </div>
             
-			<label>تاريخ الاصابة<span class="text-danger fs-5">*</span</label>
+			<label>تاريخ الاصابة<span class="text-danger fs-5">*</span></label>
             <div class="form-group">
               <input  type="date" class="p-4 form-control" name="injured_date" value="{{ $injured->injured_date }}" />
             </div>
 
-			<label>نسبة الاصابة<span class="text-danger fs-5">*</span</label>
+			<label>نسبة الاصابة<span class="text-danger fs-5">*</span></label>
             <div class="form-group">
               <input name="injured_percentage" type="number" class="p-4 form-control" value="{{ $injured->injured_percentage }}"/>
             </div>

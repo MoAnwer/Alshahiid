@@ -6,7 +6,7 @@ use Exception;
 use App\Http\Requests\MartyrRequest;
 use Illuminate\Http\Request;
 use App\Models\Martyr;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class MartyrController extends Controller
 {
@@ -16,23 +16,56 @@ class MartyrController extends Controller
 
         $needel = trim($request->query('needel'));
 
-        $query = Martyr::query();
+        $query = DB::table('martyrs')
+                ->leftJoin('families', 'families.martyr_id', 'martyrs.id')
+                ->leftJoin('addresses', 'addresses.family_id', 'families.id')
+                ->select('martyrs.id', 'families.id as family_id', 'martyrs.name', 'martyrs.force', 'martyrs.unit', 'martyrs.militarism_number', 'martyrs.martyrdom_date', 'martyrs.martyrdom_place', 'martyrs.record_date', 'martyrs.rights', 'martyrs.record_number', 'martyrs.rank', 'addresses.sector', 'addresses.locality');
 
         if($request->query('search') == 'name') {
-            $query->where('name', 'LIKE', "%{$needel}%");
+            $query->where('name', 'LIKE', "%$needel%");
         }
 
         if($request->query('search') == 'record_number') {
             $query->where('record_number', $needel);
         }
 
+        if (!empty($request->query('force')) && $request->query('force') != 'all') {
+            $query->where('force', $request->query('force'));
+        }
+
+        if (!empty($request->query('rank')) && $request->query('rank') != 'all') {
+            $query->where('rank', $request->query('rank'));
+        }
+
+        if (!empty($request->query('martyrdom_date'))) {
+            $query->where('martyrdom_date', $request->query('martyrdom_date'));
+        }
+
+        if (!empty($request->query('martyrdom_place'))) {
+            $query->where('martyrdom_place', 'LIKE', '%' . $request->query('martyrdom_place') . '%' );
+        }
+
+        if (!empty($request->query('unit'))) {
+            $query->where('unit',  'LIKE', '%' . $request->query('unit') . '%');
+        }
 
         if($request->query('search') == 'militarism_number') {
             $query->where('militarism_number', $needel);
         }
+        
+        if($request->query('search') == 'force') {
+            $query->where('force', $needel);
+        }
 
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->where('addresses.sector', $request->query('sector'));
+        } 
 
-        $martyrs = $query->orderByDESC('id')->paginate();
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->where('addresses.locality', $request->query('locality'));
+        } 
+
+        $martyrs = $query->latest('martyrs.id')->paginate(10);
         
         return view('martyrs.martyrs', ['martyrs' => $martyrs]);
 
@@ -121,7 +154,7 @@ class MartyrController extends Controller
         }
 
         try {
-            //dd($request->all());
+
             Martyr::findOrFail($id)->update($data);
             return back()->with('success', 'تم الاضافة بنجاح');
 
@@ -139,13 +172,48 @@ class MartyrController extends Controller
     public function destroy(int $id)
     {
         try {
+
              $martyr = Martyr::findOrFail($id);
+  
+
              if(isset($martyr->family) && $martyr->family->addresses->isNotEmpty()) {
                 $martyr->family->addresses()->delete();
              }
-                $martyr->delete();
 
-            return to_route('martyrs.index')->with('success', 'تم حذف بيانات الشهيد بنجاح');   
+             if(isset($martyr->family) && $martyr->family->documents->isNotEmpty()) {
+                foreach ($martyr->family->documents as $doc)
+                {
+             
+                    @unlink('uploads/documents/'.$doc->storage_path);
+                }
+             }  
+
+             if(isset($martyr->family->familyMembers)) {
+                foreach ($martyr->family->familyMembers as $member) {
+                 
+                    @unlink('uploads/images/'.$member->personal_image);
+
+                    if (isset($member->documents)) {
+                        foreach ($member->documents as $doc) {
+                            
+                            @unlink('uploads/members_documents/'.$doc->storage_path);
+                        }
+                    }
+                    
+                }
+            }
+
+
+
+            if(isset($martyr->martyrDoc->storage_path)) {
+                unlink(public_path("uploads/documents/{$martyr->martyrDoc->storage_path}"));
+                $martyr->martyrDoc()->delete();
+            }
+
+            $martyr->delete();
+
+            return to_route('martyrs.index')->with('success', 'تم حذف بيانات الشهيد بنجاح'); 
+              
         } catch (Exception $e) {
             return  $e->getMessage();
         }
@@ -153,10 +221,39 @@ class MartyrController extends Controller
 
     public function report() 
     {
-        $report = Martyr::selectRaw('`force`, COUNT(*) as count')->groupBy('force')->get();
-        $report = $report->groupBy('force');
-        $totalCount = Martyr::count();
-        return view('martyrs.report', compact('report', 'totalCount'));
+        $request = request();
+
+        // $report = Martyr::selectRaw('force, COUNT(*) as count')->groupBy('force')->get();
+
+        // $report = $report->groupBy('force');
+
+        $query = DB::table('martyrs')
+                ->leftJoin('families', 'families.martyr_id', 'martyrs.id')
+                ->leftJoin('addresses', 'families.id', 'addresses.family_id')
+                ->selectRaw('martyrs.force, COUNT(martyrs.force) as count')->groupBy('martyrs.force');
+
+        
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->selectRaw('addresses.sector as sector')->where('addresses.sector', $request->query('sector'))
+            ->groupBy(['addresses.sector', 'martyrs.force']);
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->selectRaw('addresses.locality as locality')->where('addresses.locality', $request->query('locality'))
+            ->groupBy(['addresses.sector', 'addresses.locality', 'martyrs.force']);
+        } 
+
+        if (!is_null($request->query('month')) && $request->query('month') != '') {
+            $query->selectRaw('MONTH(martyrs.created_at) as month')->whereMonth('martyrs.created_at',  $request->query('month'))->groupBy('month');
+        } 
+
+        if (!is_null($request->query('year')) && $request->query('year') != '') {
+            $query->selectRaw('YEAR(martyrs.created_at) as year')->whereYear('martyrs.created_at',  $request->query('year'))->groupBy('year');
+        } 
+
+        $report = $query->latest('martyrs.created_at')->get()->groupBy('force'); 
+
+        return view('martyrs.report', compact('report'));
     }
 
 

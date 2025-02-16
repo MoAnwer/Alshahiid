@@ -59,4 +59,11 @@ class Family extends Model
         return $this->hasMany(Communicate::class);
     }
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(fn ($family) => $family->familyMembers()->delete());
+    }
+
 }

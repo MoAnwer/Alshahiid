@@ -6,19 +6,10 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Models\Family;
 use App\Models\HomeService;
+use Illuminate\Support\Facades\DB;
 
 class HomeServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -66,11 +57,13 @@ class HomeServiceController extends Controller
 			$family = Family::find($family);
 			
 			$family->homeService()->create($data);
+            
+            
 			return back()->with('success', 'تم اضافة مشروع سكن جديد بنجاح');
 			
 		} catch(Exception $e) {
 			
-			return abort(404);
+			return $e->getMessage();
 		}
 		
     }
@@ -90,7 +83,7 @@ class HomeServiceController extends Controller
 			return view('homesServices.edit', compact('home'));
 			
         } catch (Exception $e) {
-            return abort(404);
+            return $e->getMessage();
         }
     }
 
@@ -125,12 +118,14 @@ class HomeServiceController extends Controller
 			$home = $family->homeServices()->find($home)->update($data);
 			
 			// $home->update($data);
+
+            
 			
 			return back()->with('success', "تم التعديل بنجاح");
 			
 		} catch (Exception $e) {
 			
-			return abort(404);
+			return $e->getMessage();
 		}
     }
 
@@ -144,7 +139,7 @@ class HomeServiceController extends Controller
 
         } catch (Exception $e) {
 			
-            return abort(404);
+            return $e->getMessage();
         }
 
     }
@@ -165,13 +160,75 @@ class HomeServiceController extends Controller
             $familyId = $home->family->id;
 
             $home->delete();
+
             
-            return to_route('families.show', $familyId)->with('success', 'تم حذف المشروع بنجاح ');
+            
+            return to_route('families.socialServices', $familyId)->with('success', 'تم حذف المشروع بنجاح ');
 
         } catch(Exception $e) {
 
             return $e->getMessage();
 
         }
+    }
+
+    public function report() 
+    {
+        
+       $request = request();
+
+       $query = DB::table('home_services')
+                ->join('families', 'families.id', 'home_services.family_id')
+                ->join('martyrs','martyrs.id', 'families.martyr_id')
+                ->leftJoin('addresses', 'addresses.family_id', 'families.id')
+                ->selectRaw('
+                    SUM(home_services.budget) as totalBudget,
+                    home_services.status as status, 
+                    COUNT(home_services.status) as count, 
+                    home_services.type as type,
+                    SUM(home_services.budget_from_org)  as budget_from_org,
+                    SUM(home_services.budget_out_of_org) as budget_out_of_org,
+                    SUM(home_services.budget_out_of_org + home_services.budget_from_org) AS totalMoney
+                ', 
+                )->groupBy(['home_services.type', 'home_services.status']);
+
+        if (!empty($request->query('type')) && $request->query('type') != 'all') {
+            $query->where('home_services.type', $request->query('type'))->groupBy(['home_services.type', 'home_services.status']);
+        } 
+
+
+        if (!empty($request->query('category')) && $request->query('category') != 'all') {
+            $query->selectRaw('families.category as category')->where('families.category', $request->query('category'))
+            ->groupBy(['families.category', 'home_services.type', 'home_services.status']);
+        } 
+        
+        if (!empty($request->query('force')) && $request->query('force') != 'all') {
+            $query->selectRaw('martyrs.force')->where('martyrs.force', $request->query('force'))->groupBy(['martyrs.force', 'home_services.type', 'home_services.status']);
+        } 
+
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->selectRaw('addresses.sector as sector')->where('addresses.sector', $request->query('sector'))
+            ->groupBy(['addresses.sector', 'home_services.type', 'home_services.status']);
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            
+            $query->selectRaw('addresses.locality as locality')->where('addresses.locality', $request->query('locality'))
+            ->groupBy(['addresses.sector', 'addresses.locality', 'home_services.type', 'home_services.status']);
+
+        } 
+
+        if (!is_null($request->query('month')) && $request->query('month') != '') {
+            $query->selectRaw('MONTH(home_services.created_at) as month')->whereMonth('home_services.created_at',  $request->query('month'))->groupBy('month');
+        } 
+
+        if (!is_null($request->query('year')) && $request->query('year') != '') {
+            $query->selectRaw('YEAR(home_services.created_at) as year')->whereYear('home_services.created_at',  $request->query('year'))->groupBy('year');
+        } 
+
+        $homeServicesReport = $query->latest('home_services.created_at')->get()->groupBy(['type', 'status']); 
+        // dd($homeServicesReport);
+
+        return view('reports.homeServices', compact('homeServicesReport'));
     }
 }

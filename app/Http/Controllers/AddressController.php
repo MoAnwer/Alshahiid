@@ -6,17 +6,27 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Models\Address;
 use App\Models\Family;
-use Illuminate\Support\Facades\DB;
+use App\Services\AddressService;
+use Illuminate\Support\Facades\Log;
 
 class AddressController extends Controller
 {
+    protected $log;
+    protected Family $family;
+    protected Address $address;
+    protected AddressService $addressService;
 
+    public function __construct() 
+    {
+        $this->family   = new Family;
+        $this->address  = new Address;
+        $this->addressService  = new AddressService;
+        $this->log      = Log::stack(['stack' => Log::build(['driver' => 'single', 'path' => storage_path('logs/alshahiid.log')]) ]);
+    }
 
     public function create(int $family) 
     {
-        return view('address.create', 
-            ['family' => Family::findOrFail($family)]
-        );
+        return view('address.create', ['family' => $this->family->findOrFail($family)]);
     }
     
 
@@ -33,13 +43,12 @@ class AddressController extends Controller
 
         try {
 
-            $family = Family::findOrFail($family);
-            $family->addresses()->create($data);
+            $this->family->findOrFail($family)->addresses()->create($data);
 
             return back()->with('success', 'تم انشاء السكن بنجاح');
 
         } catch(Exception $e) {
-
+            $this->log->error('Storing address to family id='.$family, ['exception' =>  $e->getMessage()]);
             return $e->getMessage();
 
         } 
@@ -48,9 +57,9 @@ class AddressController extends Controller
     public function edit(int $id) 
     {
 		try {
-			$address = Address::findOrFail($id);
-			return view('address.edit', compact('address'));	
+			return view('address.edit', ['address' => $this->address->findOrFail($id)]);
 		} catch (Exception $e) {
+            $this->log->error('Edit address id='.$id, ['exception' =>  $e->getMessage()]);
             return $e->getMessage();
         }
     }
@@ -69,13 +78,12 @@ class AddressController extends Controller
 		
         try {
 
-            $address = Address::findOrFail($id);
-            $address->update($data);
+            $this->address->findOrFail($id)->update($data);
 
             return back()->with('success', 'تم تعديل بيانات السكن بنجاح');
 
         } catch(Exception $e) {
-
+            $this->log->error('Update address id='.$id, ['exception' =>  $e->getMessage()]);
             return $e->getMessage();
 
         }
@@ -85,9 +93,10 @@ class AddressController extends Controller
     public function delete(int $id) 
     {
         try {
-            return view('address.delete', ['address' => Address::findOrFail($id)]);
+            return view('address.delete', ['address' => $this->address->findOrFail($id)]);
         } catch (Exception $e) {
-            return abort(404);
+            $this->log->error('Delete address id='.$id, ['exception' =>  $e->getMessage()]);
+            return $e->getMessage();
         }
     }
 
@@ -95,92 +104,20 @@ class AddressController extends Controller
     {
         try {
 
-            $address  = Address::findOrFail($id);
+            $address  = $this->address->findOrFail($id);
             $familyId = $address->family->id;
             $address->delete();
 
             return to_route('families.show', $familyId)->with('success', 'تم حذف بيانات السكن بنجاح');
 
         } catch (Exception $e) {
-            return abort(404);
+            $this->log->error('Destroy address id='.$id, ['exception' =>  $e->getMessage()]);
+            return $e->getMessage();
         }
     }
 
     public function report()
     {
-        $report =  
-                DB::table('addresses')
-                            ->selectRaw('type, COUNT(id) as count')
-                            ->groupBy('type')
-                            ->get();   
-
-
-        $report = $report->groupBy('type');
-        
-        $homeServicesReport = 
-                DB::table('home_services')
-                        ->selectRaw('
-                                    SUM(budget) as totalBudget,
-                                    status, 
-                                    COUNT(status) as count, 
-                                    type,
-                                    SUM(budget_from_org)  as budget_from_org,
-                                    SUM(budget_out_of_org) as budget_out_of_org
-                                    ')
-                                    ->groupBy(['type', 'status'])->get();
-
-        $homeServicesReport = collect([
-            'build' => [
-                'need'   => $homeServicesReport->get(0), 
-                'done'   => $homeServicesReport->get(1)
-            ],
-            'complete_build'   => [
-                'need'   => $homeServicesReport->get(2), 
-                'done'   => $homeServicesReport->get(3)
-            ]
-        ]);
-
-        $homeServicesReport->prepend([
-            'build' => round(
-                ( ($homeServicesReport->get('build')['done']->count ?? 0) / ($homeServicesReport->get('build')['need']->count ?? 1) ) * 100
-                , 1),
-
-            'complete_build'   => round(
-                ( ($homeServicesReport->get('complete_build')['done']->count ?? 0)  / ($homeServicesReport->get('complete_build')['need']->count ?? 1) ) * 100
-                , 1),
-            'total'  => round(
-                (
-                    (($homeServicesReport->get('build')['done']->count ?? 0)   + ( $homeServicesReport->get('complete_build')['done']->count ?? 1) )
-                    / 
-                    (($homeServicesReport->get('build')['need']->count ?? 0) +  ($homeServicesReport->get('complete_build')['need']->count ?? 1) ) 
-                ) * 100
-                  
-            , 1)
-        ], 'precentages');
-
-        $homeServicesReport->prepend([
-            'total_budget'               => 
-                      ( ($homeServicesReport->get('build')['need']->totalBudget ?? 0 )  +  ($homeServicesReport->get('build')['done']->totalBudget ?? 0) )
-                    + ( ($homeServicesReport->get('complete_build')['need']->totalBudget ?? 0)  +  ($homeServicesReport->get('complete_build')['done']->totalBudget ?? 0) )
-
-            ,
-            'total_budget_from_org'      =>         
-                      (($homeServicesReport->get('build')['need']->budget_from_org) ?? 0 + ( $homeServicesReport->get('build')['done']->budget_from_org?? 0))
-                    + (($homeServicesReport->get('complete_build')['need']->budget_from_org ?? 0) +  ($homeServicesReport->get('complete_build')['done']->budget_from_org?? 0))
-            ,
-
-            'total_budget_out_of_org'    => 
-                      (($homeServicesReport->get('build')['done']->budget_out_of_org ?? 0) + ($homeServicesReport->get('build')['need']->budget_out_of_org?? 0) )
-                    + (($homeServicesReport->get('complete_build')['done']->budget_out_of_org) ?? 0 + ($homeServicesReport->get('complete_build')['need']->budget_out_of_org ?? 0))
-            ,
-            'total_money'                =>
-                      (($homeServicesReport->get('build')['need']->budget_from_org ?? 0) +  ($homeServicesReport->get('build')['done']->budget_from_org?? 0))
-                    + (($homeServicesReport->get('complete_build')['need']->budget_from_org ?? 0) +  ($homeServicesReport->get('complete_build')['done']->budget_from_org?? 0))
-                    + (($homeServicesReport->get('build')['done']->budget_out_of_org ?? 0) + ($homeServicesReport->get('build')['need']->budget_out_of_org?? 0))
-                    + (($homeServicesReport->get('complete_build')['done']->budget_out_of_org ?? 0)+ ($homeServicesReport->get('complete_build')['need']->budget_out_of_org?? 0))
-
-        ], 'totals');
-
-        return view('reports.address', compact('report', 'homeServicesReport'));
+        return view('reports.address', $this->addressService->report());
     }
 }

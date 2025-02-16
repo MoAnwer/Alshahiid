@@ -24,7 +24,7 @@ class AuthController extends Controller
 
                 $request->session()->regenerate();
 
-                return to_route('martyrs.index');
+                return to_route('home');
             }
 
             return back()->withErrors([

@@ -17,6 +17,8 @@
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>تقرير اعانات الزواج</h4>
         </div>
+        
+        <hr>
     
         @php
           $totalNeed = 0;
@@ -26,17 +28,60 @@
           $totalBudgetOutOfOrg = 0;
           $totalMoney = 0;
         @endphp
-    
-    
-      <div class="search-form">
+
+
+        <div class="search-form">
+
           <form action="{{ URL::current() }}" method="GET">
 
-            <div class="row">
+            <div class="row px-1 mt-4">
+
+              <div class="col-1">
+                <label>العلاقة :</label>
+                <div class="form-group">
+                  <select name="relation" class="form-select">
+                    <option value="all"  @selected(request('relation') == "all")>الكل</option>
+                    <option value="ابنة" @selected(request('relation') == 'ابنة')>ابنة</option>
+                    <option value="اخ" @selected(request('relation') == 'اخ')>اخ</option>
+                    <option value="اخت" @selected(request('relation') == 'اخت')>اخت</option>
+                    <option value="زوجة" @selected(request('relation') == 'زوجة')>ارامل</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-2">
+              <label>القوة: </label>
+                  <div class="form-group">
+                  <select class="form-select" name="force">
+                    <option value="all">الكل</option>
+                    @foreach(['جهاز الأمن','شرطة موحدة','قوات مسلحة','قرارات','شهداء الكرامة'] as $force)
+                      <option value="{{ $force }}" @selected(request('force') == $force)>{{ $force }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-2">
+                          
+                  <label>الشريحة</label>
+                  
+                  <div class="form-group">
+                    <select class="form-select" name="category">
+                       <option value="all">الكل</option>
+                      @foreach(['أرملة و ابناء','أب و أم و أخوان و أخوات','أخوات','مكتفية'] as $category)
+                        <option value="{{ $category }}" @selected(request('category') == $category)>{{ $category }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+
+              </div>
+
               
-              <div class="col-6">
+              <div class="col-2">
                 <label>القطاع :</label>
                 <div class="form-group">
                     <select name="sector" class="form-select">
+                      <option value="all">كل القطاعات</option>
                       <option value="القطاع الشرقي"  @selected(request('sector') == 'القطاع الشرقي')>القطاع الشرقي</option>
                       <option value="القطاع الشمالي" @selected(request('sector') == 'القطاع الشمالي')>القطاع الشمالي</option>
                       <option value="القطاع الغربي"  @selected(request('sector') == 'القطاع الغربي')>القطاع الغربي</option>
@@ -44,30 +89,48 @@
                   </div>
               </div>
 
-              <div class="col-5">
+              <div class="col-2">
                   <label>المحلية: </label>
                   <div class="form-group">
                     <select name="locality" class="form-select">
+                      <option value="all">كل المحليات </option>
                       @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
                         <option value="{{ $locality }}" @selected(request('locality') == $locality)>{{ $locality }}</option>
                         @endforeach
                       </select>
                   </div>
+              </div>
+
+              <div class="col-1">
+                  <label>السنة: </label>
+                  <div class="form-group">
+                    <input type="number" class="py-4 form-control" max="2100" min="1900" step="1" name="year" placeholder="{{ request('year') }}" />
+                  </div>
                 </div>
 
-              <div class="col-1 mt-3 d-flex align-items-center flex-column justify-content-center">
-                <button class="btn py-4 btn-primary active form-control ">
-                  <i class="fas fa-search ml-2"></i>
-                  بحث 
+              <div class="col-1">
+                  <label>الشهر: </label>
+                  <div class="form-group">
+                    <input type="number" class="py-4 form-control" min="1" max="12" step="1" name="month" placeholder="{{ request('month') }}" />
+                  </div>
+                </div>
+
+               <div class="col-1 mt-3 d-flex align-items-center">
+                <button class="btn py-3 px-2 btn-primary active form-control ml-2" title="بحث">
+                  <i class="bi bi-search"></i>
                 </button>
+                <a class="btn py-3 px-2 btn-success active form-control " title="القائمة" href="{{ request()->url() }}">
+                  <i class="bi bi-menu-button"></i>
+                </a>
               </div>
 
               </form>
-
             </div>
         </div>
-        
-		      <x-table>
+
+
+
+	      <x-table>
 			     <x-slot:head>
               <th>نوع الخدمة</th>
               <th>مطلوب</th>
@@ -80,6 +143,7 @@
             </x-slot:head>
 
             <x-slot:body>
+            @if(is_null(request()->query('relation')) || (request()->query('relation') == 'all' || request()->query('relation') == 'زوجة' ))
               <tr>
                 <td>أرامل</td>
                 <td>
@@ -141,6 +205,10 @@
                   @endif
                 </td>
               </tr>
+
+            @endif
+
+            @if(is_null(request()->query('relation')) || (request()->query('relation') == 'all' || request()->query('relation') == 'ابنة' ))
              <tr>
                 <td>بنات</td>
                 <td>
@@ -202,7 +270,9 @@
                   @endif
                 </td>
               </tr>
+              @endif 
 
+              @if(is_null(request()->query('relation')) || (request()->query('relation') == 'all' || request()->query('relation') == 'اخت' ))
               <tr>
                 <td>اخوات</td>
                 <td>
@@ -264,8 +334,12 @@
                   @endif
                 </td>
               </tr>
+              
+
+              @endif
 
 
+              @if(is_null(request()->query('relation')) || (request()->query('relation') == 'all' || request()->query('relation') == 'اخ' ))
               <tr>
                 <td>اخرى</td>
                 <td>
@@ -328,6 +402,7 @@
                 </td>
               </tr>
 
+              @endif
               
             <tr>
               <td>
@@ -348,14 +423,33 @@
               <td>{{ number_format($totalMoney) }}</td>
             </tr>
 
-            <caption>
-              @empty(!request()->query('sector'))
-                {{ request()->query('sector') . ' - ' . request()->query('locality')}}
+            <caption class="text-primary">
+              اعانات الزواج 
+              
+             @if(request()->query('relation') != 'all')
+                 {{ request()->query('relation') == "زوجة" ? 'ارامل' : request()->query('relation') }}
+              @endif
+                -
+             @if(request()->query('force') != 'all')
+                {{ request()->query('force') }}
+              @endif
+
+              @if(request()->query('sector') != 'all' || is_null(request()->query('sector')))
+                {{ request()->query('sector') }}
               @else
               كل القطاعات
+              @endif
+
+              @if( request()->query('locality') == 'all' || is_null(request()->query('locality'))) 
+                كل المحليات
+              @else
+              {{ '-' . request()->query('locality')  }}
+              @endif
+
+               @empty(!request()->query('year'))
+                {{ 'سنة ' . request()->query('year')  . (request()->query('month') != '' ?  ' شهر ' . request()->query('month') : ' لكل الشهور     ')}}
               @endempty
             </caption>
-
             </x-slot:body>
 
           </x-table>

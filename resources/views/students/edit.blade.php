@@ -29,12 +29,16 @@
           @method('PUT')
 		      <label>المرحلة</label>
             <div class="form-group">
-              <select name="stage" class="form-select">
+              <select name="stage" class="form-select my-2">
 			         @foreach(['جامعي', 'الإبتدائي', 'فوق الجامعي', 'الثانوي', 'المتوسط'] as $stage)
                 <option value="{{ $stage }}" @selected( $student->stage  == $stage)>{{ $stage }}</option>
 			         @endforeach
               </select>
-            </div>s
+              <label>الصف   <span class="text-danger fs-5">*</span></label>
+              <input type="text" name="class" class="form-control py-4 mb-3" value="{{$student->class}}"/>
+              <label>اسم المدرسة   <span class="text-danger fs-5">*</span></label>
+              <input type="text" name="school_name" class="form-control py-4 mb-3" value="{{$student->school_name}}"/>
+            </div>
 
             <button type="submit" class="btn btn-success py-2 mt-3">
               انشاء

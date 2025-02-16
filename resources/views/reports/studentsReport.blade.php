@@ -19,15 +19,43 @@
         </div>
 
         
-        <div class="search-form">
+      <hr>
+
+       <div class="search-form">
           <form action="{{ URL::current() }}" method="GET">
 
-            <div class="row">
+            <div class="row px-1 mt-4">
               
-              <div class="col-6">
+              <div class="col-2">
+                <label>النوع :</label>
+                <div class="form-group">
+                    <select name="gender" class="form-select">
+                      <option value="all">ذكور و إناث</option>
+                      <option value="ذكر" @selected(request('gender') == 'ذكر')>ذكور</option>
+                      <option value="أنثى" @selected(request('gender') == 'أنثى')>إناث</option>
+                    </select>
+                  </div>
+              </div>
+              
+              <div class="col-2">
+                <label>المرحلة :</label>
+                <div class="form-group">
+                    <select name="stage" class="form-select">
+                      <option value="all">كل المراحل</option>
+                      <option value="الإبتدائي" @selected(request('stage') == 'الإبتدائي')>الإبتدائي</option>
+                      <option value="المتوسط" @selected(request('stage') == 'المتوسط')>المتوسط</option>
+                      <option value="الثانوي"  @selected(request('stage') == 'الثانوي')>الثانوي</option>
+                      <option value="جامعي"  @selected(request('stage') == 'جامعي')>جامعي</option>
+                      <option value="فوق الجامعي"  @selected(request('stage') == 'فوق الجامعي')>فوق الجامعي</option>
+                    </select>
+                  </div>
+              </div>
+              
+              <div class="col-2">
                 <label>القطاع :</label>
                 <div class="form-group">
                     <select name="sector" class="form-select">
+                      <option value="all">كل القطاعات</option>
                       <option value="القطاع الشرقي"  @selected(request('sector') == 'القطاع الشرقي')>القطاع الشرقي</option>
                       <option value="القطاع الشمالي" @selected(request('sector') == 'القطاع الشمالي')>القطاع الشمالي</option>
                       <option value="القطاع الغربي"  @selected(request('sector') == 'القطاع الغربي')>القطاع الغربي</option>
@@ -35,129 +63,154 @@
                   </div>
               </div>
 
-              <div class="col-5">
+              <div class="col-2">
                   <label>المحلية: </label>
                   <div class="form-group">
                     <select name="locality" class="form-select">
+                      <option value="all">كل المحليات </option>
                       @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
                         <option value="{{ $locality }}" @selected(request('locality') == $locality)>{{ $locality }}</option>
                         @endforeach
                       </select>
                   </div>
+              </div>
+
+              <div class="col-1">
+                  <label>السنة: </label>
+                  <div class="form-group">
+                    <input type="number" class="py-4 form-control" max="2100" min="1900" step="1" name="year" value="{{ request('year') }}" />
+                  </div>
                 </div>
 
-              <div class="col-1 mt-3 d-flex align-items-center flex-column justify-content-center">
-                <button class="btn py-4 btn-primary active form-control ">
-                  <i class="fas fa-search ml-2"></i>
-                  بحث 
+              <div class="col-1">
+                  <label>الشهر: </label>
+                  <div class="form-group">
+                    <input type="number" class="py-4 form-control" min="1" max="12" step="1" name="month" value="{{ request('month') }}" />
+                  </div>
+                </div>
+
+              <div class="col-1  d-flex align-items-center">
+              <div class="mt-3 ml-1 d-flex align-items-center flex-column justify-content-center">
+                <button class="btn py-4 btn-primary active form-control " title="بحث ">
+                  <i class="bi bi-search ml-2"></i>
                 </button>
               </div>
 
+              <div class="mt-3 d-flex align-items-center flex-column justify-content-center">
+              <a class="btn py-4 btn-success active form-control " title="الغاء الفلاتر" href="{{ request()->url() }}">
+                  <i class="bi bi-menu-button ml-2"></i>
+                </a>
+              </div>
+
+              </div>
               </form>
 
             </div>
-        </div> {{-- search form --}}
-          
+        </div>
 
 		  <x-table>
 			  <x-slot:head>
+			    <th>النوع</th>
 			    <th>المرحلة</th>
-          <th>الإبتدائي</th>
-          <th>المتوسط</th>
-          <th>ثانوي</th>
-          <th>جامعي</th>
-          <th>فوق الجامعي</th>
-          <th>المجموع</th>
+			    <th>العدد</th>
+          <th>النسبة</th>
         </x-slot:head>
 			
 			<x-slot:body>
-        @php($totalCount = 0)
+        @php
+          $totalCount =  @$report->get('ذكر')[0]->count + @$report->get('أنثى')[0]->count;
+          $totalPer = 0
+        @endphp
+          
+          @if (request()->query('gender') == 'ذكر'  ||request()->query('gender') == 'all' || empty(request()->query('gender')))
           <tr>
-            <td>العدد</td>
-            <td>
-              @if (!is_null($report->get('الإبتدائي')))
-                {{ $report->get('الإبتدائي')[0]->count }}
-                @php($totalCount +=  $report->get('الإبتدائي')[0]->count)
-              @else
-              0
-              @endif
-            </td>
-            <td>
-              @if (!is_null($report->get('المتوسط')))
-                {{ $report->get('المتوسط')[0]->count }}
-                @php($totalCount +=  $report->get('المتوسط')[0]->count)
-              @else
-              0
-              @endif
-            </td>
-            <td>
-              @if (!is_null($report->get('الثانوي')))
-                {{ $report->get('الثانوي')[0]->count }}
-                @php($totalCount += $report->get('الثانوي')[0]->count)  
-              @else
-              0    
-              @endif
-            </td>
-            <td>
-              @if (!is_null($report->get('جامعي')))
-                {{ $report->get('جامعي')[0]->count }}
-                @php($totalCount += $report->get('جامعي')[0]->count)
-              @else
-              0
-              @endif
-            </td>
-            <td>
-              @if (!is_null($report->get('فوق الجامعي')))
-                {{ $report->get('فوق الجامعي')[0]->count }}
-                @php($totalCount += $report->get('فوق الجامعي')[0]->count) 
-              @else
-                0
-              @endif
-            </td>
-            <td>
-              {{ $totalCount }}
-            </td>
+
+              <td>ذكور</td>
+              
+              <td>
+
+                @if (empty(request()->query('stage')))
+                  كل المراحل
+                @elseif (request()->query('stage') == 'all')
+                  كل المراحل
+                @else
+                  {{  request()->query('stage') }}
+                @endif
+
+              </td>
+              <td>{{ number_format( @$report->get('ذكر')[0]->count ?? '0') }}</td>
+              <td>
+                @if (@$report->get('ذكر')[0]->count > 0 || $totalCount > 0)
+                  {{ round((@$report->get('ذكر')[0]->count / $totalCount) * 100, 2) . '%' }}
+                  @php($totalPer += (@$report->get('ذكر')[0]->count / $totalCount) * 100)
+                @else
+                  0%
+                @endif
+              </td>
+
+            </tr>
+
+            @endif
+  
+            @if (request()->query('gender') == 'أنثى' ||request()->query('gender') == 'all' || empty(request()->query('gender')))
+                      
+              <tr>
+                  <td>إناث</td>
+
+                  <td>
+                  @if (empty(request()->query('stage')))
+                      كل المراحل
+                    @elseif (request()->query('stage') == 'all')
+                      كل المراحل
+                    @else
+                      {{  request()->query('stage') }}
+                    @endif
+                  </td>
+
+                  <td>{{ number_format(@$report->get('أنثى')[0]->count ?? '0') }}</td>
+                  <td>
+                    @if (@$report->get('أنثى')[0]->count > 0 && $totalCount > 0)
+                      {{ round((@$report->get('أنثى')[0]->count / $totalCount) * 100, 2) . '%' }}
+                      @php($totalPer += (@$report->get('أنثى')[0]->count / $totalCount) * 100)
+                    @else
+                      0%
+                    @endif
+                  </td>
+              </tr>
+
+            @endif
+
+          <tr class="border border-top">
+              <td><b>المجموع<b></td>
+              <td>-</td>
+              <td><b>{{$totalCount}}</b></td>
+              <td>
+
+                <b>
+                  {{ $totalPer . '%' }}
+                <b>
+
+              </td>
           </tr>
 
-          <tr>
-            <td>النسبة</td>
-            <td>
-              @if (!is_null($report->get('الإبتدائي')) && $report->get('الإبتدائي')[0]->count > 0)
-                %{{ round(($report->get('الإبتدائي')[0]->count / $totalCount) * 100,1) }}
+            <caption class="text-primary">
+              احصاء الطلاب
+              @if(request()->query('sector') != 'all')
+                {{ request()->query('sector') }}
               @else
-              0
+              كل القطاعات
               @endif
-            </td>
-            <td>
-              @if (!is_null($report->get('المتوسط')) && $report->get('المتوسط')[0]->count > 0)
-                %{{ round(($report->get('المتوسط')[0]->count / $totalCount) * 100,1) }}
+
+              @if( request()->query('locality') == 'all') 
+                كل المحليات
               @else
-              0
+               محلية  {{ request()->query('locality')  }}
               @endif
-            </td>
-            <td>
-              @if (!is_null($report->get('الثانوي')) && $report->get('الثانوي')[0]->count > 0)
-                %{{ round(($report->get('الثانوي')[0]->count / $totalCount) * 100, 1) }}
-              @else
-              0
-              @endif
-            </td>
-            <td>
-              @if (!is_null($report->get('جامعي')) && $report->get('جامعي')[0]->count > 0)
-                %{{ round(($report->get('جامعي')[0]->count / $totalCount) * 100, 1) }}
-              @else
-              0
-              @endif
-            </td>
-            <td>
-              @if (!is_null($report->get('فوق الجامعي')) && $report->get('فوق الجامعي')[0]->count > 0)
-                %{{ round(($report->get('فوق الجامعي')[0]->count / $totalCount) * 100, 1) }}
-              @else
-              0
-              @endif
-            </td>
-            <td>100%</td>
-          </tr>
+
+               @empty(!request()->query('year'))
+                {{ 'سنة ' . request()->query('year')  . (request()->query('month') != '' ?  ' شهر ' . request()->query('month') : ' لكل الشهور     ')}}
+              @endempty
+            </caption>
           
 			</x-slot:body>
 

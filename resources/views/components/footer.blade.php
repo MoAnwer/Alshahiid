@@ -1,6 +1,27 @@
-  <script src="{{ asset('asset/js/jquery.js')}}"></script>
-  <script src="{{ asset('asset/js/bootstrap.js')}}"></script>
-  <script src="{{ asset('asset/js/jquery.easing.js')}}"></script>
-  <script src="{{ asset('asset/js/admin.js')}}"></script>
+
+  <script src="{{ asset('asset/js/html2canvas.min.js')}}"></script>
+  <script src="{{ asset('asset/js/jquery.min.js')}}"></script>
+  <script src="{{ asset('asset/js/bootstrap.min.js')}}"></script>
+  <script src="{{ asset('asset/js/jquery.easing.min.js')}}"></script>
+  <script src="{{ asset('asset/js/admin.min.js')}}"></script>
+  <script type="text/javascript">
+      function printTable() 
+      {
+        let table = document.querySelector('.table-responsive');
+
+        html2canvas(table, {
+            'scale': 2,
+            'useCORS': true,
+        }).then(canvas => {
+            let imageDate = canvas.toDataURL('image/png');
+            let newWindow = window.open("");
+            newWindow.document.write('<img src="' + imageDate + '" style="width:100%; ">')
+            newWindow.document.close();
+            setTimeout(() => {
+                newWindow.print();
+            }, 200);
+        });
+      }
+  </script>
 </body>
 </html>

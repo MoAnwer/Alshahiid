@@ -59,7 +59,27 @@
             <div class="form-group">
               <input name="budget_out_of_org" type="number" class="p-4 form-control" value="{{ $session->budget_out_of_org }}"/>
             </div>
-            
+ 
+
+               <label>القطاع :</label>
+            <div class="form-group">
+                <select name="sector" class="form-select">
+                  <option value="القطاع الشرقي"  @selected($session->sector == 'القطاع الشرقي')>القطاع الشرقي</option>
+                  <option value="القطاع الشمالي" @selected($session->sector == 'القطاع الشمالي')>القطاع الشمالي</option>
+                  <option value="القطاع الغربي"  @selected($session->sector == 'القطاع الغربي')>القطاع الغربي</option>
+                </select>
+              </div>
+
+              <label>المحلية: </label>
+              <div class="form-group">
+                <select name="locality" class="form-select">
+                  @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
+                    <option value="{{ $locality }}" @selected($session->locality == $locality)>{{ $locality }}</option>
+                    @endforeach
+                  </select>
+              </div>
+
+                         
             <label>ملاحظات: </label>
             <textarea name="notes" class="form-control w-100">{{ $session->notes }}</textarea>
 

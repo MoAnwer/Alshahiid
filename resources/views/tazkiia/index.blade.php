@@ -74,7 +74,7 @@
           <a href="{{ route('tazkiia.hagsMembersList') }}" >
             <div class="card text-center py-4 border border-success">
               <div class="card-body">
-                <i class="fas fa-quran text-success mb-5" style="font-size: 100px !important"></i>
+                <i class="bi bi-moon text-success mb-5" style="font-size: 100px !important"></i>
                 <h4 class="card-title mb-4"> الحج و العمرة </h4>
               </div>
             </div>

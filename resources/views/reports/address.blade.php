@@ -11,12 +11,18 @@
       <div id="content">
 
       @include('components.navbar')
-      
+        @php($totalDone = 0)
+        @php($totalNeed = 0)
 
-      <div class="container-fluid mt-4">
-        <div class="d-flex justify-content-between align-items-center px-3">
-          <h4>تقارير السكن</h4>
-        </div>
+        <div class="container-fluid mt-4">
+          <div class="d-flex justify-content-between align-items-center px-3">
+            <h4>تقارير السكن</h4>
+          </div>
+
+        {{--  --}}
+        <x-search-form />
+        {{--  --}}
+
 		  <x-table>
 			  <x-slot:head>
   			  <th>نوع الملكية</th>
@@ -140,124 +146,6 @@
 
 		  </x-table>
 
-      <hr>
-
-      <div>
-        <h5>تقارير خدمات السكن</h5>
-        <x-table>
-           <x-slot:head>
-              <th>نوع الخدمة</th>
-              <th>مطلوب</th>
-              <th>منفذ</th>
-              <th>النسبة</th>
-              <th>التقديري</th>
-              <th>من داخل المنظمة</th>
-              <th>من خارج المنظمة</th>
-              <th>الاجمالي الكلي</th>
-            </x-slot:head>
-      
-           <x-slot:body>
-            <tr>
-              <td>تشييد</td>
-
-                <td>{{ $homeServicesReport->get('build')['need']->count ?? 0 }}</td>
-                <td>{{ $homeServicesReport->get('build')['done']->count ?? 0 }}</td>
-                <td>{{ $homeServicesReport->get('precentages')['build'] . '%'}}</td>
-
-                <td>{{ number_format(($homeServicesReport->get('build')['need']->totalBudget ?? 0) +  ($homeServicesReport->get('build')['done']->totalBudget ?? 0)) }}</td>
-
-                <td>{{ number_format(($homeServicesReport->get('build')['need']->budget_from_org ?? 0 ) +  ($homeServicesReport->get('build')['done']->budget_from_org ?? 0)) }}</td>
-
-                <td>{{ number_format(($homeServicesReport->get('build')['need']->budget_out_of_org ?? 0) +  ($homeServicesReport->get('build')['done']->budget_out_of_org ?? 0)) }}</td>
-
-                <td>
-                  {{  
-                    number_format(
-                          (($homeServicesReport->get('build')['need']->budget_from_org ?? 0)  +  ($homeServicesReport->get('build')['done']->budget_from_org ?? 0))
-                        + (($homeServicesReport->get('build')['need']->budget_out_of_org ?? 0) +  ($homeServicesReport->get('build')['done']->budget_out_of_org ?? 0))
-                      )
-                   }}
-                </td>
-
-
-            </tr>
-            <tr>
-              <td>اكمال تشييد</td>
-                
-              <td>{{ $homeServicesReport->get('complete_build')['need']->count ?? 0 }}</td>
-                <td>{{ $homeServicesReport->get('complete_build')['done']->count ?? 0 }}</td>
-                <td>{{ $homeServicesReport->get('precentages')['complete_build']. '%'}}</td>
-
-                <td>{{ number_format(($homeServicesReport->get('complete_build')['need']->totalBudget ?? 0) +  ($homeServicesReport->get('complete_build')['done']->totalBudget ?? 0)) }}</td>
-
-                <td>{{ number_format(($homeServicesReport->get('complete_build')['need']->budget_from_org ?? 0 ) +  ($homeServicesReport->get('complete_build')['done']->budget_from_org ?? 0)) }}</td>
-
-                <td>{{ number_format(($homeServicesReport->get('complete_build')['need']->budget_out_of_org ?? 0) +  ($homeServicesReport->get('complete_build')['done']->budget_out_of_org ?? 0)) }}</td>
-
-                <td>
-                  {{  
-                    number_format(
-                          (($homeServicesReport->get('complete_build')['need']->budget_from_org ?? 0)  +  ($homeServicesReport->get('complete_build')['done']->budget_from_org ?? 0))
-                        + (($homeServicesReport->get('complete_build')['need']->budget_out_of_org ?? 0) +  ($homeServicesReport->get('complete_build')['done']->budget_out_of_org ?? 0))
-                      )
-                   }}
-                </td>
-            </tr>
-
-            <tr>
-              <td>الاجمالي</td>
-              <td>{{ ($homeServicesReport->get('build')['need']->count ?? 0) + ($homeServicesReport->get('complete_build')['need']->count ?? 0)  }}</td>
-              <td>{{ ($homeServicesReport->get('build')['done']->count ?? 0) + ($homeServicesReport->get('complete_build')['done']->count ?? 0)  }}</td>
-              <td>
-                @if (@$homeServicesReport->get('build')['done']->count > 0)
-                  {{ 
-                  round( (
-                      ( ($homeServicesReport->get('build')['done']->count ?? 0) + ($homeServicesReport->get('complete_build')['done']->count ?? 0) )
-                      / 
-                      ( ($homeServicesReport->get('build')['need']->count ?? 0) + ($homeServicesReport->get('complete_build')['need']->count ?? 0) )
-                    ) * 100, 1)
-                  . '%'}}
-                @else
-                  0%
-                @endif
-              </td>
-              <td>
-                {{ 
-                  number_format(
-                    ($homeServicesReport->get('build')['need']->totalBudget ?? 0) +  ($homeServicesReport->get('build')['done']->totalBudget ?? 0) 
-                  + ($homeServicesReport->get('complete_build')['need']->totalBudget ?? 0) +  ($homeServicesReport->get('complete_build')['done']->totalBudget ?? 0)) 
-                }}
-              </td>
-              <td>
-                {{ 
-                  number_format(
-                    ($homeServicesReport->get('build')['need']->budget_from_org ?? 0) +  ($homeServicesReport->get('build')['done']->budget_from_org ?? 0) 
-                  + ($homeServicesReport->get('complete_build')['need']->budget_from_org ?? 0) +  ($homeServicesReport->get('complete_build')['done']->budget_from_org ?? 0)) 
-                }}
-              </td>
-              <td>
-                {{ 
-                  number_format(
-                    ($homeServicesReport->get('build')['need']->budget_out_of_org ?? 0) +  ($homeServicesReport->get('build')['done']->budget_out_of_org ?? 0) 
-                  + ($homeServicesReport->get('complete_build')['need']->budget_out_of_org ?? 0) +  ($homeServicesReport->get('complete_build')['done']->budget_out_of_org ?? 0)) 
-                }}
-              </td>
-              <td>
-                {{  
-                  number_format(
-                    (($homeServicesReport->get('build')['need']->budget_from_org ?? 0)  +  ($homeServicesReport->get('build')['done']->budget_from_org ?? 0))
-                  + (($homeServicesReport->get('build')['need']->budget_out_of_org ?? 0) +  ($homeServicesReport->get('build')['done']->budget_out_of_org ?? 0))
-                  + (($homeServicesReport->get('complete_build')['need']->budget_from_org ?? 0) +  ($homeServicesReport->get('complete_build')['done']->budget_from_org ?? 0))
-                  + (($homeServicesReport->get('complete_build')['need']->budget_out_of_org ?? 0) +  ($homeServicesReport->get('complete_build')['done']->budget_out_of_org ?? 0))
-                  )
-                }}
-              </td>
-            </tr>
-
-           </x-slot:body>
-
-         </x-table>
-      </div>
 
       </div>
     </div>

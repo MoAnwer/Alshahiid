@@ -18,6 +18,9 @@
           <h4>تقرير الاجمالي العام</h4>
         </div>
     
+        <hr>
+        
+        <x-search-form />
         
 		      <x-table>
 			     <x-slot:head>
@@ -48,12 +51,35 @@
                 <td>{{ number_format($report['budgetOurOfOrg']) }} </td>
                 <td>{{ number_format($report['totalMoney']) }} </td>
               </tr>
+
+              <caption class="text-primary">
+                 الإجمالي العام
+                 
+                 @if(request()->query('type') != 'all')
+                   {{ request()->query('type') }}
+                 @endif
+   
+                @if(request()->query('sector') == 'all' || is_null(request()->query('sector')))
+                  كل القطاعات
+                @else
+                  {{ request()->query('sector') }}
+                @endif
+
+                @if(request()->query('locality') == 'all')
+                كل المحليات
+                @else
+                  {{ request()->query('locality') }}
+                @endif
+
+               @empty(!request()->query('year'))
+                {{ 'سنة ' . request()->query('year')  . (request()->query('month') != '' ?  ' شهر ' . request()->query('month') : ' لكل الشهور     ')}}
+                @endempty
+
+
+               </caption>
             </x-slot:body>
 
           </x-table>
-          <caption>
-            <span class="text-danger">*ملاحظة :</span> قد لا تظهر التعديلات الا بعد 10 دقائق
-          </caption>
     </div>
   </div>
 

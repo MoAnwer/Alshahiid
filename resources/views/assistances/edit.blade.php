@@ -24,7 +24,7 @@
 		
         <x-alert />
 		
-        <form action="{{ route('assistances.update', ['family' => $family->id, 'id' => $assistant->id]) }}" method="POST">
+        <form action="{{ route('assistances.update', $assistant->id) }}" method="POST">
           @csrf
           @method('PUT')
           <label>نوع المساعدة</label>

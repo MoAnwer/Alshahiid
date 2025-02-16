@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Lecture;
 use App\Http\Requests\LectureRequest;
+use Illuminate\Support\Facades\DB;
 
 class LectureController extends Controller
 {
@@ -15,7 +16,38 @@ class LectureController extends Controller
      */
     public function index()
     {
-        return view('tazkiia.lectures.index', ['lectures' => Lecture::orderByDESC('id')->paginate(10)]);
+
+        $request = request();
+
+        $lectName = trim(htmlentities($request->query('name')));
+
+        $query = DB::table('lectures')
+                ->select('id','budget', 'name', 'budget_out_of_org', 'budget_from_org', 'notes', 'status',  'sector', 'date', 'locality', 'sector', 'locality');
+
+        if (!empty($lectName)) {
+            $query->where('name', 'LIKE', "%$lectName%");
+        }
+
+        if (!empty($request->query('date'))) {
+            $query->where('date', $request->query('date'));
+        }
+
+
+        if (!empty($request->query('status')) && $request->query('status') != 'all') {
+            $query->where('status', $request->query('status'));
+        } 
+
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->where('sector', $request->query('sector'));
+        }
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->where('locality', $request->query('locality'));
+        }
+
+        $lectures = $query->latest('id')->paginate(10);
+
+        return view('tazkiia.lectures.index', compact('lectures'));
     }
 
     /**

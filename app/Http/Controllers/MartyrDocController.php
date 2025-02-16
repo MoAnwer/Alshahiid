@@ -55,9 +55,14 @@ class MartyrDocController extends Controller
 
                 $data['storage_path'] = $document;
 
-                Martyr::findOrFail($martyr)->martyrDoc()->create($data);
+                $martyr = Martyr::findOrFail($martyr);
+                $martyr->martyrDoc()->create($data);
 
-                return to_route('tazkiia.martyrDocs.index', $martyr)->with('success', 'تم اضافة سيرة ذاتية بنجاح');
+                if (isset($martyr->family)) {
+                    return to_route('tazkiia.martyrDocs.index', $martyr)->with('success', 'تم اضافة سيرة ذاتية بنجاح');
+                }
+
+                return redirect(url('uploads/documents/'.$martyr->martyrDoc->storage_path))->header('content-type', 'application/pdf');
 
             } catch (Exception $e) {
                 return $e->getMessage();
@@ -90,16 +95,7 @@ class MartyrDocController extends Controller
   
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -185,10 +181,9 @@ class MartyrDocController extends Controller
         try {
             $doc = MartyrDoc::findOrFail($id);
             $martyrName = $doc->martyr->name;
-            $familyId = $doc->martyr->family->id;
             $doc->delete();
-            @unlink(public_path('uploads/documents/'.$doc->storage_path));
-            return to_route('families.show', $familyId)->with('success', 'تم حذف السيرة الشخصية للشهيد ' . $martyrName);
+            unlink(public_path('uploads/documents/'.$doc->storage_path));
+            return to_route('tazkiia.martyrsDocsList')->with('success', 'تم حذف السيرة الشخصية للشهيد ' . $martyrName);
         } catch (Exception $e) {
             return $e->getMessage();
         }

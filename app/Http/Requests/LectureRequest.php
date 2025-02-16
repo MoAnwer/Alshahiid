@@ -21,7 +21,9 @@ class LectureRequest extends FormRequest
             'budget' => 'required',
             'budget_from_org' => 'nullable|numeric',
             'budget_out_of_org' => 'nullable|numeric',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
+            'sector' => 'string',
+            'locality' => 'string'
         ];
     }
 

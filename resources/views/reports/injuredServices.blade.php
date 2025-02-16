@@ -17,6 +17,11 @@
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>تقارير مصابي العمليات</h4>
         </div>
+
+        <hr>
+        {{-- search form --}}
+        <x-search-form />
+        {{-- search form --}}
         
 		      <x-table>
 			     <x-slot:head>
@@ -393,7 +398,7 @@
               <td>الإجمالي</td>
               <td>{{ $totalNeed }}</td>
               <td>{{ $totalDone }}</td>
-              <td>%{{ $totalDone > 0  ? round(($totalDone / $totalNeed) * 100, 1) : 0 }}</td>
+              <td>%{{ $totalDone > 0 && $totalNeed > 0  ? round(($totalDone / $totalNeed) * 100, 1) : 0 }}</td>
               <td>{{ number_format($totalBudget) }}</td>
               <td>{{ number_format($totalBudgetFromOrg) }}</td>
               <td>{{ number_format($totalBudgetOutOfOrg) }}</td>

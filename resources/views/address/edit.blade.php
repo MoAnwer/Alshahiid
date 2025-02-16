@@ -28,9 +28,9 @@
           <label>القطاع :</label>
             <div class="form-group">
             <select name="sector" class="form-select">
-              <option value="القطاع الشرقي">القطاع الشرقي</option>
-              <option value="القطاع الشمالي">القطاع الشمالي</option>
-              <option value="القطاع الغربي">القطاع الغربي</option>
+              <option value="القطاع الشرقي" @selected($address->sector == 'القطاع الشرقي')>القطاع الشرقي</option>
+              <option value="القطاع الشمالي" @selected($address->sector == 'القطاع الشمالي')>القطاع الشمالي</option>
+              <option value="القطاع الغربي" @selected($address->sector == 'القطاع الغربي')>القطاع الغربي</option>
             </select>
             </div>
 
@@ -38,7 +38,7 @@
             <div class="form-group">
             <select name="locality" class="form-select">
               @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
-              <option value="{{ $locality }}">{{ $locality }}</option>
+              <option value="{{ $locality }}" @selected($locality == $address->locality)>{{ $locality }}</option>
               @endforeach
             </select>
             </div>
@@ -51,7 +51,7 @@
             <label>نوع السكن: </label>
             <div class="form-group">
               <select name="type" class="form-select">
-                <option value="{{ $address->type }}">{{ $address->type }}</option>
+                <option value="{{ $address->type }}" selected>{{ $address->type }}</option>
                 <option value="ملك">ملك</option>
                 <option value="مؤجر">مؤجر</option>
                 <option value="حكومي">حكومي</option>

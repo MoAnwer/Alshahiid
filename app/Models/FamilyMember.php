@@ -36,8 +36,22 @@ class FamilyMember extends Model
         return $this->hasMany(FamilyMemberDocument::class)->orderByDESC('id');
     }
 
-    public function hags()
-    {
+    public function hags() {
         return $this->hasMany(Hag::class)->orderByDESC('id');
     }
+
+    public static function boot() {
+
+        parent::boot();
+
+        static::deleting(function ($member) { 
+            $member->documents()->delete();
+            $member->student()->delete();
+            $member->marryAssistances()->delete();
+            $member->hags()->delete();
+            $member->medicalTreatment()->delete();
+            $member->medicalTreatment()->delete();
+        });
+    }
+
 }

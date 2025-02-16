@@ -48,10 +48,10 @@
                 <td>{{ $user->role }}</td>
                 <td>
                   <a href="{{ route('users.edit', $user->id) }}" class="btn btn-success px-2">
-                    <i class="fas fa-edit fa-sm"></i>
+                    <i class="bi bi-pen fa-sm"></i>
                   </a>
                   <a href="{{ route('users.delete', $user->id) }}" class="btn btn-danger px-2">
-                    <i class="fas fa-trash fa-sm"></i>
+                    <i class="bi bi-trash-fill" title="حذف""></i>
                   </a>
                 </td>
               </tr>

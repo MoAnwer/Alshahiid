@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return Auth::check() ? to_route('martyrs.index') : to_route('login');
+    return Auth::check() ? to_route('home') : to_route('login');
 });
 
 Route::controller(AuthController::class)->group(function() {
@@ -30,6 +30,9 @@ Route::controller(AuthController::class)->group(function() {
 
 
 Route::middleware('auth')->group(function() {
+
+
+	Route::view('home', 'home')->name('home');
 
 	Route::controller(UserController::class)->prefix('users-management')->group(function(){
 		Route::get('', 'index')->name('users.index');
@@ -54,6 +57,8 @@ Route::middleware('auth')->group(function() {
 	});
 	
 	Route::controller(FamilyController::class)->prefix('families')->group(function () {
+		Route::get('list', 'index')->name('families.list');
+		Route::get('family-members-count', 'familiesMembersCount')->name('families.index');
 		Route::get('show/{id}', 'show')->name('families.show');
 		Route::get('{martyr}/create', 'create')->name('families.create');
 		Route::post('store/{martyr}', 'store')->name('families.store');
@@ -62,10 +67,7 @@ Route::middleware('auth')->group(function() {
 		Route::get('delete/{id}', 'delete')->name('families.delete');
 		Route::delete('destroy/{id}', 'destroy')->name('families.destroy');
 		
-		
 		Route::get('{id}/social-services', 'socialServices')->name('families.socialServices');
-		Route::get('{id}/monthly-bails', 'monthlyBails')->name('families.bails');
-		
 
 		Route::get('supervisor/create/{id}', 'createSupervisor')->name('families.createSupervisor');
 		Route::post('supervisor/store/{id}', 'storeSupervisor')->name('families.storeSupervisor');
@@ -79,10 +81,11 @@ Route::middleware('auth')->group(function() {
 	
 	Route::controller(ProjectController::class)->prefix('projects')->group(function() {
 		Route::get('', 'index')->name('projects.index');
+		Route::get('{family}/list', 'family')->name('projects.family');
 		Route::get('{family}/create', 'create')->name('projects.create');
-		Route::get('{family}/edit/{project}', 'edit')->name('projects.edit');
-		Route::post('store', 'store')->name('projects.store');
-		Route::put('{family}/update/{project}', 'update')->name('projects.update');
+		Route::get('edit/{id}', 'edit')->name('projects.edit');
+		Route::post('{family}/store', 'store')->name('projects.store');
+		Route::put('update/{id}', 'update')->name('projects.update');
 		Route::get('delete/{id}', 'delete')->name('projects.delete');
 		Route::delete('destroy/{id}', 'destroy')->name('projects.destroy');
 	
@@ -92,7 +95,7 @@ Route::middleware('auth')->group(function() {
 
 	Route::controller(FamilyMemberController::class)->prefix('family-members')->group(function() {
 		Route::get('{family}/create', 'create')->middleware('check.family_size')->name('familyMembers.create');
-		Route::get('{family}/edit/{member}', 'edit')->name('familyMembers.edit');
+		Route::get('edit/{member}', 'edit')->name('familyMembers.edit');
 		Route::get('show/{member}', 'show')->name('familyMembers.show');
 		Route::post('{family}/store', 'store')->name('familyMembers.store');
 		Route::put('update/{member}', 'update')->name('familyMembers.update');
@@ -103,8 +106,26 @@ Route::middleware('auth')->group(function() {
 		Route::get('reports/family-members-count-by-category', 'familyMembersCountByCategoryReport')
 		->name('reports.familyMembersCountByCategory');
 		Route::get('reports/orphans', 'orphanReport')->name('reports.orphanReport');
+
+	});
+
+	Route::controller(WidowController::class)->prefix('widows')->group(function() {
+
+			Route::get('', 'widows')->name('widows.index');
+			
+	});
+
+	Route::controller(OrphanController::class)->prefix('orphans')->group(function() {
+
+		Route::get('', 'index')->name('orphans.index');
+		Route::get('list', 'orphansList')->name('orphans.list');
+		Route::get('hags', 'hags')->name('orphans.hags');
+		Route::get('education-report', 'education')->name('orphans.education');
+		Route::get('medical-report', 'medical')->name('orphans.medical');
+			
 	});
     
+
   Route::controller(AddressController::class)->prefix('address')->group(function() {
 		Route::get('{family}/create', 'create')->name('address.create');
 		Route::get('edit/{address}', 'edit')->name('address.edit');
@@ -117,15 +138,21 @@ Route::middleware('auth')->group(function() {
   });
 	
 	Route::controller(HomeServiceController::class)->prefix('home-services')->group(function() {
+		// Route::get('', 'index')->name('homes.index');
 		Route::get('{family}/create', 'create')->name('homes.create');
 		Route::get('edit/{home}', 'edit')->name('homes.edit');
 		Route::post('{family}/store', 'store')->name('homes.store');
 		Route::put('{family}/update/{home}', 'update')->name('homes.update');
 		Route::get('delete/{home}', 'delete')->name('homes.delete');
 		Route::delete('destroy/{home}', 'destroy')->name('homes.destroy');
+
+		Route::get('report', 'report')->name('reports.homes');
 	});
 	
 	Route::controller(MedicalTreatmentController::class)->prefix('medical-treatments')->group(function() {
+		Route::get('', 'index')->name('medicalTreatment.index');
+		Route::get('tamiin', 'tamiin')->name('medicalTreatment.tamiin');
+		Route::get('tamiin-list', 'tamiinList')->name('medicalTreatment.tamiinList');
 		Route::get('{member}/create', 'create')->name('medicalTreatment.create');
 		Route::get('edit/{id}', 'edit')->name('medicalTreatment.edit');
 		Route::post('store/{member}', 'store')->name('medicalTreatment.store');
@@ -134,10 +161,12 @@ Route::middleware('auth')->group(function() {
 		Route::delete('destroy/{id}', 'destroy')->name('medicalTreatment.destroy');
 
 		Route::get('report', 'report')->name('reports.medicalTreatment');
+		
 	});
 
 
 	Route::controller(EducationServiceController::class)->prefix('education-services')->group(function() {
+		Route::get('', 'index')->name('educationServices.index');
 		Route::get('{member}/create', 'create')->name('educationServices.create');
 		Route::get('edit/{id}', 'edit')->name('educationServices.edit');
 		Route::post('store/{member}', 'store')->name('educationServices.store');
@@ -150,6 +179,7 @@ Route::middleware('auth')->group(function() {
 	
 
 	Route::controller(StudentController::class)->prefix('students')->group(function() {
+		Route::get('', 'index')->name('students.index');
 		Route::get('show/{student}', 'show')->name('students.show');
 		Route::get('{member}/create', 'create')->name('students.create');
 		Route::get('edit/{id}', 'edit')->name('students.edit');
@@ -198,18 +228,19 @@ Route::middleware('auth')->group(function() {
 		Route::post('store', 'store')->name('supervisors.store');
 		Route::put('update/{id}', 'update')->name('supervisors.update');
 		Route::get('delete/{id}', 'delete')->name('supervisors.delete');
-		Route::delete('destory/{id}', 'destory')->name('supervisors.destory');
+		Route::delete('destroy/{id}', 'destroy')->name('supervisors.destroy');
 
 		Route::get('supervisor/{id}/families', 'families')->name('supervisors.families');
 
 	});
 
 	Route::controller(AssistancesController::class)->prefix('assistances')->group(function() {
-		Route::get('{family}', 'index')->name('assistances.index');
+		Route::get('', 'index')->name('assistances.index');
+		Route::get('{family}/list', 'family')->name('assistances.family');
 		Route::get('{family}/create', 'create')->name('assistances.create');
 		Route::post('{family}/store', 'store')->name('assistances.store');
 		Route::get('{family}/edit/{id}', 'edit')->name('assistances.edit');
-		Route::put('{family}/update/{id}', 'update')->name('assistances.update');
+		Route::put('update/{id}', 'update')->name('assistances.update');
 		Route::get('delete/{id}', 'delete')->name('assistances.delete');
 		Route::delete('destroy/{id}', 'destroy')->name('assistances.destroy');
 	
@@ -220,6 +251,8 @@ Route::middleware('auth')->group(function() {
 
 
 	Route::controller(BailController::class)->prefix('bails')->group(function () {
+		Route::get('index', 'index')->name('bails.index');
+		Route::get('{family}/monthly-bails', 'show')->name('families.bails');
 		Route::get('{family}/create', 'create')->name('bails.create');
 		Route::get('edit/{id}', 'edit')->name('bails.edit');
 		Route::put('update/{id}', 'update')->name('bails.update');
@@ -358,12 +391,17 @@ Route::middleware('auth')->group(function() {
 		Route::put('update', 'update')->name('profile.update');
 	});
 	
+
+	Route::controller(CourseController::class)->prefix('courses')->group(function () {
+		Route::get('', 'index')->name('courses.index');
+	});
 	
 	Route::controller(SettingController::class)->prefix('settings')->group(function () {
-		Route::get('', 'settingPage')->name('settings.index');
-		Route::post('backup', 'backup')->name('settings.backup');
-		Route::get('/backup/download', 'downloadBackup')->name('settings.downloadBackup');
+		Route::get('', 'settingPage')->name('settings.index')->can('isModerate');
+		Route::post('backup', 'backup')->name('settings.backup')->can('isModerate');
+		Route::get('/backup/download', 'downloadBackup')->name('settings.downloadBackup')->can('isModerate');
 	});
-	Route::post('/backup/restore', 'SettingController@importBackup')->name('backup.restore');
+	
+	Route::post('/backup/restore', 'SettingController@importBackup')->name('backup.restore')->can('isModerate');
 	
 });

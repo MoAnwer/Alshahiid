@@ -12,6 +12,169 @@ use Illuminate\Support\Facades\DB;
 class MedicalTreatmentController extends Controller
 {
 
+    public function index()
+    {
+        $request = request();
+
+        $needel  = $request->query('needel');
+
+        $query = DB::table('family_members')
+                ->join('families', 'families.id', 'family_members.family_id')
+                ->join('medical_treatments', 'medical_treatments.family_member_id', 'family_members.id')
+                ->leftJoin('addresses', 'addresses.family_id', 'family_members.family_id')
+                ->leftJoin('martyrs', 'martyrs.id', '=', 'families.martyr_id')
+                ->select(
+                    'family_members.name as name',
+                    'family_members.gender as gender',
+                    'family_members.relation as relation',
+                    'family_members.health_insurance_number as health_insurance_number',
+                    'addresses.sector as sector',
+                    'addresses.locality as locality',
+                    'families.martyr_id',
+                    'families.id',
+                    'medical_treatments.id as medicalTreatment_id',
+                    'medical_treatments.type as type',
+                    'medical_treatments.status as status',
+                    'medical_treatments.budget as budget',
+                    'medical_treatments.budget_from_org as budget_from_org',
+                    'medical_treatments.budget_out_of_org as budget_out_of_org',
+                    'medical_treatments.created_at as created_at',
+                    'martyrs.name as martyr_name',
+                    'martyrs.force as force',
+                );
+
+        if ($request->query('search') == 'martyr_name') {
+            $query->where('martyrs.name',  'LIKE', "%{$needel}%");
+        }
+
+        if ($request->query('search') == 'force') {
+            $query->where('martyrs.force',  'LIKE', "%{$needel}%");
+        }
+
+        if ($request->query('search') == 'name') {
+            $query->where('family_members.name',  'LIKE', "%{$needel}%");
+        }
+
+        if (!empty($request->query('relation')) && $request->query('relation') != 'all') {
+            $query->where('family_members.relation', $request->query('relation'));
+        } 
+
+        if(!empty($request->query('gender')) && $request->query('gender') != 'all') {
+            $query->where('family_members.gender', $request->query('gender'));
+        }
+
+        if (!empty($request->query('type')) && $request->query('type') != 'all') {
+            $query->where('medical_treatments.type', $request->query('type'));
+        } 
+
+        if (!empty($request->query('status')) && $request->query('status') != 'all') {
+            $query->where('medical_treatments.status', $request->query('status'));
+        } 
+
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->where('addresses.sector', $request->query('sector'));
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->where('addresses.locality', $request->query('locality'));
+        } 
+
+        if (!empty($request->query('year')) && $request->query('year') != 'all') {
+            $query->whereYear('medical_treatments.created_at', $request->query('year'));
+        } 
+
+        if (!empty($request->query('month')) && $request->query('month') != 'all') {
+            $query->whereMonth('medical_treatments.created_at', $request->query('month'));
+        } 
+
+        $medicalTreatments = $query->latest('medical_treatments.id')->paginate(10);
+
+        return view('medicalTreatments.index', compact('medicalTreatments'));
+    }
+
+    public function tamiinList()
+    {
+        $request = request();
+
+        $needel  = $request->query('needel');
+
+        $query = DB::table('family_members')
+                ->join('families', 'families.id', 'family_members.family_id')
+                ->leftJoin('addresses', 'addresses.family_id', 'family_members.family_id')
+                ->leftJoin('martyrs', 'martyrs.id', '=', 'families.martyr_id')
+                ->select(
+                    'family_members.name as name',
+                    'family_members.gender as gender',
+                    'family_members.relation as relation',
+                    'family_members.health_insurance_number as health_insurance_number',
+                    'family_members.health_insurance_start_date as health_insurance_start_date',
+                    'family_members.health_insurance_end_date as health_insurance_end_date',
+                    'addresses.sector as sector',
+                    'addresses.locality as locality',
+                    'families.martyr_id',
+                    'family_members.id as member_id',
+                    'family_members.created_at as created_at',
+                    'martyrs.name as martyr_name',
+                    'martyrs.force as force',
+                );
+
+
+
+        if ($request->query('search') == 'martyr_name') {
+            $query->where('martyrs.name',  'LIKE', "%{$needel}%");
+        }
+        if ($request->query('search') == 'force') {
+            $query->where('martyrs.force',  'LIKE', "%{$needel}%");
+        }
+
+        if ($request->query('search') == 'name') {
+            $query->where('family_members.name',  'LIKE', "%{$needel}%");
+        }
+
+        
+        if (!empty($request->query('hasTamiin')) && $request->query('hasTamiin') != 'all') {
+            
+            if ($request->query('hasTamiin') == 'yes') {
+
+                $query->where('family_members.health_insurance_number', '!=', null)->where('health_insurance_end_date', '>', now()); // 2030-01-01 > 2025-02-11
+
+            } else if ($request->query('hasTamiin') == 'no') {
+
+                $query->where('family_members.health_insurance_number', null)->orWhere('health_insurance_end_date', '<', now()); // 2025-01-01 < 2025-02-11
+            }
+        }
+        
+        if (!empty($request->query('gender')) && $request->query('gender') != 'all') {
+            $query->where('family_members.gender', $request->query('gender'));
+        } 
+
+        if (!empty($request->query('relation')) && $request->query('relation') != 'all') {
+            $query->where('family_members.relation', $request->query('relation'));
+        }
+
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->where('addresses.sector', $request->query('sector'));
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->where('addresses.locality', $request->query('locality'));
+        } 
+
+        if (!empty($request->query('year')) && $request->query('year') != 'all') {
+            $query->whereYear('family_members.created_at', $request->query('year'));
+        } 
+
+        if (!empty($request->query('month')) && $request->query('month') != 'all') {
+            $query->whereMonth('family_members.created_at', $request->query('month'));
+        } 
+
+        
+        $medicalTreatments = $query->latest('family_members.id')->paginate(10);
+
+        return view('medicalTreatments.tamiinList', compact('medicalTreatments'));
+
+    }
+
     public function create(int $member)
     {
 		try {
@@ -72,7 +235,7 @@ class MedicalTreatmentController extends Controller
 
     public function update(Request $request, $id)
     {
-		//dd($request->all());
+
         $data = $request->validate([
             'type'      		=> "required|in:التأمين الصحي,علاج خارج المظلة,علاج بالخارج",
             'status'            => 'required|in:مطلوب,منفذ',
@@ -87,7 +250,11 @@ class MedicalTreatmentController extends Controller
 		
 		try {
 			
-			MedicalTreatment::where('id', $id)->update($data);			
+			$medical = MedicalTreatment::findOrFail($id);
+            $medical->update($data);
+
+            
+            
 			return back()->with('success', 'تم اضافة الخدمة العلاجية بنجاح');
 			
 		} catch (PDOException $e) {
@@ -119,64 +286,142 @@ class MedicalTreatmentController extends Controller
 		}
     }
 
-    public function report()
-    {
 
-        $request    = request();
+    /**
+     * التأمين الصحي دا التقرير بتاعو
+     */
 
+    public function tamiin() {
 
-        $report = collect(DB::select('
-                                SELECT 
-                                    SUM(m.budget) as totalBudget,
-                                    m.status, 
-                                    COUNT(m.status) as count, 
-                                    m.type,
-                                    SUM(m.budget_from_org)  as budget_from_org,
-                                    SUM(m.budget_out_of_org) as budget_out_of_org,
-                                    addresses.sector,
-                                    addresses.locality
-                                FROM
-                                    family_members
-                                INNER JOIN
-                                    medical_treatments m
-                                ON
-                                    m.family_member_id = family_members.id
+        $request = request();
+        
 
-                                INNER JOIN
-                                    families
-                                ON
-                                    families.id = family_members.family_id
-                                INNER JOIN
-                                    addresses
-                                ON
-                                    addresses.family_id = families.id
+        $hasTamiin = DB::table('family_members')
+                    ->join('families', 'family_members.family_id', 'families.id')
+                    ->join('martyrs', 'families.martyr_id', 'martyrs.id')
+                    ->join('addresses', 'addresses.family_id', 'family_members.family_id')
+                    ->selectRaw('COUNT(family_members.id) as count')
+                    ->where('family_members.health_insurance_number', '!=', null) 
+                    ->where('health_insurance_end_date', '>', now()); // 2030-01-01 > 2025-02-11
+        
+        $hasNoTamiin = DB::table('family_members')
+                       ->join('families', 'family_members.family_id', 'families.id')
+                       ->join('martyrs', 'families.martyr_id', 'martyrs.id')
+                       ->join('addresses', 'addresses.family_id', 'family_members.family_id')
+                       ->selectRaw('COUNT(family_members.id) as count')
+                       ->where('family_members.health_insurance_number', '=', null);
 
-                                WHERE addresses.sector = ? AND addresses.locality = ?
+        
+        if (!empty($request->query('force')) && $request->query('force') != 'all') {
+            $hasTamiin->selectRaw('martyrs.force')->where('martyrs.force', $request->query('force'))
+            ->groupBy(['martyrs.force']);
 
-                                GROUP BY
-                                    m.type, m.status, addresses.sector,addresses.locality
+            $hasNoTamiin->selectRaw('martyrs.force')->where('martyrs.force', $request->query('force'))
+            ->groupBy(['martyrs.force']);
+        } 
 
-        ', [$request->query('sector') ?? 'القاش', $request->query('locality') ?? 'كسلا']));
+        if (!empty($request->query('gender')) && $request->query('gender') != 'all') {
 
-         $report = $report->groupBy('type');
+            $hasTamiin->selectRaw('family_members.gender as gender')->where('gender', $request->query('gender'))
+            ->groupBy(['martyrs.force', 'family_members.gender']);
 
+            $hasNoTamiin->selectRaw('family_members.gender as gender')->where('gender', $request->query('gender'))
+            ->groupBy(['martyrs.force', 'family_members.gender']);
+        } 
+ 
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+
+            $hasTamiin->where('sector', $request->query('sector'))
+            ->groupBy(['martyrs.force', 'family_members.gender', 'addresses.sector']);
+
+            $hasNoTamiin->where('sector', $request->query('sector'))->groupBy(['martyrs.force', 'family_members.gender', 'addresses.sector']);
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+
+            $hasTamiin->where('locality', $request->query('locality'))->groupBy(['martyrs.force', 'family_members.gender',  'addresses.sector', 'addresses.locality']);
+
+            $hasNoTamiin->where('locality', $request->query('locality'))->groupBy(['martyrs.force', 'family_members.gender',  'addresses.sector', 'addresses.locality']);
+        } 
+
+        // $hasNoTamiin = $hasNoTamiin->get();
+
+        // dd($hasTamiin->get());
 
         $report = collect([
+            'has'       => @$hasTamiin->get()[0]->count ?? 0,
+            'no'        => @$hasNoTamiin->get()[0]->count ?? 0,
+            'total'     => @$hasTamiin->get()[0]->count  + @$hasNoTamiin->get()[0]->count
+        ]);
+
+        return view('MedicalTreatments.tamiin', compact('report'));
+
+    }
+
+
+
+    public function report()
+    {
+        $request    = request();
+        
+        $query = DB::table('family_members')
+                ->join('families', 'family_members.family_id', 'families.id')
+                ->join('martyrs', 'families.martyr_id', 'martyrs.id')
+                ->join('medical_treatments', 'medical_treatments.family_member_id', 'family_members.id')
+                ->leftJoin('addresses', 'addresses.family_id', 'family_members.family_id')
+                ->selectRaw('
+                    medical_treatments.status as status,
+                    medical_treatments.type as type,
+                    SUM(medical_treatments.budget) as totalBudget,  
+                    SUM(medical_treatments.budget_from_org) as budget_from_org,
+                    SUM(medical_treatments.budget_out_of_org)  as budget_out_of_org,                   
+                    SUM(medical_treatments.budget_out_of_org + medical_treatments.budget_from_org)  as totalMoney,
+                    COUNT(medical_treatments.id) as count
+                ', 
+                )->groupBy(['medical_treatments.type', 'medical_treatments.status']);
+
+        if (!empty($request->query('force')) && $request->query('force') != 'all') {
+            $query->selectRaw('martyrs.force')->where('martyrs.force', $request->query('force'))
+            ->groupBy(['martyrs.force', 'medical_treatments.status', 'medical_treatments.type']);
+        } 
+
+
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->selectRaw('addresses.sector as sector')->where('addresses.sector', $request->query('sector'))
+            ->groupBy(['addresses.sector', 'medical_treatments.status', 'medical_treatments.type']);
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->selectRaw('addresses.locality as locality')->where('addresses.locality', $request->query('locality'))
+            ->groupBy(['addresses.sector', 'addresses.locality', 'medical_treatments.status', 'medical_treatments.type']);
+        } 
+
+        if (!is_null($request->query('month')) && $request->query('month') != '') {
+            $query->selectRaw('MONTH(medical_treatments.created_at) as month')->whereMonth('medical_treatments.created_at',  $request->query('month'))->groupBy('month');
+        } 
+
+        if (!is_null($request->query('year')) && $request->query('year') != '') {
+            $query->selectRaw('YEAR(medical_treatments.created_at) as year')->whereYear('medical_treatments.created_at',  $request->query('year'))->groupBy('year');
+        } 
+
+        $report = $query->get()->groupBy(['type', 'status']);
+
+        
+        $report = collect([
             'tamiin'            =>    [
-                'need'   => $report->has('التأمين الصحي') ? $report->get('التأمين الصحي')->groupBy('status')->get('مطلوب') : null,
-                'done'   => $report->has('التأمين الصحي') ? $report->get('التأمين الصحي')->groupBy('status')->get('منفذ') : null
+                'need'   => $report->has('التأمين الصحي') ? $report->get('التأمين الصحي')->get('مطلوب') : null,
+                'done'   => $report->has('التأمين الصحي') ? $report->get('التأمين الصحي')->get('منفذ') : null
             ],
             'outTeatments'      =>  [
-                'need'   => $report->has('علاج بالخارج') ? $report->get('علاج بالخارج')->groupBy('status')->get('مطلوب') : null,
-                'done'   => $report->get('علاج بالخارج') ? $report->get('علاج بالخارج')->groupBy('status')->get('منفذ') : null
+                'need'   => $report->has('علاج بالخارج') ? $report->get('علاج بالخارج')->get('مطلوب') : null,
+                'done'   => $report->get('علاج بالخارج') ? $report->get('علاج بالخارج')->get('منفذ') : null
             ],
             'teatmentsOutOfOrg'  => [
-                'need'   => $report->has('علاج خارج المظلة') ? $report->get('علاج خارج المظلة')->groupBy('status')->get('مطلوب') : null,
-                'done'   => $report->has('علاج خارج المظلة') ? $report->get('علاج خارج المظلة')->groupBy('status')->get('منفذ') : null
+                'need'   => $report->has('علاج خارج المظلة') ? $report->get('علاج خارج المظلة')->get('مطلوب') : null,
+                'done'   => $report->has('علاج خارج المظلة') ? $report->get('علاج خارج المظلة')->get('منفذ') : null
             ]
         ]);
 
-         //dd($report);
 
         return view('reports.medicalTreatments', compact('report'));
     }

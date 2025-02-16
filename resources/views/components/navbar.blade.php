@@ -1,5 +1,5 @@
 <!-- Topbar -->
-<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top" style="box-shadow: 0 0 10px #ddd">
 
     <!-- Sidebar Toggle (Topbar) -->
     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -17,7 +17,7 @@
         <li class="nav-item dropdown no-arrow" dir="ltr">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" dir="rtl">
-                <span class="ml-2 d-none d-lg-inline text-gray-600 small">
+                <span class="ml-2 d-none d-lg-inline text-gray-600" style="font-size:13px !important">
                     مرحباً  ,{{ auth()->user()->username }}
                 </span>
                 <img class="img-profile rounded-circle"
@@ -30,10 +30,12 @@
                     الملف الشخصي
                     <i class="bi bi-person-circle mx-2 text-gray-400"></i>
                 </a>
+                   @can('isModerate')
                     <a class="dropdown-item pr-0 py-2" href="{{ route('settings.index') }}">
                         الاعدادات
                         <i class="bi bi-gear-fill mx-2 text-gray-400"></i>
                     </a>
+                   @endif
                     <a class="dropdown-item pr-0 py-2" href="{{ route('logout') }}">
                         خروج
                     <i class="bi bi-door-open-fill mx-2 text-gray-400"></i>

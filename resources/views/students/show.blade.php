@@ -1,4 +1,4 @@
-@include('components.header', ['page_title' => 'بيانات ' . $student->familyMember->name])
+@include('components.header', ['page_title' => 'ملف '. $student->familyMember->name ])
 
  <div id="wrapper">
 
@@ -19,10 +19,16 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb breadcrumb-style">
             <li class="breadcrumb-item">
+              <a href="{{ route('home') }}">الرئيسية</a>
+              /               
+            </li>
+            <li class="breadcrumb-item mx-1">
+              <a href="{{ route('families.list') }}">قائمة اسر الشهداء</a>
+            </li>
+            <li class="breadcrumb-item ">
               <a href="{{ route('families.show', $student->familyMember->family->id) }}"> اسرة الشهيد {{ $student->familyMember->family->martyr->name}} </a>
             </li>
             <li class="breadcrumb-item">
-              /
               <a href="{{ route('familyMembers.show', $student->familyMember->id) }}"> {{ $student->familyMember->name }}  </a>
             </li>
             <li  class="breadcrumb-item active">ملف {{ $student->familyMember->name }} التعليمي</li>
@@ -35,6 +41,40 @@
           <h4>ملف {{ $student->familyMember->name }} التعليمي </h4>
         </div>
        <hr>
+
+       
+       <x-table>
+        <x-slot:head>
+            <th>#</th>
+            <th>المرحلة التعليمية</th>
+            <th>الصف</th>
+            <th>المدرسة</th>
+            <th>عمليات</th>
+        </x-slot:head>
+
+      <x-slot:body>
+      @empty(!$student)
+        <tr>
+          <td>{{ $student->id }}</td>
+          <td>{{ $student->stage }}</td>
+          <td>{{ $student->class }}</td>
+          <td>{{ $student->school_name }}</td>
+          <td>
+              <a href="{{ route('students.edit', $student->id)}}" class="btn btn-success p-2 fs-sm">
+                <i class="bi bi-pen" title="تعديل"></i>
+              </a>
+              <a href="{{ route('students.delete', $student->id)}}" class="btn btn-danger p-2 fs-sm">
+                <i class="bi bi-trash-fill" title="حذف"></i>
+              </a>
+            </td>
+        </tr>
+        @endempty
+        </x-slot:body>
+      </x-table>
+
+
+        <hr>
+
 		    <div class="d-flex justify-content-between align-items-center px-3">
             <h5>الاعانات التعليمية</h5>
             <a class="btn btn-primary active" href="{{ route('educationServices.create', $student->id) }}">اضافة خدمة جديدة</a>
@@ -53,22 +93,22 @@
           </x-slot:head>
 
         <x-slot:body>
-		      @if($student->educationServices->count() > 0)
-			     @foreach($student->educationServices as $service)
+		      @if($student->educationServices->isNotEmpty())
+			     @foreach($student->loadMissing('educationServices')->educationServices as $service)
               <tr>
 			          <td>{{ $service->id }}</td>
                 <td>{{ $service->type }}</td>
                 <td>{{ $service->status }}</td>
 				        <td>{{ number_format($service->budget ?? 0) }}</td>
                 <td>{{ number_format($service->budget_from_org ?? 0) }}</td>
-                <td>{{ number_format( $service->budget_out_of_org ?? 0) }}</td>
+                <td>{{ number_format($service->budget_out_of_org ?? 0) }}</td>
                 <td>{{ $service->notes }}</td>
 				        <td>
                     <a href="{{ route('educationServices.edit', $service->id)}}" class="btn btn-success p-2 fs-sm">
-                      <i class="fa fa-edit"></i>
+                      <i class="bi bi-pen" title="تعديل"></i>
                     </a>
                     <a href="{{ route('educationServices.delete', $service->id)}}" class="btn btn-danger p-2 fs-sm">
-                      <i class="fa fa-trash"></i>
+                      <i class="bi bi-trash-fill" title="حذف"></i>
                     </a>
                   </td>
               </tr>
@@ -79,7 +119,6 @@
           </x-slot:body>
         </x-table>
 
-		
         </div>
       </div>
     </div>

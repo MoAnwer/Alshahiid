@@ -27,7 +27,7 @@
           @csrf
           <label>القطاع :</label>
             <div class="form-group">
-              <select name="sector" class="form-select">
+              <select name="sector" class="form-select custom-select-sm">
               <option value="القطاع الشرقي">القطاع الشرقي</option>
               <option value="القطاع الشمالي">القطاع الشمالي</option>
               <option value="القطاع الغربي">القطاع الغربي</option>

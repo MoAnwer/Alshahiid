@@ -13,7 +13,7 @@
       @include('components.navbar')
       
       <div class="container-fluid mt-4">
-        <h4>إضافة فرد جديد الى اسرة الشهيد{{ $family->martyr->name }} </h4>
+        <h4>إضافة فرد جديد الى اسرة الشهيد  {{ $family->martyr->name }} </h4>
         <hr />
         
         @if($errors->any())
@@ -37,30 +37,30 @@
             
             <div class="form-group">
               <select name="gender" class="form-select">
-                <option value="ذكر">ذكر</option>
-                <option value="أنثى">أنثى</option>
+                <option value="ذكر"  @selected(old('gender') == 'ذكر')>ذكر</option>
+                <option value="أنثى" @selected(old('gender') == 'أنثى')>أنثى</option>
               </select>
             </div>
 
             <div class="form-group">
               <select name="relation" class="form-select">
-                <option value="ابن">ابن</option>
-                <option value="ابنة">ابنة</option>
-                <option value="اخ">اخ</option>
-                <option value="اخت">اخت</option>
-                <option value="اب">اب</option>
-                <option value="ام">ام</option>
-                <option value="زوجة">زوجة</option>
+                <option value="ابن" @selected(old('relation') == 'ابن')>ابن</option>
+                <option value="ابنة" @selected(old('relation') == 'ابنة')>ابنة</option>
+                <option value="اخ" @selected(old('relation') == 'اخ')>اخ</option>
+                <option value="اخت" @selected(old('relation') == 'اخت')>اخت</option>
+                <option value="اب" @selected(old('relation') == 'اب')>اب</option>
+                <option value="ام" @selected(old('relation') == 'ام')>ام</option>
+                <option value="زوجة" @selected(old('relation') == 'زوجة')>زوجة</option>
               </select>
             </div>
 
             <div class="form-group">
             <span class="text-danger fs-5">*</span>
-              <input name="national_number" type="number" class="p-4 form-control" placeholder="الرقم الوطني" value="{{ old("national_number") }}"/>
+              <input name="national_number" type="number" class="p-4 form-control" placeholder="الرقم الوطني" value="{{ old("national_number") }}"  maxlength="20"/>
             </div>
 
             <div class="form-group">
-              <input name="phone_number" type="text" class="p-4 form-control" placeholder="رقم الهاتف" value="{{ old('phone_number') }}"/>
+              <input name="phone_number" type="text" class="p-4 form-control" placeholder="رقم الهاتف" value="{{ old('phone_number') }}"  maxlength="15"/>
             </div>
 
             <label>تاريخ الميلاد <span class="text-danger fs-5">*</span></label>
@@ -83,8 +83,6 @@
               <input name="health_insurance_end_date" type="date" class="p-4 form-control" value="{{ old('health_insurance_end_date') }}"/>
             </div>
 
-            <input name="family_id" type="hidden" value="{{ $family->id }}"/>
-
             <label>الصورة الشخصية</label>
             <div class="for-group">
               <input type="file" name="personal_image"  class="form-control"/>
@@ -99,7 +97,7 @@
       </div>
       
     </div>
-
   </div>
+
 
   @include('components.footer')

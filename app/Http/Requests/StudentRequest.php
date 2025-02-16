@@ -15,14 +15,18 @@ class StudentRequest extends FormRequest
     public function rules()
     {
         return [
-            'stage'     => 'required',
+            'stage'     => 'required|string',
+            'class'     => 'required|string',
+            'school_name'     => 'required|string',
         ];
     }
 
     public function messages()
     {
         return [
-            'stage' => 'المرحلة الدراسية مطلوبة'
+            'stage' => 'المرحلة الدراسية مطلوبة',
+            'class' => 'الصف مطلوب',
+            'school_name' => 'اسمة المدرسة مطلوب'
         ];
     }
 }

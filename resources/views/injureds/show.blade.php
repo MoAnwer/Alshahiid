@@ -1,4 +1,4 @@
-@include('components.header', ['page_title' => 'ملف مصاب'])
+@include('components.header', ['page_title' => 'ملف مصاب ' . $injured->name])
 
  <div id="wrapper">
 
@@ -29,27 +29,29 @@
             <th>نوع الاصابة</th>
             <th>نسبة الاصابة</th>
             <th>تاريخ الاصابة</th>
+            <th>السكن</th>
             <th>ملاحظات</th>
             <th>عمليات</th>
           </x-slot:head>
 
         <x-slot:body>
-              <tr>
-				<td>{{ $injured->id}} </td>
-				<td>{{ $injured->name }}</td>
-				<td>{{ $injured->type }}</td>
-				<td>{{ $injured->injured_percentage }}</td>
-				<td>{{ $injured->injured_date }}</td>
-				<td>{{ $injured->notes }}</td>
-                <td>
-                    <a href="{{ route('injureds.edit', $injured->id) }}" class="btn btn-success">
-                      <i class="fa fa-edit"></i>
-                    </a>
-                    <a href="{{ route('injureds.delete', $injured->id) }}" class="btn btn-danger">
-                      <i class="fa fa-trash"></i>
-                    </a>
-                  </td>
-              </tr>
+        <tr>
+				  <td>{{ $injured->id}} </td>
+				  <td>{{ $injured->name }}</td>
+				  <td>{{ $injured->type }}</td>
+				  <td>{{ $injured->injured_percentage }}</td>
+				  <td>{{ $injured->injured_date }}</td>
+          <td>{{ $injured->sector . ' - ' . $injured->locality }}</td>
+          <td>{{ $injured->notes }}</td>
+          <td>
+              <a href="{{ route('injureds.edit', $injured->id) }}" class="btn btn-success">
+                <i class="bi bi-pen" title="تعديل"></i>
+              </a>
+              <a href="{{ route('injureds.delete', $injured->id) }}" class="btn btn-danger">
+                <i class="bi bi-trash-fill" title="حذف"></i>
+              </a>
+            </td>
+        </tr>
           </x-slot:body>
         </x-table>
 		
@@ -68,14 +70,14 @@
             <th>الوصف</th>
             <th>التقديري</th>
             <th>من داخل المنظمة</th>
-			<th>من خارج المنظمة</th>
+			      <th>من خارج المنظمة</th>
+            <th>تاريخ</th>
             <th>ملاحظات</th>
             <th>عمليات</th>
           </x-slot:head>
 
         <x-slot:body>
-		@if($injured->injuredServices->isNotEmpty())
-			@foreach($injured->loadMissing('injuredServices')->injuredServices as $injuredService)
+			@forelse($injured->injuredServices as $injuredService)
 			<tr>
 				<td>{{ $injuredService->id}} </td>
 				<td>{{ $injuredService->type }}</td>
@@ -84,25 +86,24 @@
 				<td>{{ number_format($injuredService->budget) }}</td>
 				<td>{{ number_format($injuredService->budget_from_org )}}</td>
 				<td>{{ number_format($injuredService->budget_out_of_org) }}</td>
+				<td>{{ date('Y-m-d', strtotime($injuredService->created_at)) }}</td>
 				<td>{{ $injuredService->notes }}</td>
 				<td>
 					<a href="{{ route('injuredServices.edit', $injuredService->id) }}" class="btn btn-success">
-						<i class="fa fa-edit"></i>
+						<i class="bi bi-pen" title="تعديل"></i>
 					</a>
 					<a href="{{ route('injuredServices.delete', $injuredService->id) }}" class="btn btn-danger">
-						<i class="fa fa-trash"></i>
+						<i class="bi bi-trash-fill" title="حذف"></i>
 					</a>
 				</td>
 			</tr>
-			@endforeach
-		@else
-			<tr>
-				<td colspan="9">لا توجد خدمات</td>
-			</tr>
-		@endif
+		    @empty
+			  <tr>
+				  <td colspan="10">لا توجد خدمات</td>
+			  </tr>
+		      @endforelse
           </x-slot:body>
         </x-table>
-
         </div>
       </div>
     </div>

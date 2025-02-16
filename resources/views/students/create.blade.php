@@ -33,6 +33,10 @@
                 <option value="{{ $stage }}">{{ $stage }}</option>
 			         @endforeach
               </select>
+              <label>الصف   <span class="text-danger fs-5">*</span></label>
+              <input type="text" name="class" class="form-control py-4 mt-3" />
+              <label>اسم المدرسة   <span class="text-danger fs-5">*</span></label>
+              <input type="text" name="school_name" class="form-control py-4 mb-3" />
             </div>
 
             <button type="submit" class="btn btn-success py-2 mt-3">

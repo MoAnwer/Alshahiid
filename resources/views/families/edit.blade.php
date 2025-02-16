@@ -32,7 +32,7 @@
 		  <div class="form-group">
 				<select class="form-select" name="category">
           @foreach(['أرملة و ابناء','أب و أم و أخوان و أخوات','أخوات','مكتفية'] as $category)
-            <option value="{{ $category }}">{{ $category }}</option>
+            <option value="{{ $category }}" @selected($family->category == $category)>{{ $category }}</option>
           @endforeach
 				</select>
 		  </div>

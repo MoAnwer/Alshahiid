@@ -1,7 +1,7 @@
 <ul class="navbar-nav p-0 bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('martyrs.index') }}">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home')  }}">
         <div class="sidebar-brand-icon bg-light p-1" style="border-radius: 50%;">
             <img src="{{ asset('asset/images/logo.jpg')  }}" style="border-radius: 25%;" alt="logo" width="27">
         </div>
@@ -32,7 +32,7 @@
 		</a>
         </a>
     </li>
-
+    
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#taskiia"
             aria-expanded="true" aria-controls="taskiia">
@@ -47,8 +47,22 @@
                 <a class="collapse-item" href="{{ route('tazkiia.sessions.index') }}">حلقات</a>
                 <a class="collapse-item" href="{{ route('tazkiia.martyrsDocsList') }}">توثيق سير الشهداء</a>
                 <a class="collapse-item" href="{{ route('tazkiia.hagsMembersList') }}">حج و عمرة</a>
-                <a class="collapse-item" href="{{ route('tazkiia.report') }}">تواصل مع اسر الشهداء</a>
+                <a class="collapse-item" href="{{ route('tazkiia.communicate.index') }}">تواصل مع اسر الشهداء</a>
                 <a class="collapse-item" href="{{ route('tazkiia.report') }}">التقارير</a>
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#orphans"
+            aria-expanded="true" aria-controls="orphans">
+            <i class="bi bi-person-fill text-danger ml-2"></i>
+            <span>الارامل و الايتام</span>
+        </a>
+        <div id="orphans" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('widows.index') }}">الارامل</a>
+                <a class="collapse-item" href="{{ route('orphans.index') }}">الايتام</a>
             </div>
         </div>
     </li>
@@ -90,6 +104,20 @@
             <span>تقارير المساعدات</span>
 		</a>
         </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#medicalTreatment"
+            aria-expanded="true" aria-controls="medicalTreatment">
+            <i class="bi bi-newspaper ml-2"></i>
+            <span>العلاج الطبي</span>
+        </a>
+        <div id="medicalTreatment" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{{ route('reports.medicalTreatment') }}">العلاج الطبي</a>
+                <a class="collapse-item" href="{{ route('medicalTreatment.tamiin') }}">التأمين الصحي</a>
+            </div>
+        </div>
     </li>
 
 
@@ -151,14 +179,19 @@
 		</div>
 	</li>
 
-
-	<li class="nav-item mb-0">
-        <a class="nav-link pb-2" href="{{ route('reports.address') }}">
-            <i class="bi bi-newspaper ml-2"></i>
-            <span>السكن</span>
+	<li class="nav-item">
+		<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#addresses"
+			aria-expanded="true" aria-controls="addresses">
+			<i class="bi bi-people ml-2"></i>
+			<span>السكن</span>
 		</a>
-        </a>
-    </li>
+		<div id="addresses" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+			<div class="bg-white py-2 collapse-inner rounded">
+				<a class="collapse-item" href="{{ route('reports.address') }}">السكن</a>
+				<a class="collapse-item" href="{{ route('reports.homes') }}">مشاريع السكن</a>
+			</div>
+		</div>
+	</li>
 
 	<li class="nav-item mb-0">
         <a class="nav-link pb-2" href="{{ route('reports.students') }}">
@@ -168,19 +201,11 @@
         </a>
     </li>
 
-	<li class="nav-item mb-0">
+	<li class="nav-item mb-2">
         <a class="nav-link pb-2" href="{{ route('reports.educationServices') }}">
             <i class="bi bi-newspaper ml-2"></i>
             <span>التعليم</span>
 		</a>
-        </a>
-    </li>
-
-	<li class="nav-item mb-2">
-        	<a class="nav-link pb-2" href="{{ route('reports.medicalTreatment') }}">
-            	<i class="bi bi-newspaper ml-2"></i>
-            	<span>العلاج الطبي</span>
-			</a>
         </a>
     </li>
     
@@ -196,7 +221,7 @@
     </li>
     <li class="nav-item mb-0">
     	<a class="nav-link pb-2" href="{{ route('settings.index') }}">
-        	<i class="bi bi-gear text-light ml-2"></i>
+        	<i class="bi bi-menu-button-wide text-success ml-2"></i>
         	<span>الاعدادات</span>
 	    </a>
     </li>

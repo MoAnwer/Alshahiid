@@ -5416,33 +5416,6 @@
   content: "\f644";
 }
 
-.bi-headset-vr::before {
-  content: "\f645";
-}
-
-.bi-info-lg::before {
-  content: "\f646";
-}
-
-.bi-mastodon::before {
-  content: "\f647";
-}
-
-.bi-messenger::before {
-  content: "\f648";
-}
-
-.bi-piggy-bank-fill::before {
-  content: "\f649";
-}
-
-.bi-piggy-bank::before {
-  content: "\f64a";
-}
-
-.bi-pin-map-fill::before {
-  content: "\f64b";
-}
 
 .bi-pin-map::before {
   content: "\f64c";
@@ -5450,50 +5423,6 @@
 
 .bi-plus-lg::before {
   content: "\f64d";
-}
-
-.bi-question-lg::before {
-  content: "\f64e";
-}
-
-.bi-recycle::before {
-  content: "\f64f";
-}
-
-.bi-reddit::before {
-  content: "\f650";
-}
-
-.bi-safe-fill::before {
-  content: "\f651";
-}
-
-.bi-safe2-fill::before {
-  content: "\f652";
-}
-
-.bi-safe2::before {
-  content: "\f653";
-}
-
-.bi-sd-card-fill::before {
-  content: "\f654";
-}
-
-.bi-sd-card::before {
-  content: "\f655";
-}
-
-.bi-skype::before {
-  content: "\f656";
-}
-
-.bi-slash-lg::before {
-  content: "\f657";
-}
-
-.bi-translate::before {
-  content: "\f658";
 }
 
 .bi-x-lg::before {

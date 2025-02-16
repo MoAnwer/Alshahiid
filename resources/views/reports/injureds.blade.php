@@ -11,10 +11,61 @@
       <div id="content">
 
       @include('components.navbar')
-      
 
       <div class="container-fluid mt-4">
         <h4>تقرير نسبة العجز في مصابي العمليات</h4>
+        <hr>
+          
+        <div class="search-form">
+          <form action="{{ URL::current() }}" method="GET">
+
+            <div class="row px-1 mt-4">
+              
+              <div class="col-5">
+                <label>القطاع :</label>
+                <div class="form-group">
+                    <select name="sector" class="form-select">
+                      <option value="all">كل القطاعات</option>
+                      <option value="القطاع الشرقي"  @selected(request('sector') == 'القطاع الشرقي')>القطاع الشرقي</option>
+                      <option value="القطاع الشمالي" @selected(request('sector') == 'القطاع الشمالي')>القطاع الشمالي</option>
+                      <option value="القطاع الغربي"  @selected(request('sector') == 'القطاع الغربي')>القطاع الغربي</option>
+                    </select>
+                  </div>
+              </div>
+
+              <div class="col-5">
+                  <label>المحلية: </label>
+                  <div class="form-group">
+                    <select name="locality" class="form-select">
+                      <option value="all">كل المحليات </option>
+                      @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
+                        <option value="{{ $locality }}" @selected(request('locality') == $locality)>{{ $locality }}</option>
+                        @endforeach
+                      </select>
+                  </div>
+              </div>
+
+              <div class="col-1 mt-3 d-flex align-items-center flex-column justify-content-center">
+                <button class="btn py-4 btn-primary active form-control " title="بحث ">
+                  <i class="bi bi-search ml-2"></i>
+                </button>
+              </div>
+
+              <div class="col-1 mt-3 d-flex align-items-center flex-column justify-content-center">
+              <a class="btn py-4 btn-success active form-control " title="الغاء الفلاتر" href="{{ request()->url() }}">
+                  <i class="bi bi-menu-button ml-2"></i>
+                </a>
+              </div>
+
+            </div>
+          </form>
+        </div>
+
+
+        </th>
+
+        @php($totalPer = 0)
+
         <x-table>
            <x-slot:head>
               <th>نسبة العجز</th>
@@ -33,27 +84,34 @@
             <tr>
               <td>النسبة</td>
               <td>
-                @if($report['80-89'] > 0)
-                  {{ round(($report['80-89'] / $report['total']) * 100, 1) . '%'}}
+                @if($report['80-89'] > 0 && $report['total'] > 0)
+                  {{ round(($report['80-89'] / $report['total']) * 100, 2) . '%'}}
+                  @php($totalPer += ($report['80-89'] / $report['total']) * 100) 
                 @else
-                  0
+                  0%
                 @endif
               </td>
               <td>
-                @if($report['90-100'] > 0)
-                  {{ round(($report['90-100'] / $report['total']) * 100, 1) . '%'}}
+                @if($report['90-100'] > 0 && $report['total'] > 0)
+                  {{ round(($report['90-100'] / $report['total']) * 100, 2) . '%'}}
+                  @php($totalPer += ($report['90-100'] / $report['total']) * 100)
                 @else
-                  0
+                  0%
                 @endif
               </td>
-              <td>100%</td>
+              <td>
+                @if( $report['total'] > 0)
+                  {{ round($totalPer, 2) . '%'}}
+                @else
+                  0%
+                @endif
+              </td>
             </tr>
 
            </x-slot:body>
 
          </x-table>
       </div>
-
       </div>
     </div>
 

@@ -31,4 +31,14 @@ class Martyr extends Model
         return $this->hasOne(MartyrDoc::class);
     }
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($martyr) {
+            $martyr->family()->delete();
+            $martyr->martyrDoc()->delete();
+        });
+    }
+
 }

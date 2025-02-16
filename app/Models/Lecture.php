@@ -9,5 +9,5 @@ class Lecture extends Model
 {
     use HasFactory;
 
-    protected $fillable  = ['budget', 'name', 'date', 'budget_out_of_org', 'budget_from_org', 'notes', 'status'];
+    protected $fillable  = ['budget', 'name', 'date', 'budget_out_of_org', 'budget_from_org', 'notes', 'status', 'sector', 'locality'];
 }

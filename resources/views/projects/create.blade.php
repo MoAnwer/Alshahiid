@@ -24,7 +24,7 @@
 		
         <x-alert />
 		
-        <form action="{{ route('projects.store') }}" method="POST">
+        <form action="{{ route('projects.store', $family->id) }}" method="POST">
           @csrf
             <div class="form-group">
               <span class="text-danger">*</span>

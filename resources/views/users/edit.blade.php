@@ -22,11 +22,11 @@
           @endforeach
         @endif
 		
-        <x-alert />
-		
         <form action="{{ route('users.update', $user->id) }}" method="POST">
           @csrf
           @method('PUT')
+
+            <x-alert />
 
             <div class="form-group">
               <label>الاسم الرباعي</label>

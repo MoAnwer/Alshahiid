@@ -50,10 +50,10 @@
               <div class="card h-100 text-center">
                 @empty(!$martyr->martyrDoc->storage_path)
                   <a href="{{ asset("uploads/documents/{$martyr->martyrDoc->storage_path}") }}" class="text-center p-3  text-info" target="_blank">
-                    <i class="fas fa-file-pdf" style="font-size: 150px"></i>
+                    <i class="bi bi-file-pdf" style="font-size: 150px"></i>
                   </a>
                 @else 
-                  <i class="fas fa-file-pdf" style="font-size: 150px" class="text-center p-3 text-danger" title="لا يوجد ملف سيرة ذاتية"></i>
+                  <i class="bi bi-file-pdf" style="font-size: 150px" class="text-center p-3 text-danger" title="لا يوجد ملف سيرة ذاتية"></i>
                 @endempty
                 
                 <div class="card-body">
@@ -62,11 +62,11 @@
                     {{ $martyr->martyrDoc->notes ?? 'لا يوجد'}}
                   </p>
                   <hr />
-                  <a href="{{ route('tazkiia.martyrDocs.edit', $martyr->martyrDoc->id) }}" class="btn btn-success fa-sm p-1">
-                    <i class="fas fa-edit"></i>
+                  <a href="{{ route('tazkiia.martyrDocs.edit', $martyr->martyrDoc->id) }}" class="btn btn-success fa-sm py-1 px-2">
+                    <i class="bi bi-pen" title="تعديل"></i>
                   </a>
-                  <a href="{{ route('tazkiia.martyrDocs.delete', $martyr->martyrDoc->id) }}" class="btn btn-danger fa-sm p-1">
-                    <i class="fas fa-trash"></i>
+                  <a href="{{ route('tazkiia.martyrDocs.delete', $martyr->martyrDoc->id) }}" class="btn btn-danger fa-sm  py-1 px-2">
+                    <i class="bi bi-trash-fill"></i>
                   </a>
                 </div>
               </div>

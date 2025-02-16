@@ -13,7 +13,7 @@
           @method('DELETE')
             <div class="d-flex gap-1">
               <button type="submit" class="btn btn-danger py-2 mt-3 w-50">
-                <i class="fas fa-trash ml-2"></i>
+                <i class="bi bi-trash-fill-fill ml-2"></i>
               حذف
               </button>
               <a class="btn btn-info py-2 mt-3 w-50" href="{{ route('families.socialServices',  $assistance->family->id) }}">

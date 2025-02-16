@@ -18,10 +18,13 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb breadcrumb-style">
             <li class="breadcrumb-item">
-              <a href="{{ route('martyrs.index') }}">الشهداء</a>
+              <a href="{{ route('home') }}">الرئيسية</a>
               /               
             </li>
-            <li class="breadcrumb-item active mr-1" >
+            <li class="breadcrumb-item mx-1">
+              <a href="{{ route('families.list') }}">قائمة اسر الشهداء</a>
+            </li>
+            <li class="breadcrumb-item active " >
               اسرة الشهيد {{ $family->martyr->name}}
             </li>
           </ol>
@@ -33,21 +36,21 @@
 
         <div class="d-flex justify-content-between align-items-center px-3">
           <div>
-            <h4>اسرة الشهيد {{ $family->martyr->name }}</h4>
-            <span>عدد افراد الاسرة {{ $family->family_size }} , و تم اضافة {{ $family->loadMissing('familyMembers')->familyMembers->count() }} منهم الى النظام</span>
-            
+            <h4>اسرة الشهيد {{ $family->martyr->name }} <span class="text-primary text-bold">[ {{ $family->category }} ]</span></h4>
+            <span>عدد افراد الاسرة {{ $family->family_size }} , و تم اضافة {{ $family->familyMembers->count() }} منهم الى النظام</span>
             <div>
+              <span>[تم اضافة الاسرة الى النظام في  {{ date('Y-m-d', strtotime($family->created_at) )}} ]</span>
               <a href="{{ route('families.edit', $family->id) }}" class="btn btn-success p-2 fa-sm">
-              <i class="fa fa-edit"></i>
+              <i class="bi bi-pen" title="تعديل"></i>
             </a>
             <a href="{{ route('families.delete', $family->id) }}" class="btn btn-danger p-2 fa-sm">
-              <i class="fa fa-trash"></i>
+              <i class="bi bi-trash-fill" title="حذف"></i>
             </a>
             </div>
 
           </div>
-          @if ($family->loadMissing('familyMembers')->familyMembers->count() < $family->family_size)
-            <a class="btn btn-primary active" href="{{ route('familyMembers.create', $family) }}">اضافة فرد جديد</a>
+          @if ($family->familyMembers->count() < $family->family_size)
+            <a class="btn btn-primary active" href="{{ route('familyMembers.create', $family->id) }}">اضافة فرد جديد</a>
           @endif
         </div>
 
@@ -69,7 +72,7 @@
 
           <x-slot:body>
           @if($family->familyMembers->isNotEmpty())
-            @foreach($family->loadMissing('familyMembers')->familyMembers as $familyMember)
+            @foreach($family->familyMembers as $familyMember)
               <tr>
                 <td>{{ $familyMember->id }}</td>
                 <td>{{ $familyMember->name }}</td>
@@ -80,11 +83,11 @@
 
                 <td>
                   @if(!is_null($familyMember->personal_image))
-                  <a href="{{ url("uploads/images/{$familyMember->personal_image}") }}">
+                  <a href="{{ url("uploads/images/{$familyMember->personal_image}") }}" target="_blank">
                     <img src="{{ url("uploads/images/{$familyMember->personal_image}") }}" width="50"/>
                   </a>
                   @else
-                    -
+                   لا توجد صورة
                   @endif
                 </td>
                 <td>{{ $familyMember->health_insurance_number }}</td>
@@ -92,14 +95,14 @@
                 <td>{{ $familyMember->health_insurance_end_date }}</td>
                 <td>{{ $familyMember->phone_number }}</td>
                 <td>
-                    <a href="{{ route('familyMembers.edit', ['family' => $family->id, 'member' => $familyMember->id]) }}" class="btn btn-success p-2 fa-sm">
-                      <i class="fa fa-edit"></i>
+                    <a href="{{ route('familyMembers.edit', $familyMember->id) }}" class="btn btn-success py-1 px-2 fa-sm">
+                      <i class="bi bi-pen" title="تعديل"></i>
                     </a>
-                    <a href="{{ route('familyMembers.delete', $familyMember->id) }}" class="btn btn-danger p-2 fa-sm">
-                      <i class="fa fa-trash"></i>
+                    <a href="{{ route('familyMembers.delete', $familyMember->id) }}" class="btn btn-danger py-1 px-2 fa-sm">
+                      <i class="bi bi-trash-fill" title="حذف"></i>
                     </a>
-					          <a href="{{ route('familyMembers.show', $familyMember->id) }}" class="btn btn-info p-2 fa-sm">
-                      <i class="fa fa-user"></i>
+					          <a href="{{ route('familyMembers.show', $familyMember->id) }}" class="btn btn-info py-1 px-2 fa-sm">
+                      <i class="bi bi-person-fill"></i>
                     </a>
                   </td>
               </tr>
@@ -137,10 +140,10 @@
                 <td>{{ $family->supervisor->phone }}</td>
                 <td>
                   <a href="{{ route('families.editSupervisor', $family->id) }}" class="btn btn-success px-2">
-                    <i class="fas fa-edit fa-sm"></i>
+                    <i class="bi bi-pen fa-sm"></i>
                   </a>
                   <a href="{{ route('families.deleteSupervisor', $family->id) }}" class="btn btn-danger px-2">
-                    <i class="fas fa-trash fa-sm"></i>
+                    <i class="bi bi-trash-fill" title="حذف""></i>
                   </a>
                 </td>
               </tr>
@@ -165,7 +168,7 @@
 
       <div class="d-flex justify-content-between align-items-center px-3">
         <h4>مكان سكن الاسرة</h4>
-        <a class="btn btn-primary active " href="{{ route('address.create', $family) }}">اضافة مسكن جديد</a>
+        <a class="btn btn-primary active " href="{{ route('address.create', $family->id) }}">اضافة مسكن جديد</a>
       </div>
        <x-table>
           <x-slot:head>
@@ -178,7 +181,7 @@
 
           <x-slot:body>
           @if($family->addresses->isNotEmpty())
-			      @foreach($family->loadMissing('addresses')->addresses as $address)
+			      @foreach($family->addresses as $address)
               <tr>
                <td>{{ $address->sector }}</td>
                <td>{{ $address->locality }}</td>
@@ -186,10 +189,10 @@
                <td>{{ $address->type }}</td>
                <td>
                   <a href="{{ route('address.edit', $address->id) }}" class="btn btn-success p-2 fa-sm">
-                    <i class="fa fa-edit"></i>
+                    <i class="bi bi-pen" title="تعديل"></i>
                   </a>
                   <a href="{{ route('address.delete', $address->id) }}" class="btn btn-danger p-2 fa-sm">
-                    <i class="fa fa-trash"></i>
+                    <i class="bi bi-trash-fill" title="حذف"></i>
                   </a>
               </td>
             </tr>
@@ -234,10 +237,10 @@
                <td>{{ $communicate->notes }}</td>
                <td>
                   <a href="{{ route('tazkiia.communicate.edit', $communicate->id) }}" class="btn btn-success p-2 fa-sm">
-                    <i class="fa fa-edit"></i>
+                    <i class="bi bi-pen" title="تعديل"></i>
                   </a>
                   <a href="{{ route('tazkiia.communicate.delete', $communicate->id) }}" class="btn btn-danger p-2 fa-sm">
-                    <i class="fa fa-trash"></i>
+                    <i class="bi bi-trash-fill" title="حذف"></i>
                   </a>
               </td>
             </tr>
@@ -256,57 +259,58 @@
       <div class="row mb-3 py-3">
 
         <div class="col-sm-12 col-6  col-lg-3">
+          <a href="{{ route('tazkiia.martyrDocs.index', $family->martyr->id) }}" target="_blank">
           <div class="card text-center py-3 border border-warning">
             <div class="card-body">
-              <i class="fas fa-star fs-1 text-warning mb-4"></i>
-              <h5 class="card-title mb-3"> توثيق سيرة الشهيد {{ $family->martyr->name }} </h5>
+              <i class="bi bi-star-fill fs-1 text-warning mb-5"></i>
+              <h5 class="card-title mb-3 mt-3"> توثيق سيرة الشهيد {{ $family->martyr->name }} </h5>
               <p class="card-text mb-3">السيرة الذاتية للشهيد</p>
-              <a href="{{ route('tazkiia.martyrDocs.index', $family->martyr->id) }}" class="btn btn-primary active">عرض</a>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
 
         <div class="col-lg-3 col-6 col-sm-12">
 
+          <a href="{{ route('documents.show', $family->id) }}" target="_blank">
           <div class="card text-center py-3 border border-info">
             <div class="card-body">
-              <i class="fas fa-file fs-1 text-info mb-4"></i>
-              <h5 class="card-title mb-3"> خطابات اسرة </h5>
+              <i class="bi bi-file-pdf-fill fs-1 text-info mb-5"></i>
+              <h5 class="card-title mb-3 mt-3"> خطابات اسرة </h5>
               <p class="card-text mb-3"> تأكيد الاستشهاد، الاعلام الشرعي، التوكيل ...</p>
-              <a href="{{ route('documents.show', $family->id) }}" class="btn btn-primary active">عرض</a>
+
+              </div>
             </div>
-          </div>
+          </a>
 
         </div>
 
         <div class="col-lg-3 col-6 col-sm-12">
+          <a href="{{ route('families.socialServices', $family->id)}}" target="_blank">
           <div class="card text-center py-3 border border-danger">
             <div class="card-body">
-              <i class="bi bi-hearts fs-1 text-danger mb-4"></i>
-              <h5 class="card-title mb-3"> الخدمات الاجتماعية </h5>
+              <i class="bi bi-person-hearts fs-1 text-danger mb-5"></i>
+              <h5 class="card-title mb-3 mt-3"> الخدمات الاجتماعية </h5>
               <p class="card-text mb-3">الخدمات الاجتماعية </p>
-              <a href="{{ route('families.socialServices', $family->id)}}" class="btn btn-primary active">عرض</a>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
 
         <div class="col-lg-3 col-6 col-sm-12">
+          <a href="{{ route('families.bails', $family->id)}}" target="_blank">
           <div class="card text-center py-3 border border-success">
             <div class="card-body">
-              <i class="fas fa-dollar-sign fs-1 text-success mb-4"></i>
-              <h5 class="card-title mb-3">  الكفالات الشهرية  </h5>
+              <i class="bi bi-cash-coin fs-1 text-success mb-5"></i>
+              <h5 class="card-title mb-3 mt-3">  الكفالات الشهرية  </h5>
               <p class="card-text mb-3">الكفالات الشهرية  </p>
-              <a href="{{ route('families.bails', $family->id)}}" class="btn btn-primary active">عرض</a>
-            </div>
-          </div>
+                </div>
+              </div>
+            </a>
         </div>
         
         </div>
-
-      </div>
-
-      
-  
+      </div>      
     </div>
 
   @include('components.footer')

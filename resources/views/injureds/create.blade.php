@@ -31,6 +31,35 @@
               <input type="text" class="p-4 form-control" name="name" placeholder="اسم المصاب" value="{{ old('name') }}" />
             </div>
 
+            <label>القطاع :</label>
+            <div class="form-group">
+                <select name="sector" class="form-select">
+                  <option value="القطاع الشرقي"  @selected(request('sector') == 'القطاع الشرقي')>القطاع الشرقي</option>
+                  <option value="القطاع الشمالي" @selected(request('sector') == 'القطاع الشمالي')>القطاع الشمالي</option>
+                  <option value="القطاع الغربي"  @selected(request('sector') == 'القطاع الغربي')>القطاع الغربي</option>
+                </select>
+              </div>
+
+              <label>المحلية: </label>
+              <div class="form-group">
+                <select name="locality" class="form-select">
+                  @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
+                    <option value="{{ $locality }}" @selected(request('locality') == $locality)>{{ $locality }}</option>
+                    @endforeach
+                  </select>
+              </div>
+
+              <div class="form-group">
+                <span class="text-danger fs-5">*</span>
+                <input name="phone" type="text" class="p-4 form-control" placeholder="رقم الهاتف" value="{{ old('phone') }}"/>
+              </div>
+
+            <div class="form-group">
+               <span class="text-danger fs-5">*</span>
+              <input name="national_number" type="number" class="p-4 form-control" placeholder="الرقم الوطني" value="{{ old("national_number") }}"/>
+            </div>
+
+
             <div class="form-group">
             <span class="text-danger fs-5">*</span>
               <input type="text" class="p-4 form-control" name="type"  placeholder="نوع الاصابة" max-length="2" value="{{ old('type') }}"/>

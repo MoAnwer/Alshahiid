@@ -3,346 +3,213 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use Illuminate\Http\Request;
+use App\Http\Requests\ProjectRequest;
 use App\Models\Project;
-use App\Models\GlobalTotalReport;
 use App\Models\Family;
+use App\Services\ProjectService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
+    protected $log;
+    protected Family $family;
     protected Project $project;
+    protected ProjectService $projectService;
 
     public function __construct() 
     {
+        $this->family  = new Family;
         $this->project = new Project;
+        $this->projectService = new ProjectService;
+        $this->log  = Log::stack(['stack' => Log::build(['driver' => 'single', 'path' => storage_path('logs/alshahiid.log')]) ]);
+    }
+
+
+    public function index() 
+    {
+        $request = request();
+
+        $needel  = $request->query('needel');
+
+        $query = DB::table('projects')
+            ->leftJoin('families', 'projects.family_id', '=', 'families.id')
+            ->leftJoin('addresses', 'addresses.family_id', '=','families.id')
+            ->leftJoin('martyrs', 'martyrs.id', '=', 'families.martyr_id')
+            ->select(
+                'addresses.sector as sector',
+                'addresses.locality as locality',
+                'families.martyr_id',
+                'families.id',
+                'projects.id as project_id',
+                'projects.manager_name as manager_name',
+                'projects.project_type as project_type',
+                'projects.project_name as project_name',
+                'projects.status as status',
+                'projects.work_status as work_status',
+                'projects.budget as budget',
+                'projects.budget_from_org as budget_from_org',
+                'projects.budget_out_of_org as budget_out_of_org',
+                'projects.expense as expense',
+                'projects.monthly_budget as monthly_budget',
+                'projects.created_at as created_at',
+                'martyrs.name as martyr_name',
+                'martyrs.force as force',
+                'projects.family_id as family_id'
+            );
+
+        if ($request->query('search') == 'project_name') {
+            $query->where('projects.project_name', 'LIKE', "%{$needel}%");
+        }
+
+        if ($request->query('search') == 'manager_name') {
+            $query->where('projects.manager_name', 'LIKE', "%{$needel}%");
+        }
+
+        if ($request->query('search') == 'force') {
+            $query->where('martyrs.force', $needel);
+        }
+
+        if ($request->query('search') == 'martyr_name') {
+            $query->where('martyrs.name', $needel);
+        }
+
+        if (!empty($request->query('status')) && $request->query('status') != 'all') {
+            $query->where('projects.status', $request->query('status'));
+        } 
+
+        if (!empty($request->query('work_status')) && $request->query('work_status') != 'all') {
+            $query->where('projects.work_status', $request->query('work_status'));
+        } 
+
+        if (!empty($request->query('project_type')) && $request->query('project_type') != 'all') {
+            $query->where('projects.project_type', $request->query('project_type'));
+        } 
+
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->where('addresses.sector', $request->query('sector'));
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->where('addresses.locality', $request->query('locality'));
+        } 
+
+        if (!empty($request->query('year')) && $request->query('year') != 'all') {
+            $query->whereYear('projects.created_at', $request->query('year'));
+        } 
+
+        if (!empty($request->query('month')) && $request->query('month') != 'all') {
+            $query->whereMonth('projects.created_at', $request->query('month'));
+        } 
+
+        $projects = $query->latest('projects.id')->paginate(10);
+
+        return view('projects.index', ['projects' => $projects]);
+
+    }
+
+
+
+    // عرض قاءمة مشاريع خاصة باسرة الاـ id بتاعها $family
+    public function family($family)
+    {
+        return view('families.socialServices.projects', [
+            'projects'           => $this->project->where('family_id', $family)->paginate(),
+            'family_with_martyr' =>  $this->family->where('id', $family)->select('id', 'martyr_id')->with('martyr:id,name')->get()
+        ]);
     }
 
     public function create(int $family)
-    {
-        $family = Family::findOrFail($family);
-
-        return view('projects.create', compact('family'));
+    {   
+        return view('projects.create', ['family' => $this->family->findOrFail($family)->loadMissing('martyr')]);
     }
 
-    public function store(Request $request)
+    public function store(ProjectRequest $request, $family)
     {
-        $data = $request->validate([
-            'project_name'      => 'string|required',
-            'project_type'      => "required|in:جماعي,فردي",
-            'status'            => 'required|in:مطلوب,منفذ',
-            'budget'            => 'numeric|required',
-            'budget_from_org'   => 'nullable|numeric',
-            'budget_out_of_org' => 'nullable|numeric',           
-            'manager_name'      => 'required',
-            'notes'             => 'nullable|string',
-            'provider'          => 'in:من داخل المنظمة,من خارج المنظمة',
-            'monthly_budget'    => 'nullable|numeric',
-            'expense'           => 'nullable|numeric',
-            'work_status'       => 'required'
-        ], [
-			'project_name' 		=> 'اسم المشروع اجباري',
-			'budget'			=> 'حقل المبلغ مطلوب',
-            'manager_name'  => 'اسم مدير المشروع مطلوب'
-		]);
-
-        $data['family_id'] = $request->family_id;
+        $data = $request->validated();
 
         try {
 
-            Project::create($data);
+            $this->family->findOrFail($family)->projects()->create($data);
 
-            return back()->with('success', 'تم انشاء المشروع بنجاح');
+
+            
+            return back()->with('success', 'تم انشاء مشروع '. $data['project_name'] .' بنجاح');
 
         } catch (Exception $e) {
-            return $e->getMessage();
+            $exception = $e->getMessage();
+            $this->log->error('Storing project ', ['exception' => $exception]);
+            return $exception;
         }
     }
 
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(int $family, int $project)
+    public function edit(int $id)
     {
         try {
 
-            $family  = Family::findOrFail($family);
+            $project  = $this->project->findOrFail($id)->loadMissing('family');
 
-            $project = $family->projects()->findOrFail($project);
+            return view('projects.edit', compact('project'));
 
-            return view('projects.edit', compact('family', 'project'));
-
-        } catch(Exception $e) {
-            return $e->getMessage();
+        } catch (Exception $e) {
+            $exception = $e->getMessage();
+            $this->log->error('Edit project id='. $id, ['exception' => $exception]);
+            return $exception;
         }
 
     }
 
-    public function update(Request $request, int $family, int $project)
+    public function update(ProjectRequest $request, int $id)
     {
-         $data = $request->validate([
-                'project_name'      => 'string|required',
-                'project_type'      => "required|in:جماعي,فردي",
-                'status'            => 'required|in:مطلوب,منفذ',
-                'budget'            => 'numeric|required',
-                'budget_from_org'   => 'nullable|numeric',
-                'budget_out_of_org' => 'nullable|numeric',           
-                'manager_name'      => 'required',
-                'notes'             => 'nullable|string',
-                'provider'          => 'in:من داخل المنظمة,من خارج المنظمة',
-                'monthly_budget'    => 'nullable|numeric',
-                'expense'           => 'nullable|numeric',
-                'work_status'       => 'required'
-            ], [
-                'manager_name'     => 'حقل اسم المدير اجباري',
-                'budget'           => 'حقل المبلغ مطلوب',
-                'project_name'     => 'حقل  اسم المشروع اجباري'
-            ]);
+        $data = $request->validated();
 
-        try {
-                    
-            $family  = Family::findOrFail($family);
-            $project = $family->projects()->findOrFail($project);
+        try {        
 
+            $project = $this->project->findOrFail($id);
             $project->update($data);
 
-             return back()->with('success', 'تم تعديل المشروع بنجاح ');
+         
 
-        } catch(Exception $e) {
+            return back()->with('success', 'تم تعديل المشروع بنجاح ');
 
-            return $e->getMessage();
-
+        } catch (Exception $e) {
+            $exception = $e->getMessage();
+            $this->log->error('Update project id=' . $id . ['exception' => $exception]);
+            return $exception;
         }
 
     }
 
     public function delete($id) {
-        try {
-
-            $project = Project::findOrFail($id);
-            return view('projects.delete', compact('project'));
-
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-
+        return view('projects.delete', ['project' => $this->project->findOrFail($id)]);
     }
 
     public function destroy($id)
     {
-         try {
+        try {
 
-            $project = Project::findOrFail($id);
-
-            $familyId = $project->family->id;
-
+            $project = $this->project->findOrFail($id)->loadMissing('family');
+            $name = $project->project_name;
+            $family = $project->family->id;
             $project->delete();
-            
-            return to_route('families.socialServices', $familyId)->with('success', 'تم حذف المشروع بنجاح ');
+
+       
+            return to_route('families.socialServices', $family)->with('success', 'تم حذف مشروع  ' . $name . 'بنجاح ');
 
         } catch(Exception $e) {
-
-            return abort(404);
-
+            $exception = $e->getMessage();
+            $this->log->error("Delete project id=$id" , ['Exception' => $exception]);
+            return $exception;
         }
     }
 	
 	public function report()
 	{
-        $request    = request();
-        $reportQuery = null;
-
-        if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
-            $reportQuery = collect(DB::select('
-                            SELECT 
-                                SUM(projects.budget) as totalBudget,
-                                projects.status, 
-                                COUNT(projects.status) as count, 
-                                projects.project_type,
-                                SUM(projects.budget_from_org)  as budget_from_org,
-                                SUM(projects.budget_out_of_org) as budget_out_of_org,
-                                COUNT(*) as families_count,
-                                addresses.sector,
-                                addresses.locality                            
-                            FROM
-                                families
-                            INNER JOIN
-                                projects
-                            ON families.id = projects.family_id
-
-                            INNER JOIN
-                               addresses 
-                            ON
-                            addresses.family_id = families.id
-
-                            WHERE addresses.sector = ? AND addresses.locality = ?
-
-                            GROUP BY 
-                                projects.project_type, projects.status, addresses.sector,addresses.locality
-
-                            ', [$sector, $locality]
-                    ));
-        } else  {
-            $reportQuery = collect(DB::select('
-                            SELECT 
-                                SUM(budget) as totalBudget,
-                                status, 
-                                COUNT(status) as count, 
-                                project_type,
-                                SUM(budget_from_org)  as budget_from_org,
-                                SUM(budget_out_of_org) as budget_out_of_org,
-                                COUNT(*) as families_count                        
-                            FROM
-                                projects
-                            GROUP BY 
-                                projects.project_type, projects.status
-                            '
-            ));
-        }
- 
-
-        $report = collect([
-                'member' => collect([
-                    'need'   => collect([]),
-                    'done'   => collect([])
-                ]),
-
-                'team' => collect([
-                    'need'   => collect([]),
-                    'done'   => collect([])
-                ])
-        ]);
-
-       
-
-        $reportQuery->map(function($value, $key) use ($report) {
-            if($value->status == 'مطلوب'  && $value->project_type == 'جماعي' ){
-                $report->get('team')->get('need')[] = $value;
-            } 
-
-            if ($value->status == 'منفذ'  && $value->project_type == 'جماعي' ) {
-                $report->get('team')->get('done')[] = $value;
-            }
-            if ($value->status == 'مطلوب'  && $value->project_type == 'فردي' ) {
-               $report->get('member')->get('need')[] = $value;
-            }
-            if ($value->status == 'منفذ'  && $value->project_type == 'فردي' ) {
-                $report->get('member')->get('done')[] = $value;
-            }
-        });
-
-        //dd($collection);
-
-		
-        $report->prepend([
-            'member' => round((($report->get('member')['done'][0]->count ?? 0) / ($report->get('member')['need'][0]->count ?? 1)) * 10, 1),
-            'team'   => round((($report->get('team')['done'][0]->count ?? 0) / ($report->get('team')['need'][0]->count ?? 1)) * 10, 1),
-            'total'  => round(
-                (
-                    ( ($report->get('member')['done'][0]->count ?? 0)  +  ($report->get('team')['done'][0]->count ?? 1))
-                    /
-                    (($report->get('member')['need'][0]->count ?? 0)  +  ($report->get('team')['need'][0]->count ?? 1))
-                ) * 10
-                  
-            , 1)
-        ], 'precentages');
-
-        $report->prepend([
-            'total_budget'               => 
-                      (($report->get('member')['need'][0]->totalBudget ?? 0)  +  ($report->get('member')['done'][0]->totalBudget ?? 0))
-                    + (($report->get('team')['need'][0]->totalBudget ?? 0)  +  ($report->get('team')['done'][0]->totalBudget ?? 0))
-
-            ,
-            'total_budget_from_org'      =>         
-                      (($report->get('member')['need'][0]->budget_from_org ?? 0)  + ( $report->get('member')['done'][0]->budget_from_org ?? 0))
-                    + (($report->get('team')['need'][0]->budget_from_org ?? 0)  +  ($report->get('team')['done'][0]->budget_from_org ?? 0))
-            ,
-
-            'total_budget_out_of_org'    => 
-                      (($report->get('member')['done'][0]->budget_out_of_org ?? 0) + ($report->get('member')['need'][0]->budget_out_of_org ?? 0))
-                    + (($report->get('team')['done'][0]->budget_out_of_org ?? 0) + ($report->get('team')['need'][0]->budget_out_of_org ?? 0))
-            ,
-            'total_money'                =>
-                      (($report->get('member')['need'][0]->budget_from_org ?? 0)  + ( $report->get('member')['done'][0]->budget_from_org ?? 0))
-                    + (($report->get('team')['need'][0]->budget_from_org ?? 0)  + ( $report->get('team')['done'][0]->budget_from_org ?? 0))
-                    + (($report->get('member')['done'][0]->budget_out_of_org ?? 0) + ($report->get('member')['need'][0]->budget_out_of_org ?? 0))
-                    + (($report->get('team')['done'][0]->budget_out_of_org ?? 0) + ($report->get('team')['need'][0]->budget_out_of_org ?? 0))
-
-        ], 'totals');
-
-        //dd($report);
-
-		return view('reports.projects', compact('report'));
+		return view('reports.projects', ['report' => $this->projectService->report()]);
 	}
-
 
     public function projectsWorkStatusReport()
     {
-
-        if(($sector = request()->query('sector')) && ($locality = request()->query('locality'))) {
-                $work = DB::select('
-                                SELECT 
-                                    COUNT(projects.work_status) as count,
-                                    addresses.sector,
-                                    addresses.locality
-                                FROM
-                                    projects
-                                INNER JOIN
-                                    addresses
-                                ON 
-                                    addresses.family_id = projects.family_id
-                                WHERE
-                                    projects.work_status = "يعمل"
-    
-                                and addresses.sector = ? AND addresses.locality = ?
-    
-                                GROUP BY
-                                    addresses.sector, addresses.locality, projects.work_status
-                    ', [$sector, $locality]);
-
-            $doesNotWork =  DB::select('
-                     SELECT 
-                         COUNT(projects.work_status) as count,
-                         addresses.sector,
-                         addresses.locality
-                     FROM
-                         projects
-                     INNER JOIN
-                         addresses
-                     ON 
-                         addresses.family_id = projects.family_id
-                     WHERE
-                        projects.work_status = "لا يعمل"
-     
-                     and addresses.sector = ? AND addresses.locality = ?
-     
-                     GROUP BY
-                         addresses.sector, addresses.locality, projects.work_status
-                ', [$sector, $locality]);
-
-            $report = collect([
-                'work'        => (@$work[0]->count) ?? 0,
-                'doesNotWork' => (@$doesNotWork[0]->count) ?? 0,
-                'total'       => (@$doesNotWork[0]->count ?? 0) + (@$work[0]->count ?? 0)
-            ]);
-
-            return view('reports.projectsWorkStatusReport', compact('report'));
-        }
-
-        $work = DB::table('projects')->where('work_status', 'يعمل')->count();
-
-        $doesNotWork = DB::table('projects')->where('work_status', 'لا يعمل')->count();
-
-        $report = collect([
-            'work'        => $work,
-            'doesNotWork' => $doesNotWork,
-            'total'       => $doesNotWork + $work
-        ]);
-
-        return view('reports.projectsWorkStatusReport', compact('report'));
+        return view('reports.projectsWorkStatusReport', ['report' => $this->projectService->projectsWorkStatusReport()]);
     }
 }

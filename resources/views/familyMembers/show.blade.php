@@ -18,11 +18,13 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb breadcrumb-style">
             <li class="breadcrumb-item">
-              <a href="{{ route('martyrs.index') }}">الشهداء</a>
-              /
-              
+              <a href="{{ route('home') }}">الرئيسية</a>
+              /               
             </li>
-            <li class="breadcrumb-item">
+            <li class="breadcrumb-item mx-1">
+              <a href="{{ route('families.list') }}">قائمة اسر الشهداء</a>
+            </li>
+            <li class="breadcrumb-item ">
               <a href="{{ route('families.show', $member->family->id) }}"> اسرة الشهيد {{ $member->family->martyr->name}} </a>
               
             </li>
@@ -30,14 +32,20 @@
           </ol>
         </nav>
 
+        <hr>
+
         <x-alert/>
 
         <div class="d-flex justify-content-between align-items-center px-3 mb-2">
           <div class="d-flex align-items-end gap-2">
             <div style="border-radius: 50%;">
+              @if ($member->personal_image)
                 <a href="{{ url("uploads/images/{$member->personal_image}") }}">
                   <img src="{{ url("uploads/images/{$member->personal_image}") }}" width="120"/>
                 </a>
+              @else 
+                <img src="{{  url('asset/images/logo.jpg')  }}" width="80" class="mx-2"/>
+              @endif
             </div>
             <h4>ملف {{ $member->name }}  </h4>
           </div>
@@ -81,11 +89,11 @@
                 <td>{{ $member->health_insurance_end_date }}</td>
                 <td>{{ $member->phone_number }}</td>
                 <td>
-                    <a href="{{ route('familyMembers.edit', ['family' => $member->family->id, 'member' => $member->id]) }}" class="btn btn-success p-2 fs-sm">
-                      <i class="fa fa-edit"></i>
+                    <a href="{{ route('familyMembers.edit', $member->id) }}" class="btn btn-success p-2 fs-sm">
+                      <i class="bi bi-pen" title="تعديل"></i>
                     </a>
                     <a href="{{ route('familyMembers.delete', $member->id) }}" class="btn btn-danger p-2 fs-sm">
-                      <i class="fa fa-trash"></i>
+                      <i class="bi bi-trash-fill" title="حذف"></i>
                     </a>
                   </td>
               </tr>
@@ -119,16 +127,16 @@
                       <td>{{ $document->type }}</td>
                       <td>
                         <a href="{{ asset('uploads/members_documents/'. $document->storage_path ) }}" class="text-primary" target="_blank">
-                          <i class="fas fa-file-pdf fs-3"></i>
+                          <i class="bi bi-file-pdf fs-3"></i>
                         </a>
                       </td>
                       <td>{{ $document->notes  ?? 'لا يوجد'}}</td>
                       <td>
                           <a href="{{ route('familyMemberDocuments.edit', $document->id)}}" class="btn btn-success p-2 fs-sm">
-                            <i class="fa fa-edit"></i>
+                            <i class="bi bi-pen" title="تعديل"></i>
                           </a>
                           <a href="{{ route('familyMemberDocuments.delete', $document->id)}}" class="btn btn-danger p-2 fs-sm">
-                            <i class="fa fa-trash"></i>
+                            <i class="bi bi-trash-fill" title="حذف"></i>
                           </a>
                         </td>
                     </tr>
@@ -172,10 +180,10 @@
                 <td>{{ $medicalService->notes }}</td>
 				        <td>
                     <a href="{{ route('medicalTreatment.edit', $medicalService->id)}}" class="btn btn-success p-2 fs-sm">
-                      <i class="fa fa-edit"></i>
+                      <i class="bi bi-pen" title="تعديل"></i>
                     </a>
                     <a href="{{ route('medicalTreatment.delete', $medicalService->id)}}" class="btn btn-danger p-2 fs-sm">
-                      <i class="fa fa-trash"></i>
+                      <i class="bi bi-trash-fill" title="حذف"></i>
                     </a>
                   </td>
               </tr>
@@ -197,6 +205,8 @@
           <x-slot:head>
               <th>#</th>
               <th>المرحلة التعليمية</th>
+              <th>الصف</th>
+              <th>المدرسة</th>
               <th>عمليات</th>
           </x-slot:head>
 
@@ -205,15 +215,17 @@
           <tr>
             <td>{{ $member->student->id }}</td>
             <td>{{ $member->student->stage }}</td>
+            <td>{{ $member->student->class }}</td>
+            <td>{{ $member->student->school_name }}</td>
             <td>
                 <a href="{{ route('students.show', $member->student->id)}}" class="btn btn-primary active p-2 fs-sm">
-                  <i class="fa fa-user"></i>
+                  <i class="bi bi-person-fill"></i>
                 </a>
                 <a href="{{ route('students.edit', $member->student->id)}}" class="btn btn-success p-2 fs-sm">
-                  <i class="fa fa-edit"></i>
+                  <i class="bi bi-pen" title="تعديل"></i>
                 </a>
                 <a href="{{ route('students.delete', $member->student->id)}}" class="btn btn-danger p-2 fs-sm">
-                  <i class="fa fa-trash"></i>
+                  <i class="bi bi-trash-fill" title="حذف"></i>
                 </a>
               </td>
           </tr>
@@ -230,9 +242,7 @@
           </x-slot:body>
         </x-table>
 
-        
-
-      @if($member->gender == 'أنثى'  ||$member->relation == 'اخ')
+      @if($member->gender == 'أنثى'  || $member->relation == 'اخ')
       <hr>
         <div class="d-flex justify-content-between align-items-center px-3">
           <h5>اعانات زواج</h5>
@@ -262,10 +272,10 @@
               <td>{{ $marryAssistance->notes }}</td>
               <td>
                   <a href="{{ route('marryAssistances.edit', $marryAssistance->id)}}" class="btn btn-success p-2 fs-sm">
-                    <i class="fa fa-edit"></i>
+                    <i class="bi bi-pen" title="تعديل"></i>
                   </a>
                   <a href="{{ route('marryAssistances.delete', $marryAssistance->id)}}" class="btn btn-danger p-2 fs-sm">
-                    <i class="fa fa-trash"></i>
+                    <i class="bi bi-trash-fill" title="حذف"></i>
                   </a>
                 </td>
             </tr>
@@ -313,10 +323,10 @@
                 <td>{{ number_format($hag->budget_out_of_org  + $hag->budget_from_org) }}</td>
                 <td>
                   <a href="{{ route('tazkiia.hagAndOmmrah.edit', $hag->id) }}" class="btn btn-success p-2 fa-sm">
-                      <i class="fa fa-edit"></i>
+                      <i class="bi bi-pen" title="تعديل"></i>
                   </a>
                   <a href="{{ route('tazkiia.hagAndOmmrah.delete', $hag->id) }}" class="btn btn-danger p-2 fa-sm">
-                      <i class="fa fa-trash"></i>
+                      <i class="bi bi-trash-fill" title="حذف"></i>
                   </a>
                 </td>
               </tr>
@@ -327,10 +337,7 @@
 
         </x-slot:body>
       </x-table>
-
-
-
-        </div>
+      </div>
       </div>
     </div>
 

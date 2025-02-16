@@ -90,58 +90,39 @@ class UserController extends Controller
     {
         $this->authorize('isModerate');
 
-        $data = [];
+        $data     =  [];
+        $messages =  [];
+        $request->username = trim($request->username);
+        $request->password = trim($request->password);
 
-        if(empty($request->username) && !empty($request->password)) {
-            $data = $request->validate([
-                'full_name'  =>  'string|required',
-                'password'   =>  'min:6',
-                'role'       =>  'in:user,admin,moderate'
-            ], [
-                'password.min' => 'كلمة السر يجب ان تكون من 6 احرف على الاقل',
-                'full_name' => 'الاسم الرباعي مطلوب',
-                'role'  => 'الرجاء تعيين  وظيفة '
-            ]);
-
-            $data['password'] = bcrypt($request->password);
-              //dd($data);
-            User::findOrFail($id)->update($data);
-
-          
-            return to_route('users.index')->with('success', 'تم تعديل المستخدم بنجاح');
-
-        } else if (empty($request->password) && !empty($request->username)) {
-            
-           $data = $request->validate([
-                'username'   =>  'unique:users,username',
-                'full_name'  =>  'string|required',
-                'role'       =>  'in:user,admin,moderate'
-            ], [
-                'full_name' => 'الاسم الرباعي مطلوب',
-                'username.required'  => 'اسم المستخدم ضروري',
-                'username.unique'   => 'اسم المستخدم هذا غير متاح, جرب اسم اخر',
-                'role'  => 'الرجاء تعيين  وظيفة '
-            ]);
-
-            User::findOrFail($id)->update($data);
-
-            //dd($data);
-            return to_route('users.index')->with('success', 'تم تعديل المستخدم بنجاح');
-
-        } else if (empty($request->password) && empty($request->username)) {
-
-            $data = $request->validate([
-                'full_name'  =>  'string|required',
-                'role'       =>  'required|in:user,admin,moderate'
-            ], [ 
-                'full_name' => 'الاسم الرباعي مطلوب',
-                'role'  => 'الرجاء تعيين  وظيفة '
-            ]);
-
-              //dd($data);
-            User::findOrFail($id)->update($data);
-            return to_route('users.index')->with('success', 'تم تعديل المستخدم بنجاح');
+        if ($request->username) {
+            $data['username'] = 'unique:users,username';
+            $messages['username.unique']   = 'اسم المستخدم هذا غير متاح, جرب اسم اخر';
         }
+
+
+        if ($request->full_name) {
+            $data['full_name'] = 'string';
+            $messages['full_name'] = 'الاسم الرباعي مطلوب';
+        }
+
+
+        if (!empty($request->password)) {
+            $data['password'] = 'min:6';
+            $messages['password.min'] ='كلمة السر يجب ان تكون من 6 احرف على الاقل';
+            $date['password'] = bcrypt($request->password);
+        }
+
+        if ($request->role) {
+            $data['role'] = 'in:user,admin,moderate';
+        }
+
+        $data = $request->validate($data, $messages);
+
+        User::findOrFail($id)->update($data);
+
+        return to_route('users.index')->with('success', 'تم تعديل المستخدم بنجاح');
+        
     }
 
     public function delete($id)

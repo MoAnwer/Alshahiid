@@ -15,7 +15,7 @@ class SupervisorRequest extends FormRequest
     {
         return [
             'name'  => 'string|required',
-            'phone' => 'numeric|required'
+            'phone' => 'required|numeric|unique:supervisors,phone'
         ];
     }
 
@@ -23,7 +23,8 @@ class SupervisorRequest extends FormRequest
     {
         return [
             'name'  => 'الاسم المشرف مطلوب',
-            'phone.phone'   => 'الرجاء ادخال صيغة صحيحة لرقم الهاتف'
+            'phone.unique' => 'رقم الهاتف موجود بالفعل',
+            'phone.numeric'   => 'الرجاء ادخال صيغة صحيحة لرقم الهاتف'
         ];
     }
 }

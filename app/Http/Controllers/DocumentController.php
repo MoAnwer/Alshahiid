@@ -7,15 +7,27 @@ use App\Models\Family;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use App\Http\Requests\DocumentRequest;
+use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
+    protected $log;
+    protected Family $family;
+    protected Document $document;
+    protected string $docsDir;
+
+    public function __construct()
+    {
+        $this->family   = new Family;
+        $this->document = new Document;
+        $this->docsDir  = 'uploads/documents';
+        $this->log  = Log::stack(['stack' => Log::build(['driver' => 'single', 'path' => storage_path('logs/alshahiid.log')]) ]);
+    }
+
     
     public function create(int $familyId)
     {   
-        return view('documents.create', [
-            'family'    => Family::findOrFail($familyId)
-        ]);
+        return view('documents.create', ['family'  => $this->family->findOrFail($familyId)]);
     }
 
     public function store(DocumentRequest $request, $familyId)
@@ -27,15 +39,16 @@ class DocumentController extends Controller
 
             $document = str()->orderedUuid() . '.' . $request->file('storage_path')->getClientOriginalExtension();
     
-            $request->file('storage_path')->move(public_path('uploads/documents'), $document);
+            $request->file('storage_path')->move(public_path($this->docsDir), $document);
 
             $data['storage_path'] = $document;
             
-            Family::findOrFail($familyId)->documents()->create($data);
+            $this->family->findOrFail($familyId)->documents()->create($data);
 
             return to_route('documents.show', $familyId)->with('تم اضافة الخطاب بنجاح');
 
         } catch (Exception $e) {
+            $this->log->error('Store family document familyId='.$familyId, ['exception' => $e->getMessage()]);
             return $e->getMessage();
         }
 
@@ -45,14 +58,14 @@ class DocumentController extends Controller
     public function familyDocuments(int $familyId) 
     {
         return view('documents.familyDocuments', [
-            'family' => Family::findOrFail($familyId)->loadMissing(['martyr', 'documents'])
+            'family' => $this->family->findOrFail($familyId)->loadMissing(['martyr', 'documents'])
         ]);
     }
 
     public function edit($id)
     {
         return view('documents.edit', [
-            'document'  => Document::findOrFail($id)
+            'document'  => $this->document->findOrFail($id)
         ]);
     }
 
@@ -60,7 +73,7 @@ class DocumentController extends Controller
     {
         
         try {
-            $document = Document::findOrFail($id);
+            $document = $this->document->findOrFail($id);
 
             $data = [];
 
@@ -76,7 +89,7 @@ class DocumentController extends Controller
 
                 $documentFile = str()->orderedUuid() . '.' . $request->file('storage_path')->getClientOriginalExtension();
     
-                $request->file('storage_path')->move(public_path('uploads/documents'), $documentFile);
+                $request->file('storage_path')->move(public_path($this->docsDir), $documentFile);
 
                 $data['storage_path'] = $documentFile;
 
@@ -96,26 +109,28 @@ class DocumentController extends Controller
             }
 
         } catch (Exception $e) {
+            $this->log->error('Updating document id='.$id, ['exception' => $e->getMessage()]);
             return $e->getMessage();
         }
 
     }
 
     public function delete($id) {
-        return view('documents.delete', ['document' => Document::findOrFail($id)]);
+        return view('documents.delete', ['document' => $this->document->findOrFail($id)]);
     }
 
     public function destroy($id) 
     {
         try {
-            $document = Document::findOrFail($id);
+            $document = $this->document->findOrFail($id);
 
-            @unlink(public_path('uploads/documents/'.$document->storage_path));
+            @unlink(public_path($this->docsDir.'/'.$document->storage_path));
 
             $document->delete();
 
             return to_route('documents.show', $document->family->id)->with('success', 'تم حذف الخطاب بنجاح');
         } catch (Exception $e) {
+            $this->log->error('Destroy document id='.$id, ['exception' => $e->getMessage()]);
             return $e->getMessage();
         }
     }

@@ -60,6 +60,25 @@
               <input name="budget_out_of_org" type="number" class="p-4 form-control" placeholder="المبلغ المقدم من خارج المنظمة" value="{{ $lecture->budget_out_of_org }}"/>
             </div>
             
+            <label>القطاع :</label>
+            <div class="form-group">
+                <select name="sector" class="form-select">
+                  <option value="القطاع الشرقي"  @selected($lecture->sector == 'القطاع الشرقي')>القطاع الشرقي</option>
+                  <option value="القطاع الشمالي" @selected($lecture->sector == 'القطاع الشمالي')>القطاع الشمالي</option>
+                  <option value="القطاع الغربي"  @selected($lecture->sector == 'القطاع الغربي')>القطاع الغربي</option>
+                </select>
+              </div>
+
+              <label>المحلية: </label>
+              <div class="form-group">
+                <select name="locality" class="form-select">
+                  @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
+                    <option value="{{ $locality }}" @selected($lecture->locality == $locality)>{{ $locality }}</option>
+                    @endforeach
+                  </select>
+              </div>
+              
+
             <label>ملاحظات: </label>
             <textarea name="notes" class="form-control w-100">{{ $lecture->notes }}</textarea>
 

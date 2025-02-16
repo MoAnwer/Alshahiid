@@ -24,7 +24,7 @@
     
         <x-alert />
     
-        <form action="{{ route('projects.update', ['family' => $family->id, 'project' => $project->id]) }}" method="POST">
+        <form action="{{ route('projects.update', $project->id) }}" method="POST">
           @csrf
           @method('PUT')
             <div class="form-group">
@@ -89,12 +89,10 @@
             <label>ملاحظات:</label>
             <textarea name="notes" class="form-control w-100">{{ $project->notes }}</textarea>
 
-            <input name="family_id" type="hidden" value="{{ $family->id }}"/>
-
             <button type="submit" class="btn btn-success py-2 mt-3">
               تعديل
             </button>
-            <a class="btn btn-info py-2 mt-3" href="{{ route('families.socialServices', $family->id) }}">رجوع</a>
+            <a class="btn btn-info py-2 mt-3" href="{{ route('families.socialServices', $project->family->id) }}">رجوع</a>
         </form>
       </div>
       

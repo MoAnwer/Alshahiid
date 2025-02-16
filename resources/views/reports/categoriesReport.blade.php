@@ -17,45 +17,9 @@
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>تصنيف الاسر</h4>
         </div>
+        <hr>
 
-        <div class="search-form">
-          <form action="{{ URL::current() }}" method="GET">
-
-            <div class="row">
-              
-              <div class="col-6">
-                <label>القطاع :</label>
-                <div class="form-group">
-                    <select name="sector" class="form-select">
-                      <option value="القطاع الشرقي"  @selected(request('sector') == 'القطاع الشرقي')>القطاع الشرقي</option>
-                      <option value="القطاع الشمالي" @selected(request('sector') == 'القطاع الشمالي')>القطاع الشمالي</option>
-                      <option value="القطاع الغربي"  @selected(request('sector') == 'القطاع الغربي')>القطاع الغربي</option>
-                    </select>
-                  </div>
-              </div>
-
-              <div class="col-5">
-                  <label>المحلية: </label>
-                  <div class="form-group">
-                    <select name="locality" class="form-select">
-                      @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
-                        <option value="{{ $locality }}" @selected(request('locality') == $locality)>{{ $locality }}</option>
-                        @endforeach
-                      </select>
-                  </div>
-                </div>
-
-              <div class="col-1 mt-3 d-flex align-items-center flex-column justify-content-center">
-                <button class="btn py-4 btn-primary active form-control ">
-                  <i class="fas fa-search ml-2"></i>
-                  بحث 
-                </button>
-              </div>
-
-              </form>
-
-            </div>
-        </div> {{-- search form --}}
+        <x-search-form />
         
         <x-table>
           <x-slot:head>
@@ -144,11 +108,22 @@
               </td>
               <td>{{ $total > 0 ? '100%' : $total.'%' }}</td>
             </tr>
-            <caption>
-              @empty(!request()->query('sector'))
-                {{ request()->query('sector') . ' - ' . request()->query('locality')}}
+
+            <caption class="text-primary">
+              @if(request()->query('sector') != 'all')
+                {{ request()->query('sector') }}
               @else
               كل القطاعات
+              @endif
+
+              @if( request()->query('locality') == 'all') 
+                كل المحليات
+              @else
+              {{ '-' . request()->query('locality')  }}
+              @endif
+
+               @empty(!request()->query('year'))
+                {{ 'سنة ' . request()->query('year')  . (request()->query('month') != '' ?  ' شهر ' . request()->query('month') : ' لكل الشهور     ')}}
               @endempty
             </caption>
 			    </x-slot:body>

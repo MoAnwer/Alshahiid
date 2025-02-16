@@ -17,6 +17,8 @@
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>تقارير التزكية الروحية</h4>
         </div>
+
+        <x-search-form />
         
 		      <x-table>
 			     <x-slot:head>
@@ -334,6 +336,26 @@
               <td>{{ number_format($totalBudgetOutOfOrg) }}</td>
               <td>{{ number_format($totalMoney) }}</td>
            </tr>
+
+           <caption>
+              تقرير التزكية الروحية 
+               @if(request()->query('sector') == 'all' || is_null(request()->query('sector')))
+               كل القطاعات
+              @else
+                {{ request()->query('sector') }}
+              @endif
+
+              @if(request()->query('locality') == 'all')
+               كل المحليات
+              @else
+                {{ request()->query('locality') }}
+              @endif
+
+               @empty(!request()->query('year'))
+                {{ 'سنة ' . request()->query('year')  . (request()->query('month') != '' ?  ' شهر ' . request()->query('month') : ' لكل الشهور     ')}}
+                @endempty
+
+           </caption>
 
 
 			    </x-slot:body>
