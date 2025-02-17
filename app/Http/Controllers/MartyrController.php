@@ -19,7 +19,7 @@ class MartyrController extends Controller
         $query = DB::table('martyrs')
                 ->leftJoin('families', 'families.martyr_id', 'martyrs.id')
                 ->leftJoin('addresses', 'addresses.family_id', 'families.id')
-                ->select('martyrs.id', 'families.id as family_id', 'martyrs.name', 'martyrs.force', 'martyrs.unit', 'martyrs.militarism_number', 'martyrs.martyrdom_date', 'martyrs.martyrdom_place', 'martyrs.record_date', 'martyrs.rights', 'martyrs.record_number', 'martyrs.rank', 'addresses.sector', 'addresses.locality');
+                ->select('martyrs.id', 'families.id as family_id', 'families.category as category', 'martyrs.name', 'martyrs.force', 'martyrs.unit', 'martyrs.militarism_number', 'martyrs.martyrdom_date', 'martyrs.martyrdom_place', 'martyrs.record_date', 'martyrs.rights', 'martyrs.record_number', 'martyrs.rank', 'addresses.sector', 'addresses.locality');
 
         if($request->query('search') == 'name') {
             $query->where('name', 'LIKE', "%$needel%");
@@ -83,6 +83,7 @@ class MartyrController extends Controller
         
         try {
             Martyr::create($data);
+            return to_route('martyrs.index')->with('success', 'تم اضافة الشهيد بنجاح ');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -124,7 +125,8 @@ class MartyrController extends Controller
                 'rights'                 => 'حقل حقوق الشهيد مطلوب',
                 'record_number'          => 'حقل رقم السجل  مطلوب',
                 'record_date'            => 'حقل تاريخ سجل الشهيد مطلوب',
-                'militarism_number'      => 'حقل النمرة العسكرية مطلوب' ,
+                'militarism_number.required'      => 'حقل النمرة العسكرية مطلوب' ,
+                'militarism_number.unique' => 'النمرة العسكرية م  موجودة بالفعل',
                 'unit'                   => 'حقل الوحدة مطلوب',
                 'force'                  => 'حقل القوة اجباري'
             ]);

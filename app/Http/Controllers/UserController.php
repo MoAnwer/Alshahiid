@@ -5,11 +5,22 @@ namespace App\Http\Controllers;
 use Throwable;
 use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\{User, Martyr, Family};
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    protected User $user;
+    protected Martyr $martyr;
+    protected Family $family;
+
+
+    public function __construct()
+    {
+        $this->martyr = new Martyr;
+        $this->family = new Family;
+        $this->user   = new User;
+    }
 
     /**
      * Display a listing of the resource.
@@ -153,6 +164,32 @@ class UserController extends Controller
 
         } else {
             return back()->with('error', 'كلمة السر غير  صحيحة');
+        }
+    }
+
+    public function userLog(int $user)
+    {
+        try {
+
+                
+            if (auth()->user()->role != 'moderate' && auth()->id() != $user) 
+            {
+                abort(403);
+            }
+
+            // this method show the count of families & martyr that added by "$user" in this day
+
+            $martyrsStats = $this->martyr->where('user_id', $user)->whereDate('created_at', today())->count();
+            $familiesStats = $this->family->where('user_id', $user)->whereDate('created_at', today())->count();
+            $user = $this->user->findOrFail($user);
+            $printType = 'userLog';
+
+            // dd($martyrsStats);
+
+            return view('users.userLog', compact('user', 'martyrsStats', 'familiesStats', 'printType'));
+            
+        } catch (Exception $e) {
+            
         }
     }
 }

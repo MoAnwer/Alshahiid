@@ -9,7 +9,6 @@
   <title>{{ $app_name . ' | ' . $page_title}}</title>
   <style>
     * {font-family: 'cairo';}
-    .ajs-header {font-family: 'cairo' !important; color:#0d6efd !important}
   </style>
 </head>
 <body class="{{ $body_class ?? 'default-body' }}" id="page-top">

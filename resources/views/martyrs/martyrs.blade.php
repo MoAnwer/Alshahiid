@@ -15,7 +15,6 @@
 
       <div class="container-fluid mt-4">
 
-        <x-alert />
 
         
         <nav aria-label="breadcrumb">
@@ -29,6 +28,9 @@
         </nav>
 
         <hr>
+
+        <x-alert />
+        
 
 
         <div class="d-flex justify-content-between align-items-center pl-3">
@@ -191,10 +193,7 @@
 
               </form>
 
-              <button class="btn py-4 btn-primary active form-control" onclick="printTable()">
-                    <i class="bi bi-print ml-2"></i>
-                    طباعة 
-                  </button>
+         
 
             </div>
         </div> {{-- search form --}}
@@ -206,6 +205,7 @@
 
         @if (request()->query('show') == 'true' || !empty(request()->query('search')))
 
+        
           <x-table>
             <x-slot:head>
 
@@ -240,6 +240,7 @@
 
               <th>رقم السجل</th>
               <th>تاريخ السجل</th>
+              <th>الشريحة</th>
               <th>الحقوق</th>
 
                @if (request()->query('sector') == 'all' || is_null(request()->query('sector')) )
@@ -291,6 +292,7 @@
 
                   <td>{{ $martyr->record_number }}</td>
                   <td>{{ $martyr->record_date }}</td>
+                  <td>{{ $martyr->category ?? '-' }}</td>                  
                   <td>{{ number_format($martyr->rights) }}</td>
 
                   @if (request()->query('sector') == 'all' || is_null(request()->query('sector')) )

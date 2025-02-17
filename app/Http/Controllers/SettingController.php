@@ -115,7 +115,15 @@ class SettingController extends Controller
     }
 
     public function downloadBackup() 
-    {
-        return Storage::download($this->backupFile);
+    {  
+        $file_path = storage_path('app/public/'.$this->backupFile);
+        $originalName = pathinfo($file_path, PATHINFO_FILENAME);
+        $EXTENSION = pathinfo($file_path, PATHINFO_EXTENSION);
+
+        $date = now()->format('Y-m-d_H:i:s');
+
+        $newFileName = "{$originalName}_{$date}.{$EXTENSION}";
+
+        return Storage::download($this->backupFile, $newFileName);
     }
 }

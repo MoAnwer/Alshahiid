@@ -14,6 +14,7 @@
       
 
       <div class="container-fluid mt-4">
+        <div id="printArea">
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>احصائية الأيتام</h4>
         </div>
@@ -24,8 +25,21 @@
           <form action="{{ URL::current() }}" method="GET">
 
             <div class="row px-1 mt-4">
-              
-              <div class="col-5">
+
+              <div class="col-2">
+                <label>الفئة العمرية  :</label>
+                <div class="form-group">
+                    <select name="age" class="form-select">
+                      <option value="all">كل الفئات  </option>
+                      <option value="under5"  @selected(request('age') == 'under5')>اقل من 5 سنوات</option>
+                      <option value="from6To12" @selected(request('age') == 'from6To12')>6 سنوات - 12 سنة </option>
+                      <option value="from13To16"  @selected(request('age') == 'from13To16')>13 سنوات - 16 سنة  </option>
+                      <option value="from17To18"  @selected(request('age') == 'from17To18')> 17 سنوات - 18 سنة</option>
+                    </select>
+                  </div>
+              </div>
+
+              <div class="col-3">
                 <label>القطاع :</label>
                 <div class="form-group">
                     <select name="sector" class="form-select">
@@ -64,184 +78,89 @@
             </div>
           </form>
         </div>
-        
-        <x-table>
+
+         <x-table>
           <x-slot:head>
             <tr>
-              <th>الفئة العمرية</th>
-              <th colspan="2" class="border-left"> اقل من 5 سنوات</th> 
-              <th colspan="2" class="border">  6 سنوات - 12 سنة</th> 
-              <th colspan="2" class="border">  13 سنوات - 16 سنة</th> 
-              <th colspan="2" class="border">  17 سنوات - 18 سنة</th> 
-              <th colspan="4" class="border">المجموع</th> 
+              <th>الفئة العمرية </th>
+              <th>النوع</th>
+              <th>العدد</th>
             </tr>
           </x-slot:head>
-			
-			    <x-slot:body>
+          <x-slot:body>
             <tr>
-              <td>اناث</td> 
-              <td>ذكور</td> 
+              @if (request('age') == 'all')
+                  <td>كل الفئات  </td>
+                @elseif (request('age') == 'under5')
+                  <td>اقل من 5 سنوات</td>
+                @elseif (request('age') == 'from6To12')
+                  <td>6 سنوات - 12 سنة </td>
+                @elseif (request('age') == 'from13To16')
+                  <td>13 سنوات - 16 سنة </td>
+                @elseif (request('age') == 'from17To18')
+                  <td> 17 سنوات - 18 سنة </td>
+                @else 
+                  <td>كل الفئات </td>
+                @endif
 
-              <td>اناث</td> 
-              <td>ذكور</td> 
+                  <td>ذكر</td>
 
-              <td>اناث</td> 
-              <td>ذكور</td> 
+                <td>{{ $totalMale }}</td>
+              </tr>
 
-              <td>اناث</td> 
-              <td>ذكور</td> 
+              <tr>
+                @if (request('age') == 'all')
+                    <td>كل الفئات </td>
+                  @elseif (request('age') == 'under5')
+                    <td>اقل من 5 سنوات</td>
+                  @elseif (request('age') == 'from6To12')
+                    <td>6 سنوات - 12 سنة </td>
+                  @elseif (request('age') == 'from13To16')
+                    <td>13 سنوات - 16 سنة </td>
+                  @elseif (request('age') == 'from17To18')
+                    <td> 17 سنوات - 18 سنة </td>
+                  @else 
+                    <td>كل الفئات </td>
+                  @endif
 
-              <td>اناث</td> 
-              <td>ذكور</td> 
-              <td>اناث</td> 
-              <td>ارامل فقط</td> 
-              <td>المجموع</td> 
+                  <td>أنثى</td>
 
-            <tr>
-              {{-- Ander 5 --}}
-              <td>العدد</td>
-              <td>{{ (@$report->get('ذكر')[0]->ander5 ?? 0) }}</td>
-              <td>{{ (@$report->get('أنثى')[0]->ander5 ?? 0) }}</td>
-              {{--/ Ander 5 --}}
-              
-              {{-- 6 - 12 --}}
-              <td>{{ (@$report->get('ذكر')[0]->from6To12 ?? 0) }}</td>
-              <td>{{ (@$report->get('أنثى')[0]->from6To12 ?? 0) }}</td>
-              {{--/6 - 12  --}}
+                <td>{{ $totalFemale }}</td>
+              </tr>
 
-              {{-- 13 - 16 --}}
-              <td>{{ (@$report->get('ذكر')[0]->from13To16 ?? 0) }}</td>
-              <td>{{ (@$report->get('أنثى')[0]->from13To16 ?? 0) }}</td>
-              {{--/ 13 - 16  --}}
 
-              {{-- 17 - 18 --}}
-              <td>{{ (@$report->get('ذكر')[0]->from17To18 ?? 0) }}</td>
-              <td>{{ (@$report->get('أنثى')[0]->from17To18 ?? 0) }}</td>
-              {{--/17 - 18  --}}
-              
-              {{-- Counts --}}
-              <td>{{ (@$report->get('ذكر')[0]->countOfMales ?? 0) }}</td>
-              <td>{{ (@$report->get('أنثى')[0]->countOfFemales ?? 0) }}</td>
-              {{--/ Counts --}}
-
-              <td>{{ $countOfWidow }}</td>
-              <td>{{ $totalCountOfMembers }}</td>
-
-            </tr>
-
-            <tr>
-              
-              {{-- Ander 5 --}}
-              <td>النسبة</td>
-
-                @if (@$totalCountOfMembers > 0 && @$report->get('ذكر')[0]->ander5 > 0)
-                <td>{{ round((@$report->get('ذكر')[0]->ander5 / @$totalCountOfMembers) * 100, 2) . '%' }}</td>
+              <caption>
+                احصائية الأيتام   
+                @if(request()->query('sector') !== 'all' && !is_null(request()->query('sector')))
+                  {{ request()->query('sector') }}
+                  @else 
+                  {{ 'كل القطاعات' }}
+                @endif
+  
+  
+                @if(request()->query('locality') == 'all' && !is_null(request()->query('locality')))
+                  @if (request()->query('locality') != 'all')
+                    {{ '' }}
+                  @endif
                 @else
-                  <td>0%</td>
+                {{ request()->query('locality') ?? 'كل المحليات'}}
                 @endif
-                @if (@$totalCountOfMembers > 0 && @$report->get('أنثى')[0]->ander5 > 0)
-                <td>{{ round((@$report->get('أنثى')[0]->ander5 / @$totalCountOfMembers) * 100, 2) . '%' }}</td>
-                @else
-                  <td>0%</td>
-                @endif
-              {{--/ Ander 5 --}}
+              </caption>
+          </x-slot:body>
+        </x-table>
+        
+        </div>
+     
 
-              {{-- 6 - 12 --}}
-                @if (@$totalCountOfMembers > 0 && @$report->get('ذكر')[0]->from6To12 > 0)
-                <td>{{ round((@$report->get('ذكر')[0]->from6To12 / @$totalCountOfMembers) * 100, 2) . '%' }}</td>
-                @else
-                  <td>0%</td>
-                @endif
-                @if (@$totalCountOfMembers > 0 && @$report->get('أنثى')[0]->from6To12 > 0)
-                <td>{{ round((@$report->get('أنثى')[0]->from6To12 / @$totalCountOfMembers) * 100, 2) . '%' }}</td>
-                @else
-                  <td>0%</td>
-                @endif
-              {{--/ 6 - 12 --}}
-
-              {{-- 13 -16 --}}
-                @if (@$totalCountOfMembers > 0 && @$report->get('ذكر')[0]->from13To16 > 0)
-                <td>{{ round((@$report->get('ذكر')[0]->from13To16 / @$totalCountOfMembers) * 100, 2) . '%' }}</td>
-                @else
-                  <td>0%</td>
-                @endif
-                @if (@$totalCountOfMembers > 0 && @$report->get('أنثى')[0]->from13To16 > 0)
-                <td>{{ round((@$report->get('أنثى')[0]->from13To16 / @$totalCountOfMembers) * 100, 2) . '%' }}</td>
-                @else
-                  <td>0%</td>
-                @endif
-              {{--/ 13 -16 --}}
-
-              {{-- 17 - 18 --}}
-                @if (@$totalCountOfMembers > 0 && @$report->get('ذكر')[0]->from17To18 > 0)
-                <td>{{ round((@$report->get('ذكر')[0]->from17To18 / @$totalCountOfMembers) * 100, 2) . '%' }}</td>
-                @else
-                  <td>0%</td>
-                @endif
-                @if (@$totalCountOfMembers > 0 && @$report->get('أنثى')[0]->from17To18 > 0)
-                <td>{{ round((@$report->get('أنثى')[0]->from17To18 / @$totalCountOfMembers) * 100, 2) . '%' }}</td>
-                @else
-                  <td>0%</td>
-                @endif
-              {{--/ 17 - 18 --}}
-
-              {{-- COUNT --}}
-                @if ($totalCountOfMembers > 0 && @$report->get('ذكر')[0]->countOfMales > 0)
-                  <td>{{ round((@$report->get('ذكر')[0]->countOfMales / $totalCountOfMembers) * 100, 2) }}%</td>
-                  @else
-                    <td>0%</td>
-                @endif
-
-                @if ($totalCountOfMembers > 0 && @$report->get('أنثى')[0]->countOfFemales > 0)
-                <td>{{ round((@$report->get('أنثى')[0]->countOfFemales / $totalCountOfMembers) * 100, 2) }}%</td>
-                @else
-                  <td>0%</td>
-                @endif
-
-                @if ($totalCountOfMembers > 0 && @$countOfWidow > 0)
-                <td>{{ round((@$countOfWidow / $totalCountOfMembers) * 100, 2) }}%</td>
-                @else
-                  <td>0%</td>
-                @endif
-
-                @if ($totalCountOfMembers > 0)
-                <td>100%</td>
-                @else
-                  <td>0%</td>
-                @endif
-
-              {{--/ COUNT --}}
-
-            </tr>
-
-
-            </tr>
-
-
-
-            <caption class="text-primary">
-              @if(request()->query('sector') != 'all')
-                {{ request()->query('sector') }}
-              @else
-              كل القطاعات
-              @endif
-
-              @if( request()->query('locality') == 'all') 
-                كل المحليات
-              @else
-              {{ '-' . request()->query('locality')  }}
-              @endif
-
-               @empty(!request()->query('year'))
-                {{ 'سنة ' . request()->query('year')  . (request()->query('month') != '' ?  ' شهر ' . request()->query('month') : ' لكل الشهور     ')}}
-              @endempty
-            </caption>
-
-
-			    </x-slot:body>
-		    </x-table>
+        <div class="d-flex align-items-end mt-5 align-items-end">
+            <button class="mx-4 btn py-4 btn-primary active form-control" onclick="printContainer()">
+            <i class="bi bi-printer ml-2"></i>
+              طباعة 
+            </button>
+        </div>
 
       </div>
     </div>
 
   @include('components.footer')
+

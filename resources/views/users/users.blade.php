@@ -1,4 +1,4 @@
-@include('components.header', ['page_title' => 'ادارة المستحدمين'])
+@include('components.header', ['page_title' => 'دارة المستخدمين'])
 
  <div id="wrapper">
 
@@ -52,6 +52,9 @@
                   </a>
                   <a href="{{ route('users.delete', $user->id) }}" class="btn btn-danger px-2">
                     <i class="bi bi-trash-fill" title="حذف""></i>
+                  </a>
+                  <a href="{{ route('users.userLog', $user->id) }}" class="btn btn-primary active px-2">
+                    <i class="bi bi-person-fill" title="ملف المستخدم"></i>
                   </a>
                 </td>
               </tr>

@@ -42,7 +42,10 @@ class MartyrRequest extends FormRequest
             'record_number'          => 'حقل رقم السجل  مطلوب',
             'record_date'            => 'حقل تاريخ سجل الشهيد مطلوب',
             'militarism_number'      => 'حقل النمرة العسكرية مطلوب' ,
-            'unit'                   => 'حقل الوحدة مطلوب'
+            'unit'                   => 'حقل الوحدة مطلوب',
+            'militarism_number.required'      => 'حقل النمرة العسكرية مطلوب' ,
+            'militarism_number.unique' => 'النمرة العسكرية مموجودة بالفعل',
+            'record_number.unique' => 'رقم السجل موجودة بالفعل',
         ];
     }
 }

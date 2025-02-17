@@ -36,6 +36,12 @@
                         <i class="bi bi-gear-fill mx-2 text-gray-400"></i>
                     </a>
                    @endif
+
+                   <a class="dropdown-item pr-0 py-2" href="{{ route('users.userLog', auth()->id()) }}">
+                       احصائياتي للادخال
+                        <i class="bi bi-code mx-2 text-gray-400"></i>
+                    </a>
+
                     <a class="dropdown-item pr-0 py-2" href="{{ route('logout') }}">
                         خروج
                     <i class="bi bi-door-open-fill mx-2 text-gray-400"></i>
