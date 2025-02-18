@@ -39,18 +39,28 @@
 
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4> حج و عمرة </h4>
-           @if (request()->query('show') != 'true')
+          <div class="d-flex justify-content-between align-items-center px-3">
+            @if (request()->query('show') != 'true')
               <a class="btn btn-success active" href="{{ request()->url() . '?show=true' }}" >
                 <i class="bi bi-menu-app ml-2"></i>
-                عرض كل الخدمات
-              </a>
-            @else
-              <a class="btn btn-info active" href="{{ request()->url() . '?show=false' }}" >
-                <i class="bi bi-x ml-2"></i>
-                إخفاء كل الخدمات
-              </a>
-            @endif
-
+                  عرض كل الخدمات
+                </a>
+              @else
+                <a class="btn btn-info active" href="{{ request()->url() . '?show=false' }}" >
+                  <i class="bi bi-x ml-2"></i>
+                  إخفاء كل الخدمات
+                </a>
+              @endif
+              
+              <div class="d-flex justify-content-between align-items-center px-3" style="width: fit-content">
+                  <button class="mx-4 btn py-4 btn-primary active form-control" onclick="printContainer()">
+                    <i class="bi bi-printer ml-2"></i>
+                    طباعة 
+                  </button>
+              </div>
+              
+            </div>
+              
         </div>
        <hr>
        
@@ -190,6 +200,7 @@
 
         @if (request()->query('show') == 'true' || !empty(request()->query('search')))
 
+      <div id="printArea">
         <x-table>
           <x-slot:head>
               <th>اسم المستفيد</th>
@@ -384,6 +395,8 @@
               <span><b>{{ number_format($totalMoney) }}</b></span>
           </h5>
         </div>
+
+      </div>
 
          
           @else

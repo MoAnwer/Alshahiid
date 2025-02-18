@@ -46,7 +46,15 @@
                 إخفاء كل الخدمات
               </a>
             @endif
+            <div class="d-flex justify-content-between align-items-center px-3" style="width: fit-content">
+             <button class="mx-4 btn btn-primary active form-control" onclick="printContainer()">
+             <i class="bi bi-printer ml-2"></i>
+               طباعة 
+             </button>
+           </div>
           </div>
+
+
          
         </div>
         <hr class="mb-2"> 
@@ -72,7 +80,6 @@
                     <select name="search" class="form-select">
                       <option value="">--</option>
                       <option value="name" @selected(request('search') == 'name')>اسم  اليتيم</option>
-                      <option value="age" @selected(request('search') == 'age')>العمر</option>
                       <option value="national_number" @selected(request('search') == 'national_number')>الرقم الوطني</option>
                       <option value="martyr_name"  @selected(request('search') == 'martyr_name')>اسم الشهيد</option>
                       <option value="force" @selected(request('search') == 'force')>القوة العسكرية للشهيد</option>
@@ -179,6 +186,7 @@
 
         @if (request()->query('show') == 'true' || !empty(request()->query('search')))
 
+      <div id="printArea">
           <x-table>
           <x-slot:head>
             <th>اسم اليتيم</th>
@@ -226,9 +234,7 @@
           <x-slot:body>
             @forelse ($orphans as $orphan)
               <tr>
-                @if (request()->query('search') != 'name')
-                  <td>{{ $orphan->name }}</td>
-                @endif
+                <td>{{ $orphan->name }}</td>
                 @if (request()->query('search') != 'age')
                   <td>{{ $orphan->age }}</td>
                 @endif
@@ -281,21 +287,37 @@
             @endforelse
 
             <caption>
-              @if (request()->query('type') != 'all')
+              @if (request()->query('type') != 'all' && !is_null(request()->query('type')))
                 خدمات الـ{{ request()->query('type') }} للايتام
               @else
               خدمات الحج و العمرة للايتام
               @endif
 
+           
               
                 @if (request()->query('status') != 'all')
 
-                  {{ ' ' . request()->query('status') != 'all' ? request()->query('status'). 'ة' : '' }} 
+                  {{ ' ' . request()->query('status') != 'all' && !is_null(request()->query('status')) ? request()->query('status'). 'ة' : '' }} 
 
                 @endif
 
+                
+              @if (request()->query('search') == 'name')
+                - {{ request()->query('needel') }} 
+              @endif
+
+              @if (request()->query('search') == 'force')
+                - {{ request()->query('needel') }} 
+              @endif
+
+                   
+              @if (request()->query('search') == 'martyr_name')
+                 اسرة الشهيد {{ request()->query('needel') }} 
+              @endif
+
+
               @if(!is_null(request()->query('gender')) && request()->query('gender') != 'all')
-                 {{ request()->query('gender') }} -
+                 - {{ request()->query('gender') }} -
               @endif
               
               @if(request()->query('sector') == 'all')
@@ -357,6 +379,8 @@
           </h5>
         </div>
 
+
+      </div>
         @else
 
            <div class="text-center p-5 mx-auto my-5">

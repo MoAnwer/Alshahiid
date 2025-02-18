@@ -74,6 +74,13 @@
           {{--/ Show btns --}}
 
 
+          <!-- <div class="d-flex align-items-end mt-5 align-items-end"> -->
+            <button class="mx-4 btn  btn-primary active" onclick="printTable()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+              </button>
+            <!-- </div> -->
+
 
             </div>
 
@@ -213,7 +220,7 @@
                   <th>اسم الشهيد</th>
               {{-- @endif --}}
 
-              @if(request()->query('force') == 'all')
+              @if(request()->query('force') == 'all' ||  is_null(request()->query('force')))
               <th>القوة</th>                
               @endif
 
@@ -221,7 +228,7 @@
                   <th>الوحدة</th>
               @endif
 
-              @if(request()->query('rank') == 'all')
+              @if(request()->query('rank') == 'all' ||  is_null(request()->query('rank')))
                 <th>الرتبة</th>
               @endif
 
@@ -266,7 +273,7 @@
                     <td>{{ $martyr->name }}</td>
                   {{-- @endif --}}
 
-                  @if(request()->query('force') == 'all')
+                  @if(request()->query('force') == 'all'  || is_null(request()->query('force')))
                   <td>{{ $martyr->force }}</td>
                   @endif
 
@@ -274,7 +281,7 @@
                     <td>{{ $martyr->unit }}</td>
                   @endif
 
-                  @if(request()->query('rank') == 'all')
+                  @if(request()->query('rank') == 'all' || is_null(request()->query('rank')))
                     <td>{{ $martyr->rank }}</td>
                   @endif
 
@@ -327,7 +334,7 @@
               @endforelse
 
             <caption>
-              الشهداء
+              قائمة الشهداء 
               @if(request()->query('search') == 'name')
                   الشهيد  {{ request()->query('needel') }}
               @endif

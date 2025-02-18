@@ -18,7 +18,8 @@
         <div class="d-flex justify-content-between align-items-center pl-3">
           <h3>قائمة  الأرامل</h3>
 
-          @if (request()->query('hiddenNotesAndActions') == 'true')
+          <div class="d-flex justify-content-between align-items-center">
+              @if (request()->query('hiddenNotesAndActions') == 'true')
             <a class="btn btn-success active  mr-2" href="{{ request()->fullUrlWithQuery(['hiddenNotesAndActions' => 'false']) }}" >
               <i class="bi bi-x ml-2"></i>
               عرض ازرار الملف و العمليات
@@ -29,6 +30,12 @@
                 إخفاء ازرار الملف و العمليات
             </a>
           @endif
+
+          <button class="mx-4 btn  btn-primary active" onclick="printContainer()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
+          </div>
 
         </div>
 
@@ -99,6 +106,9 @@
             </div>
           </div> {{-- search form --}}          
         
+
+
+        <div id="printArea">
         <x-table>
           <x-slot:head>
             <th>#</th>
@@ -235,7 +245,11 @@
           </x-slot:body>
         </x-table>
 
+
       {{ $widows->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5') }}
+        <span>العدد  الكلي    {{number_format($widows->total()) }}</span>
+
+      </div>
 
       </div>
 

@@ -15,44 +15,40 @@ class FamilyMemberService
 
         $report = null;
 
-        if(($sector = $request->query('sector')) && ($locality = $request->query('locality'))) {
-            $report = 
-            Cache::remember('familyMembersCountReport_sector_' .$sector.'_locality_'.$locality , now()->addMinutes(1), function () use ($sector, $locality) {
-                return collect(DB::select('
-                                SELECT 
-                                    m.relation, 
-                                    COUNT(m.id) as count,
-                                    a.sector,
-                                    a.locality 
-                                FROM
-                                    family_members m
-                                INNER JOIN
-                                    addresses  a
-                                ON
-                                    a.family_id = m.family_id 
-                                WHERE 
-                                    a.sector = ?
-                                AND 
-                                    a.locality = ?
-                                GROUP BY
-                                    m.relation, a.sector, a.locality
-                        ', [$sector, $locality]
-                ));
-            });
-        } else {
-            $report = Cache::remember('familyMembersCountReport', now()->addMinutes(1), function() {
-                return FamilyMember::selectRaw('relation, count(id) as count')->groupBy('relation')->get();
-            });
-        }
+        $sector = $request->query('sector');
+        $locality   = $request->query('locality');
+
+        $query = DB::table('family_members')
+                ->join('addresses', 'addresses.family_id', 'family_members.family_id')
+                ->selectRaw('
+                    family_members.relation, 
+                    COUNT(family_members.id) as count
+                ')
+                ->groupBy('family_members.relation');
+
+
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->where('addresses.sector', $request->query('sector'))
+            ->groupBy(['addresses.sector']);
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->where('addresses.locality', $request->query('locality'))
+            ->groupBy(['addresses.sector', 'addresses.locality']);
+        } 
+
+
+
+        $report =  $query->get();
         
         $report = $report->groupBy('relation');
 
+        // dd($report);
 
-        $totalCount = Cache::remember('count_of_members_cache', now()->addMinutes(1), function() {
-            return FamilyMember::count();
-        });
 
-        return ['report' => $report, 'totalCount' => $totalCount];
+        // $totalCount = FamilyMember::count();
+
+        return ['report' => $report]; //, 'totalCount' => $totalCount
     }
 
 
@@ -108,11 +104,14 @@ class FamilyMemberService
 
         $moreTenMembersQuery = $moreTenMembersQuery->get();
 
+        // dd($moreTenMembersQuery);
+
         $moreTenMembersCount = 0;
 
         foreach ($moreTenMembersQuery as $value) {
-            $moreTenMembersCount++;
+            $moreTenMembersCount+= $value->count;
         }
+
 
         return ['report' => $report, 'moreTenMembersCount' => $moreTenMembersCount];
     }
@@ -130,9 +129,12 @@ class FamilyMemberService
         $report = null;
         $orphanReportQuery = null;
 
+        $from = $request->query('from');
+        
+
         $query = DB::table('family_members')
                 ->join('families', 'family_members.family_id', 'families.id')
-                ->leftJoin('addresses', 'addresses.family_id', 'families.id')
+                ->join('addresses', 'addresses.family_id', 'families.id')
                 ->selectRaw('family_members.gender')
                 ->where('family_members.age', '<=', 18)->where('family_members.relation',  "ابن")->orWhere('family_members.relation',  "ابنة")
                 ->groupBy(['family_members.gender']);
@@ -141,41 +143,42 @@ class FamilyMemberService
             $query->selectRaw('COUNT(family_members.age) as count')->groupBy(['family_members.gender']);
         }
 
-        if ($request->query('gender') == 'all' || is_null($request->query('gender'))) {
-            $query->where('family_members.gender', $request->query('gender'))->groupBy(['family_members.gender']);
-        }
+        // if ($request->query('gender') == 'all' || is_null($request->query('gender'))) {
+        //     $query->where('family_members.gender', $request->query('gender'))->groupBy(['family_members.gender']);
+        // }
 
-        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
-            $query->selectRaw('addresses.sector')->where('addresses.sector', $request->query('sector'))
-            ->groupBy(['addresses.sector', 'family_members.gender']);
-        }
-
-        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
-            $query->selectRaw('addresses.locality')->where('addresses.locality', $request->query('locality'))
-            ->groupBy(['addresses.sector', 'addresses.locality', 'family_members.gender']);
-        }
+     
 
         if ($request->query('age') != 'all' && $request->query('age') == 'under5') {
-            $query->selectRaw('COUNT(CASE WHEN family_members.age <= 5 THEN 1 END) AS count')->groupBy(['family_members.gender', 'family_members.gender']);
+            $query->selectRaw('count(family_members.age) as count')->whereBetween('family_members.age', [0, 5])->groupBy(['family_members.gender']);
         }
 
-        if ($request->query('age') != 'all' && $request->query('age') == 'from6To12') {
-            $query->selectRaw('COUNT(CASE WHEN family_members.age BETWEEN 6 AND 12 THEN 1 END) AS count')->groupBy(['family_members.gender']);
-        }
+        // if ($request->query('age') != 'all' && $request->query('age') == 'from6To12') {
+        //     $query->selectRaw('COUNT(CASE WHEN family_members.age BETWEEN 6 AND 12 THEN 1 END) AS count')->groupBy(['family_members.gender']);
+        // }
 
-        if ($request->query('age') != 'all' && $request->query('age') == 'from13To16') {
-            $query->selectRaw('COUNT(CASE WHEN family_members.age BETWEEN 13 AND 16 THEN 1 END) AS count')->groupBy(['family_members.gender']);
-        }
+        // if ($request->query('age') != 'all' && $request->query('age') == 'from13To16') {
+        //     $query->selectRaw('COUNT(CASE WHEN family_members.age BETWEEN 13 AND 16 THEN 1 END) AS count')->groupBy(['family_members.gender']);
+        // }
 
-        if ($request->query('age') != 'all' && $request->query('age') == 'from17To18') {
-            $query->selectRaw('COUNT(CASE WHEN family_members.age BETWEEN 17 AND 18 THEN 1 END) AS count')->groupBy(['family_members.gender']);
-        }
+        // if ($request->query('age') != 'all' && $request->query('age') == 'from17To18') {
+        //     $query->selectRaw('COUNT(CASE WHEN family_members.age BETWEEN 17 AND 18 THEN 1 END) AS count')->groupBy(['family_members.gender']);
+        // }
+
+        if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
+            $query->where('addresses.sector', $request->query('sector'));
+        } 
+
+        if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
+            $query->where('addresses.locality', $request->query('locality'));
+        } 
+
 
      
 
         $report = $query->get()->groupBy('gender');
         // dd($report);
-        $totalMale = @($report->get('ذكر') == null ? 0 : $report->get('ذكر')->sum('count'));
+        $totalMale =  @($report->get('ذكر') == null ? 0 : $report->get('ذكر')->sum('count'));
         $totalFemale = @($report->get('أنثى') == null ? 0 : $report->get('أنثى')->sum('count'));
         // dd($report->get('أنثى'));
         // dd($totalFemale);

@@ -17,6 +17,12 @@
         <div class="container-fluid mt-4">
           <div class="d-flex justify-content-between align-items-center px-3">
             <h4>تقارير السكن</h4>
+
+            <button class="mx-4 btn  btn-primary active" onclick="printTable()">
+              <i class="bi bi-printer ml-2"></i>
+              طباعة 
+            </button>
+
           </div>
 
         {{--  --}}
@@ -140,8 +146,28 @@
             @else
               <td>0%</td>
             @endif
+
 				</tr>
 
+        <caption>
+          تقرير السكن 
+              @if(request()->query('sector') != 'all' || is_null(request()->query('sector')))
+                {{ request()->query('sector') }}
+              @else
+              كل القطاعات
+              @endif
+
+              @if( request()->query('locality') == 'all' || is_null(request()->query('locality'))) 
+                كل المحليات
+              @else
+              {{ '-' . request()->query('locality')  }}
+              @endif
+
+               @empty(!request()->query('year'))
+                {{ 'سنة ' . request()->query('year')  . (request()->query('month') != '' ?  ' شهر ' . request()->query('month') : ' لكل الشهور     ')}}
+              @endempty
+
+        </caption>
 			</x-slot:body>
 
 		  </x-table>

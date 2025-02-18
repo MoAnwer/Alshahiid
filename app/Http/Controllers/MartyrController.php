@@ -52,10 +52,6 @@ class MartyrController extends Controller
         if($request->query('search') == 'militarism_number') {
             $query->where('militarism_number', $needel);
         }
-        
-        if($request->query('search') == 'force') {
-            $query->where('force', $needel);
-        }
 
         if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
             $query->where('addresses.sector', $request->query('sector'));
@@ -63,6 +59,14 @@ class MartyrController extends Controller
 
         if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
             $query->where('addresses.locality', $request->query('locality'));
+        } 
+
+        if (!is_null($request->query('month')) && $request->query('month') != '') {
+            $query->selectRaw('MONTH(martyrs.created_at) as month')->whereMonth('martyrs.created_at',  $request->query('month'))->groupBy('month');
+        } 
+
+        if (!is_null($request->query('year')) && $request->query('year') != '') {
+            $query->selectRaw('YEAR(martyrs.created_at) as year')->whereYear('martyrs.created_at',  $request->query('year'))->groupBy('year');
         } 
 
         $martyrs = $query->latest('martyrs.id')->paginate(10);

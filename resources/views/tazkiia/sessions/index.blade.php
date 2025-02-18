@@ -144,13 +144,24 @@
               </a>
             </div>
 
+            
+
           </form>
+
+          
 
           </div>
       </div>
 
+       <div class="d-flex justify-content-between align-items-center px-3" style="width: fit-content">
+          <button class="mx-4 btn py-4 btn-primary active form-control" onclick="printContainer()">
+            <i class="bi bi-printer ml-2"></i>
+            طباعة 
+          </button>
+        </div>
 
-        @if(request('show') == 'true')
+      @if(request('show') == 'true')
+      <div id="printArea">
         <x-table>
           <x-slot:head>
             @if (empty(request()->query('name')) || is_null(request()->query('name')))
@@ -299,7 +310,7 @@
           </x-slot:body>
         </x-table>
 
-        {{ $sessions->links('vendor.pagination.bootstrap-5') }}
+        {{ $sessions->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5') }}
   
   
 
@@ -336,6 +347,8 @@
                 <span><b>{{ number_format($totalMoney) }}</b></span>
             </h5>
           </div>
+
+        </div>
 
 
 

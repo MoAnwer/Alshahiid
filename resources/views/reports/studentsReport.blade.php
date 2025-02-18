@@ -16,6 +16,10 @@
       <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>احصاء الطلاب</h4>
+          <button class="mx-4 btn  btn-primary active" onclick="printTable()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
         </div>
 
         
@@ -118,7 +122,7 @@
 			
 			<x-slot:body>
         @php
-          $totalCount =  @$report->get('ذكر')[0]->count + @$report->get('أنثى')[0]->count;
+          $totalCount =  @$maleCount + @$femaleCount;
           $totalPer = 0
         @endphp
           
@@ -138,11 +142,11 @@
                 @endif
 
               </td>
-              <td>{{ number_format( @$report->get('ذكر')[0]->count ?? '0') }}</td>
+              <td>{{ number_format( @$maleCount ?? '0') }}</td>
               <td>
-                @if (@$report->get('ذكر')[0]->count > 0 || $totalCount > 0)
-                  {{ round((@$report->get('ذكر')[0]->count / $totalCount) * 100, 2) . '%' }}
-                  @php($totalPer += (@$report->get('ذكر')[0]->count / $totalCount) * 100)
+                @if (@$maleCount> 0 || $totalCount > 0)
+                  {{ round((@$maleCount / $totalCount) * 100, 2) . '%' }}
+                  @php($totalPer += (@$maleCount / $totalCount) * 100)
                 @else
                   0%
                 @endif
@@ -167,11 +171,11 @@
                     @endif
                   </td>
 
-                  <td>{{ number_format(@$report->get('أنثى')[0]->count ?? '0') }}</td>
+                  <td>{{ number_format(@$femaleCount ?? '0') }}</td>
                   <td>
-                    @if (@$report->get('أنثى')[0]->count > 0 && $totalCount > 0)
-                      {{ round((@$report->get('أنثى')[0]->count / $totalCount) * 100, 2) . '%' }}
-                      @php($totalPer += (@$report->get('أنثى')[0]->count / $totalCount) * 100)
+                    @if (@$femaleCount > 0 && $totalCount > 0)
+                      {{ round((@$femaleCount  / $totalCount) * 100, 2) . '%' }}
+                      @php($totalPer += (@$femaleCount  / $totalCount) * 100)
                     @else
                       0%
                     @endif
@@ -187,7 +191,7 @@
               <td>
 
                 <b>
-                  {{ $totalPer . '%' }}
+                  {{ round($totalPer, 2) . '%' }}
                 <b>
 
               </td>
@@ -195,13 +199,13 @@
 
             <caption class="text-primary">
               احصاء الطلاب
-              @if(request()->query('sector') != 'all')
+              @if(request()->query('sector') != 'all' && !is_null(request()->query('sector')))
                 {{ request()->query('sector') }}
               @else
               كل القطاعات
               @endif
 
-              @if( request()->query('locality') == 'all') 
+              @if( request()->query('locality') == 'all' && !is_null(request()->query('locality'))) 
                 كل المحليات
               @else
                محلية  {{ request()->query('locality')  }}

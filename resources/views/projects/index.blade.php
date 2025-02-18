@@ -40,6 +40,8 @@
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4> قائمة المشاريع</h4>
 
+          <div class="d-flex justify-content-between align-items-center">
+
            @if (request()->query('show') == 'true' || empty(request()->query('show')))
             
             {{-- Show btns --}}
@@ -55,6 +57,11 @@
                 </a>
               @endif
             {{--/ Show btns --}}
+             <button class="mx-4 btn  btn-primary active" onclick="printContainer()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
+          </div>
 
           @endif
 
@@ -180,7 +187,7 @@
         </div>
 
 
- 
+  <div id="printArea">
           <x-table>
             <x-slot:head>
               <th>اسرة الشهيد</th>
@@ -264,6 +271,11 @@
                  @if(request()->query('search') == 'force')
                   اسر {{ request()->query('needel') }}
                 @endif
+
+                 @if(request()->query('search') == 'project_name')
+                  مشروع  {{ request()->query('needel') }}
+                @endif
+
 
                      
                 @if(!is_null(request()->query('relation')) && request()->query('relation') != 'all')
@@ -365,7 +377,7 @@
 
           </div>
 
-
+        </div>
         </div>
 
     </div>

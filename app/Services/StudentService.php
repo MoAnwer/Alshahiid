@@ -18,7 +18,7 @@ class StudentService
                     COUNT(students.stage) AS count,
                     family_members.gender AS gender 
                 '
-                )->groupBy('family_members.gender');
+                )->groupBy(['family_members.gender', 'students.stage']);
 
         if (!empty($request->query('gender')) && $request->query('gender') != 'all') {
             $query->where('family_members.gender', $request->query('gender'))->groupBy('family_members.gender');
@@ -26,17 +26,17 @@ class StudentService
 
         if (!empty($request->query('stage')) && $request->query('stage') != 'all') {
             $query->selectRaw('students.stage as stage')->where('students.stage', $request->query('stage'))
-            ->groupBy(['addresses.sector', 'students.stage', 'family_members.gender']);
+            ->groupBy(['addresses.sector', 'students.stage']);
         } 
 
         if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
             $query->selectRaw('addresses.sector as sector')->where('addresses.sector', $request->query('sector'))
-            ->groupBy(['addresses.sector', 'students.stage', 'family_members.gender']);
+            ->groupBy(['addresses.sector', 'students.stage']);
         } 
 
         if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
             $query->selectRaw('addresses.locality as locality')->where('addresses.locality', $request->query('locality'))
-            ->groupBy(['addresses.sector', 'addresses.locality', 'students.stage', 'family_members.gender']);
+            ->groupBy(['addresses.sector', 'addresses.locality', 'students.stage']);
         } 
 
         if (!is_null($request->query('month')) && $request->query('month') != '') {
@@ -49,8 +49,16 @@ class StudentService
 
         $report = $query->get()->groupBy('gender');
 
-        // dd($report);
 
-        return compact('report');
+        // // $report = [
+
+        // // ];
+            
+        // dd($report->get('ذكر'));
+
+        $maleCount = @$report->get('ذكر') != null ? $report->get('ذكر')->sum('count') : 0;
+        $femaleCount = @$report->get('أنثى') != null ? $report->get('أنثى')->sum('count') : 0;
+
+        return compact('maleCount', 'femaleCount');
     }
 }

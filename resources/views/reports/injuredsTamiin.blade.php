@@ -15,6 +15,10 @@
 
       <div class="container-fluid mt-4">
         <h4>التأمين الصحي بالمعاقين</h4>
+        <button class="mx-4 btn  btn-primary active" onclick="printTable()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
         <hr>
 
                 <div class="search-form">
@@ -97,6 +101,20 @@
               <td>100%</td>
             </tr>
 
+<caption> 
+  التأمين الصحي بالمعاقين
+  @if(request()->query('sector') != 'all' && !is_null(request()->query('sector')))
+                {{ request()->query('sector') }}
+              @else
+              كل القطاعات
+              @endif
+
+              @if( request()->query('locality') == 'all' && !is_null(request()->query('locality'))) 
+                كل المحليات
+              @else
+                 {{ request()->query('locality')  }}
+              @endif
+</caption>
            </x-slot:body>
 
          </x-table>

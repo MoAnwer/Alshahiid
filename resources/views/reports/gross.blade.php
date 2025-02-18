@@ -16,15 +16,21 @@
       <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>تقرير الاجمالي العام</h4>
+          <div class="d-flex justify-content-between align-items-center px-3">
+            <x-print-btn />
+          </div>
         </div>
+        
+
+        
     
         <hr>
         
         <x-search-form />
-        
+        <div id="printArea">
 		      <x-table>
 			     <x-slot:head>
-              <th><b>الاجمالي العام</b></th>
+              <th>الاجمالي العام</th>
               <th>مطلوب</th>
               <th>منفذ</th>
 			        <th>النسبة</th>
@@ -36,7 +42,7 @@
 
             <x-slot:body>
               <tr>
-                <th>الإجمالي العام</th>
+                <td>الإجمالي العام</td>
                 <td>{{ $report['need'] }} </td>
                 <td>{{ $report['done'] }} </td>
                 <td>
@@ -80,6 +86,7 @@
             </x-slot:body>
 
           </x-table>
+        </div>
     </div>
   </div>
 

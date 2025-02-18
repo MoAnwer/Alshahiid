@@ -66,6 +66,13 @@
             @endif
           @endif
           {{--/ Show btns --}}
+
+          <button class="mx-4 btn btn-primary active" onclick="printContainer()">
+                <i class="bi bi-printer ml-2"></i>
+                طباعة 
+              </button>
+
+
           </div>
 
         </div>
@@ -108,13 +115,17 @@
                   <i class="bi bi-menu-button"></i>
                 </a>
               </div>
-              </form>
+
+              
+            </form>
 
             </div>
         </div> {{-- search form --}}
 
 
-        @if (request()->query('show') == 'true')
+      @if (request()->query('show') == 'true')
+
+      <div id="printArea">
 
         <x-table>
           <x-slot:head>
@@ -169,9 +180,11 @@
           </x-slot:body>
         </x-table>
 
-      {{ $supervisors->links('vendor.pagination.bootstrap-5') }}
+      {{ $supervisors->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5')  }}
       <hr>
         عدد المشرفين  الكلي  : <b>{{ $supervisors->total() }}</b>
+
+    </div>
 
       @else
             <div class="text-center p-5 mx-auto my-5">

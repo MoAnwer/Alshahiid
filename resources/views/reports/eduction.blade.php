@@ -16,6 +16,10 @@
       <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>تقارير التعليم</h4>
+          <button class="mx-4 btn  btn-primary active" onclick="printTable()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
         </div>
         
         <hr>
@@ -456,13 +460,14 @@
 
 
             <caption class="text-primary">
-              @if(request()->query('sector') != 'all')
+              تقارير التعليم 
+              @if(request()->query('sector') != 'all' && !is_null(request()->query('sector')))
                 {{ request()->query('sector') }}
               @else
               كل القطاعات
               @endif
 
-              @if( request()->query('locality') == 'all') 
+              @if( request()->query('locality') == 'all' && !is_null(request()->query('locality'))) 
                 كل المحليات
               @else
               {{ '-' . request()->query('locality')  }}

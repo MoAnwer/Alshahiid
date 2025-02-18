@@ -34,6 +34,9 @@
         <div class="d-flex justify-content-between align-items-center pl-3">
           <h3>قائمة  الأيتام</h3>
 
+          <div class="d-flex justify-content-between"> 
+
+
             @if (request()->query('hiddenNotesAndActions') == 'true')
             <a class="btn btn-success active  mr-2" href="{{  request()->fullUrlWithQuery(['hiddenNotesAndActions' => 'false']) }}" >
               <i class="bi bi-x ml-2"></i>
@@ -45,6 +48,14 @@
                   إخفاء ازرار الملف و العمليات
               </a>
             @endif
+            <div class="d-flex justify-content-between align-items-center px-3" style="width: fit-content">
+             <button class="mx-4 btn btn-primary active form-control" onclick="printContainer()">
+             <i class="bi bi-printer ml-2"></i>
+               طباعة 
+             </button>
+           </div>
+
+          </div>
 
         </div>
         <hr>
@@ -62,7 +73,6 @@
                     <select name="search" class="form-select">
                       <option value="">بحث باستخدام </option>
                       <option value="name" @selected(request('search') == 'name')>اسم </option>
-                      <option value="age" @selected(request('search') == 'age')>العمر</option>
                       <option value="martyr_name" @selected(request('search') == 'martyr_name')>اسم الشهيد</option>
                       <option value="militarism_number" @selected(request('search') == 'militarism_number')>النمرة العسكرية للشهيد</option>
                       <option value="national_number" @selected(request('search') == 'national_number')>الرقم الوطني</option>
@@ -134,9 +144,9 @@
             </div>
           </div> {{-- search form --}}          
         
+      <div id="printArea">
         <x-table>
           <x-slot:head>
-            <th>#</th>
             <th>الاسم</th>
             <th>العمر</th>
             <th>الشهيد</th>
@@ -159,7 +169,6 @@
           <x-slot:body>
             @forelse ($orphans as $orphan)
               <tr>
-                <td>{{ $orphan->orphan_id }}</td>
                 <td>{{ $orphan->name }}</td>
                 <td>{{ $orphan->age }}</td>
                 <td>{{ @$orphan->martyr_name }}</td>
@@ -275,6 +284,10 @@
             </caption>
           </x-slot:body>
         </x-table>
+
+
+        {{-- printArea --}}
+      </div>
 
       {{ $orphans->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5') }}
 

@@ -291,6 +291,18 @@
         </div>
 
         <div class="col-md-6 col-lg-2">
+          <a href="{{ route('reports.gross') }}">
+            <div class="card text-center py-2 border border-success">
+              <div class="card-body">
+                <i class="bi bi-cash-coin text-success mb-4" style="font-size: 60px !important"></i>
+                <h5 class="card-title mb-3"> تقرير الاجمالي العام </h5>
+              </div>
+            </div>
+          </a>
+        </div>
+
+
+        <div class="col-md-6 col-lg-2">
           <a href="{{ route('reports.homes') }}" >
             <div class="card text-center py-2 border border-info">
               <div class="card-body">
@@ -334,7 +346,7 @@
           </a>  
         </div>
 
-        <div class="col-md-6 col-lg-2">
+        <div class="col-md-6 col-lg-2 mt-4">
           <a href="{{ route('reports.projectsWorkStatusReport') }}" >
             <div class="card text-center py-2 border border-success">
               <div class="card-body">

@@ -142,11 +142,26 @@
 
             </div>
         </div>
+         <div class="d-flex justify-content-between align-items-center px-3" style="width: fit-content">
+                <button class="mx-4 btn py-4 btn-primary active form-control" onclick="printContainer()">
+                <i class="bi bi-printer ml-2"></i>
+                  طباعة 
+                </button>
+              </div>
+
+
+        @php
+          $totalBudget = 0;
+          $totalBudgetFromOrg = 0;
+          $totalBudgetOutOfOrg = 0;
+          $totalMoney = 0;
+        @endphp
 
 
 
-       @if(request('show') == 'true')
+      @if(request('show') == 'true')
 
+      <div id="printArea">
         <x-table>
           <x-slot:head>
 			        <th>#</th>
@@ -178,8 +193,17 @@
                 <td>{{ $lecture->date }}</td>
                 <td>{{ $lecture->status }}</td>
 				        <td>{{ number_format($lecture->budget ?? 0) }}</td>
+                @php($totalBudget += $lecture->budget)
+
                 <td>{{ number_format($lecture->budget_from_org ?? 0) }}</td>
+                @php($totalBudgetFromOrg += $lecture->budget_from_org)
+
                 <td>{{ number_format( $lecture->budget_out_of_org ?? 0) }}</td>
+
+                @php($totalBudgetOutOfOrg += $lecture->budget_out_of_org)
+                @php($totalMoney += $lecture->budget_out_of_org + $lecture->budget_from_org)
+
+
                 @if (request()->query('sector') == 'all' || is_null(request()->query('sector')) )
                     <td>{{ $lecture->sector ?? '-' }}</td>
                 @endif
@@ -207,6 +231,8 @@
         		@endif
 
           <caption class="text-primary">
+              ندوات و محاضرات 
+
 
               @if(request()->query('name') != '')
               محاضرة   {{ request()->query('name') }}
@@ -245,8 +271,6 @@
                 @else
                 {{ request()->query('locality') ?? 'كل المحليات'}}
                 @endif
-                
-               
 
 
               </caption>
@@ -254,7 +278,7 @@
           </x-slot:body>
         </x-table>
 
-        {{ $lectures->links('vendor.pagination.bootstrap-5') }}
+        {{ $lectures->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5') }}
 		
 
         @else    
@@ -264,6 +288,35 @@
           </div>
 
         @endif
+
+        
+          <hr>
+
+          <div class="d-flex align-items-center justify-content-between py-4 mb-5">
+             <h5>
+                العدد الكلي :
+                <span><b>{{ number_format($lectures->total()) }}</b></span>
+            </h5>
+            <h5>
+                اجمالي التقديري :
+                <span><b>{{ number_format($totalBudget) }}</b></span>
+            </h5>
+            <h5>
+                اجمالي من داخل المنظمة :
+                <span><b>{{ number_format($totalBudgetFromOrg) }}</b></span>
+            </h5>
+            <h5>
+                اجمالي من خارج المنظمة :
+                <span><b>{{ number_format($totalBudgetOutOfOrg) }}</b></span>
+            </h5>
+            <h5>
+                اجمالي المؤمن :
+                <span><b>{{ number_format($totalMoney) }}</b></span>
+            </h5>
+          </div>
+          {{-- printArea end --}}
+      </div> 
+
 
 
         </div>

@@ -8,7 +8,7 @@
   <link rel="shortcut icon" href="{{ asset('asset/images/logo.jpg') }}" />
   <title>{{ $app_name . ' | ' . $page_title}}</title>
   <style>
-    * {font-family: 'cairo';}
+    * {font-family: 'cairo';} 
   </style>
 </head>
 <body class="{{ $body_class ?? 'default-body' }}" id="page-top">

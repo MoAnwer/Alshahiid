@@ -65,6 +65,11 @@
               {{--/ Show btns --}}
 
             @endif
+
+            <button class="mx-4 btn  btn-primary active" onclick="printContainer()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
             
           </div>
         </div>
@@ -171,6 +176,7 @@
 
 
           @if (request()->query('show') == 'true')
+          <div id="printArea">
             <x-table>
             <x-slot:head>
 
@@ -354,6 +360,8 @@
               عدد الاسر الكلي :
               <span><b>{{ number_format($families->total()) }}</b></span>
           </h5>
+
+        </div>
 
         </div>
 

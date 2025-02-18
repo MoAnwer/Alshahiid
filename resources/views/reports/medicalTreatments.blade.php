@@ -17,6 +17,10 @@
 
         <div class="d-flex justify-content-between align-items-center mt-3 px-3">
           <h4>تقارير الخدمات العلاجية</h4>
+          <button class="mx-4 btn  btn-primary active" onclick="printTable()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
         </div>
 
         <hr>

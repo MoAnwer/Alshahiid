@@ -30,11 +30,13 @@
           </ol>
         </nav>
 
-        <hr />
+      <hr />
 
 
         <div class="d-flex justify-content-between align-items-center pl-3">
           <h3>الاسر التي يشرف عليها {{ $supervisorName->name }}</h3>
+
+          <div class="d-flex justify-content-between  align-items-center  ">
 
              @if (request()->query('show') == 'true' || empty(request()->query('show')))
               
@@ -51,8 +53,13 @@
                   </a>
                 @endif
               {{--/ Show btns --}}
-
             @endif
+             <button class="mx-4 btn btn-primary active" onclick="printContainer()">
+                <i class="bi bi-printer ml-2"></i>
+                طباعة 
+              </button>
+
+          </div>
         </div>
 
                
@@ -134,10 +141,12 @@
                   <i class="bi bi-menu-button ml-2"></i>
                 </a>
               </div>
-
+              </form>
             </div>
               
         </div>
+
+      <div id="printArea">
 
         <x-table>
           <x-slot:head>
@@ -220,10 +229,11 @@
 
           </x-slot:body>
         </x-table>
-        {{ $families->links('vendor.pagination.bootstrap-5') }}
+        {{ $families->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5')  }}
 
         <hr>
         عدد الاسر الكلي  المشرف عليها : <b>{{ $families->total() }}</b>
+      </div>
       </div>
     </div>
   @include('components.footer')

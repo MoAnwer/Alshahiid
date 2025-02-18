@@ -34,7 +34,13 @@
                 </a>
               @endif
             {{--/ Show btns --}}
+             <button class="mx-4 btn btn-primary active" onclick="printContainer()">
+                <i class="bi bi-printer ml-2"></i>
+                طباعة 
+              </button>
           </div>
+
+         
 
         </div>
       <hr>
@@ -110,6 +116,7 @@
       
     </div>
 
+    <div id="printArea">
 		    <hr />
         <x-table>
           <x-slot:head>
@@ -203,6 +210,8 @@
         </x-table>
 
         {{ $injureds->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5') }}
+
+      </div>
         </div>
       </div>
     </div>

@@ -70,6 +70,10 @@
 
             @endif
 
+            <button class="mx-4 btn  btn-primary active" onclick="printContainer()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
           </div>
         </div>
        <hr>
@@ -123,7 +127,9 @@
         </x-slot:inputs>
        </x-date-search-form>
 
-        @if(request('show') == 'true')
+      @if(request('show') == 'true')
+      
+      <div id="printArea">
         <x-table>
           <x-slot:head>
             @if (empty(request()->query('name')) || is_null(request()->query('name')))
@@ -252,7 +258,7 @@
           </x-slot:body>
         </x-table>
 
-        {{ $camps->links('vendor.pagination.bootstrap-5') }}
+        {{ $camps->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5') }}
   
          <hr>
 
@@ -279,6 +285,7 @@
             </h5>
           </div>
 
+      </div>
 
           @else    
 

@@ -140,7 +140,8 @@ class MedicalTreatmentController extends Controller
 
             } else if ($request->query('hasTamiin') == 'no') {
 
-                $query->where('family_members.health_insurance_number', null)->orWhere('health_insurance_end_date', '<', now()); // 2025-01-01 < 2025-02-11
+                $query->where('family_members.health_insurance_number', null); // 2025-01-01 < 2025-02-11
+                // something here
             }
         }
         
@@ -299,15 +300,14 @@ class MedicalTreatmentController extends Controller
         $hasTamiin = DB::table('family_members')
                     ->join('families', 'family_members.family_id', 'families.id')
                     ->join('martyrs', 'families.martyr_id', 'martyrs.id')
-                    ->join('addresses', 'addresses.family_id', 'family_members.family_id')
+                    ->leftJoin('addresses', 'addresses.family_id', 'family_members.family_id')
                     ->selectRaw('COUNT(family_members.id) as count')
-                    ->where('family_members.health_insurance_number', '!=', null) 
-                    ->where('health_insurance_end_date', '>', now()); // 2030-01-01 > 2025-02-11
+                    ->where('family_members.health_insurance_number', '!=', null);
         
         $hasNoTamiin = DB::table('family_members')
                        ->join('families', 'family_members.family_id', 'families.id')
                        ->join('martyrs', 'families.martyr_id', 'martyrs.id')
-                       ->join('addresses', 'addresses.family_id', 'family_members.family_id')
+                       ->leftJoin('addresses', 'addresses.family_id', 'family_members.family_id')
                        ->selectRaw('COUNT(family_members.id) as count')
                        ->where('family_members.health_insurance_number', '=', null);
 
@@ -339,19 +339,36 @@ class MedicalTreatmentController extends Controller
 
         if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
 
-            $hasTamiin->where('locality', $request->query('locality'))->groupBy(['martyrs.force', 'family_members.gender',  'addresses.sector', 'addresses.locality']);
+            $hasTamiin->where('locality', $request->query('locality'))->groupBy(['martyrs.force', 'family_members.gender',  'addresses.sector']);
 
-            $hasNoTamiin->where('locality', $request->query('locality'))->groupBy(['martyrs.force', 'family_members.gender',  'addresses.sector', 'addresses.locality']);
+            $hasNoTamiin->where('locality', $request->query('locality'))->groupBy(['martyrs.force', 'family_members.gender',  'addresses.sector']);
         } 
 
         // $hasNoTamiin = $hasNoTamiin->get();
 
-        // dd($hasTamiin->get());
+        // dd();
+
+        $tamiin = 0;
+        $notamiin = 0;
+
+        foreach ($hasTamiin->get() as $key) {
+            $tamiin += $key->count;
+        }
+
+        foreach ($hasNoTamiin->get() as $key) {
+            $notamiin += $key->count;
+        }
+        
+
+        $hasTamiin = $tamiin;
+        $hasNoTamiin = $notamiin;
+
+        // dd($tamiin);
 
         $report = collect([
-            'has'       => @$hasTamiin->get()[0]->count ?? 0,
-            'no'        => @$hasNoTamiin->get()[0]->count ?? 0,
-            'total'     => @$hasTamiin->get()[0]->count  + @$hasNoTamiin->get()[0]->count
+            'has'       => @$hasTamiin,
+            'no'        => @$hasNoTamiin,
+            'total'     => @$hasTamiin  + @$hasNoTamiin
         ]);
 
         return view('MedicalTreatments.tamiin', compact('report'));

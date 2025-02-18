@@ -1,4 +1,4 @@
-<ul class="navbar-nav p-0 bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<ul class="navbar-nav p-0 bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home')  }}">
@@ -15,6 +15,15 @@
 		</a>
         </a>
     </li>
+
+    <li class="nav-item mb-0">
+        <a class="nav-link pb-2" href="{{ route('families.list') }}">
+            <i class="bi bi-people text-info"></i>
+            <span>قائمة الأسر </span>
+        </a>
+        </a>
+    </li>
+    
 	
 	
 	<li class="nav-item mb-2">
@@ -33,26 +42,6 @@
         </a>
     </li>
     
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#taskiia"
-            aria-expanded="true" aria-controls="taskiia">
-            <i class="bi bi-hearts text-danger ml-2"></i>
-            <span>التزكية الروحية</span>
-        </a>
-        <div id="taskiia" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('tazkiia.index') }}">كل الخدمات</a>
-                <a class="collapse-item" href="{{ route('tazkiia.camps.index') }}">المعسكرات  التربوية</a>
-                <a class="collapse-item" href="{{ route('tazkiia.lectures.index') }}"> المحاضرات و الندوات</a>
-                <a class="collapse-item" href="{{ route('tazkiia.sessions.index') }}">حلقات</a>
-                <a class="collapse-item" href="{{ route('tazkiia.martyrsDocsList') }}">توثيق سير الشهداء</a>
-                <a class="collapse-item" href="{{ route('tazkiia.hagsMembersList') }}">حج و عمرة</a>
-                <a class="collapse-item" href="{{ route('tazkiia.communicate.index') }}">تواصل مع اسر الشهداء</a>
-                <a class="collapse-item" href="{{ route('tazkiia.report') }}">التقارير</a>
-            </div>
-        </div>
-    </li>
-
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#orphans"
             aria-expanded="true" aria-controls="orphans">
@@ -174,7 +163,7 @@
 				<a class="collapse-item" href="{{ route('reports.familiesCategories') }}">تصنيف الأسر</a>
 				<a class="collapse-item" href="{{ route('reports.familyMembersCount') }}">عدد افراد الأسر</a>
 				<a class="collapse-item" href="{{ route('reports.familyMembersCountByCategory') }}">عدد افراد الاسر <br>حسب الشرائح المكفولة</a>
-				<a class="collapse-item" href="{{ route('reports.orphanReport') }}">احصائيات الايتام</a>
+				<!-- <a class="collapse-item" href="{{ route('reports.orphanReport') }}">احصائيات الايتام</a> -->
 			</div>
 		</div>
 	</li>

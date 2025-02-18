@@ -45,13 +45,16 @@
                 إخفاء كل الخدمات
               </a>
             @endif
+            <div class="d-flex justify-content-between align-items-center px-3" style="width: fit-content">
+             <button class="mx-4 btn btn-primary active form-control" onclick="printContainer()">
+             <i class="bi bi-printer ml-2"></i>
+               طباعة 
+             </button>
+            </div>
           </div>
         </div>
         <hr>
-        
 
-        {{--  --}}
-                   
         @php
           $totalBudget = 0;
           $totalBudgetFromOrg = 0;
@@ -70,7 +73,6 @@
                     <select name="search" class="form-select">
                       <option value="">--</option>
                       <option value="name" @selected(request('search') == 'name')>اسم </option>
-                      <option value="age" @selected(request('search') == 'age')>العمر</option>
                       <option value="national_number" @selected(request('search') == 'national_number')>الرقم الوطني</option>
                       <option value="martyr_name"  @selected(request('search') == 'martyr_name')>اسم الشهيد</option>
                       <option value="force" @selected(request('search') == 'force')>القوة العسكرية للشهيد</option>
@@ -121,33 +123,29 @@
                 </div>
             </div>
 
+            <div class="col-2">
+              <label>القطاع :</label>
+              <div class="form-group">
+                  <select name="sector" class="form-select">
+                    <option value="all"  @selected(request('sector') == "all")>كل القطاعات</option>
+                    <option value="القطاع الشرقي"  @selected(request('sector') == 'القطاع الشرقي')>القطاع الشرقي</option>
+                    <option value="القطاع الشمالي" @selected(request('sector') == 'القطاع الشمالي')>القطاع الشمالي</option>
+                    <option value="القطاع الغربي"  @selected(request('sector') == 'القطاع الغربي')>القطاع الغربي</option>
+                  </select>
+                </div>
+            </div>
 
-
-
-              
-              <div class="col-2">
-                <label>القطاع :</label>
+            <div class="col-2">
+                <label>المحلية: </label>
                 <div class="form-group">
-                    <select name="sector" class="form-select">
-                      <option value="all"  @selected(request('sector') == "all")>كل القطاعات</option>
-                      <option value="القطاع الشرقي"  @selected(request('sector') == 'القطاع الشرقي')>القطاع الشرقي</option>
-                      <option value="القطاع الشمالي" @selected(request('sector') == 'القطاع الشمالي')>القطاع الشمالي</option>
-                      <option value="القطاع الغربي"  @selected(request('sector') == 'القطاع الغربي')>القطاع الغربي</option>
+                  <select name="locality" class="form-select">
+                    <option value="all"  @selected(request('sector') == "all")>كل المحليات</option>
+                    @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
+                      <option value="{{ $locality }}" @selected(request('locality') == $locality)>{{ $locality }}</option>
+                      @endforeach
                     </select>
-                  </div>
-              </div>
-
-              <div class="col-2">
-                  <label>المحلية: </label>
-                  <div class="form-group">
-                    <select name="locality" class="form-select">
-                      <option value="all"  @selected(request('sector') == "all")>كل المحليات</option>
-                      @foreach(['كسلا','خشم القربة','همشكوريب','تلكوك وتوايت','شمال الدلتا','اروما','ريفي كسلا','غرب كسلا','محلية المصنع محطة ود الحليو','نهر عطبرة','غرب كسلا','حلفا الجديدة'] as $locality)
-                        <option value="{{ $locality }}" @selected(request('locality') == $locality)>{{ $locality }}</option>
-                        @endforeach
-                      </select>
-                  </div>
-              </div>
+                </div>
+            </div>
 
               <div class="col-1">
                   <label>السنة: </label>
@@ -183,6 +181,7 @@
 
         @if (request()->query('show') == 'true' || !empty(request()->query('search')))
 
+        <div id="printArea">
           <x-table>
           <x-slot:head>
             <th>اسم اليتيم</th>
@@ -230,9 +229,7 @@
           <x-slot:body>
             @forelse ($orphans as $orphan)
               <tr>
-                @if (request()->query('search') != 'name')
-                  <td>{{ $orphan->name }}</td>
-                @endif
+                <td>{{ $orphan->name }}</td>
                 @if (request()->query('search') != 'age')
                   <td>{{ $orphan->age }}</td>
                 @endif
@@ -287,10 +284,18 @@
           <caption>
             
             <caption>
-              @if (request()->query('type') != 'all')
+              @if (request()->query('type') != 'all' && !is_null(request()->query('type')))
                 خدمات {{ request()->query('type') }} للايتام
               @else
               خدمات  العالج الطبي للايتام
+              @endif
+
+              @if (request()->query('search') == 'force')
+                {{ request()->query('needel') }}
+              @endif
+
+              @if (request()->query('search') == 'martyr_name')
+                 اسرة الشهيد {{ request()->query('needel') }}
               @endif
 
               
@@ -361,7 +366,8 @@
               <span><b>{{ number_format($totalMoney) }}</b></span>
           </h5>
         </div>
-
+        
+      </div>
         
         @else
 

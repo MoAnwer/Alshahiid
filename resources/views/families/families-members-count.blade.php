@@ -39,7 +39,8 @@
 
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4> عدد افراد اسر الشهداء</h4>
-               @if (request()->query('show') != 'true')
+          <div class="d-flex justify-content-between">
+            @if (request()->query('show') != 'true')
               <a class="btn btn-success active" href="{{ request()->url() . '?show=true' }}" >
                 <i class="bi bi-menu-app ml-2"></i>
                 عرض الكل
@@ -50,6 +51,11 @@
                 إخفاء الكل
               </a>
             @endif
+            <button class="mx-4 btn  btn-primary active" onclick="printContainer()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
+            </div>
         </div>
 
         <hr>
@@ -140,6 +146,7 @@
 
 
           @if (request()->query('show') == 'true')
+          <div id="printArea">
             <x-table>
             <x-slot:head>
 
@@ -318,23 +325,23 @@
               <span><b>{{ number_format($families->total()) }}</b></span>
           </h5>
           <h5>
-              عدد افراد الاسر الكلي :
+              عدد افراد الاسر  :
               <span><b>{{ number_format($totalMembers) }}</b></span>
           </h5>
 
           @if (request('category') == 'all' || request('category') ==  'أرملة و ابناء' || request('category') == null)
             <h5>
-              عدد الايتام الذكور الكلي :
+              عدد الايتام الذكور  :
               <span><b>{{ number_format($totalMaleOrphans) }}</b></span>
             </h5>
             <h5>
-              عدد الايتام الإناث الكلي :
+              عدد الايتام الإناث  :
               <span><b>{{ number_format($totalFemaleOrphans) }}</b></span>
             </h5>
           @endif
 
         </div>
-        
+        </div>
         @else
 
             <div class="text-center p-5 mx-auto my-5">

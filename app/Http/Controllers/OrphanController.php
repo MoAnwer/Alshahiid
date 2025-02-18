@@ -76,19 +76,23 @@ class OrphanController extends Controller
         }
 
         if($request->query('search') == 'stage') {
-            $query->where('students.stage', $needel);
+            $query->where('students.stage', 'LIKE', "%$needel%");
         }
 
         if($request->query('search') == 'class') {
-            $query->where('students.class', $needel);
+            $query->where('students.class','LIKE', "%$needel%");
         }
 
         if($request->query('search') == 'school_name') {
-            $query->where('students.school_name', $needel);
+            $query->where('students.school_name', 'LIKE', "%$needel%");
         }
 
         if($request->query('search') == 'force') {
-            $query->where('martyrs.force', $needel);
+            $query->where('martyrs.force', 'LIKE', "%$needel%");
+        }
+
+        if($request->query('search') == 'martyr_name') {
+            $query->where('martyrs.name', 'LIKE', "%$needel%");
         }
 
         if (!empty($request->query('gender')) && $request->query('gender') != 'all') {
@@ -163,11 +167,11 @@ class OrphanController extends Controller
         }
 
         if ($request->query('search') == 'force') {
-            $query->where('martyrs.force', $needel);
+            $query->where('martyrs.force',  'LIKE', "%{$needel}%");
         }
 
         if ($request->query('search') == 'martyr_name') {
-            $query->where('martyrs.name', $needel);
+            $query->where('martyrs.name',  'LIKE', "%{$needel}%");
         }
 
         if (!empty($request->query('gender')) && $request->query('gender') != 'all') {
@@ -259,11 +263,11 @@ class OrphanController extends Controller
         }
         
          if ($request->query('search') == 'force') {
-            $query->where('martyrs.force', $needel);
+            $query->where('martyrs.force', 'LIKE', "%{$needel}%");
         }
 
         if ($request->query('search') == 'martyr_name') {
-            $query->where('martyrs.name', $needel);
+            $query->where('martyrs.name', 'LIKE', "%{$needel}%");
         }
 
         if (!empty($request->query('gender')) && $request->query('gender') != 'all') {
@@ -362,11 +366,11 @@ class OrphanController extends Controller
 
 
         if ($request->query('search') == 'force') {
-            $query->where('martyrs.force', $needel);
+            $query->where('martyrs.force', 'LIKE', "%{$needel}%");
         }
 
         if ($request->query('search') == 'martyr_name') {
-            $query->where('martyrs.name', $needel);
+            $query->where('martyrs.name', 'LIKE', "%{$needel}%");
         }
 
         if (!empty($request->query('gender')) && $request->query('gender') != 'all') {

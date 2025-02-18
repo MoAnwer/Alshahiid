@@ -61,8 +61,8 @@ class MartyrCommunicateController extends Controller
             $query->where('communicates.phone', $needel);
         }
         
-        if($request->query('search') == 'force') {
-            $query->where('martyrs.force', $needel);
+        if($request->query('force') != 'all' &&  !empty($request->query('force'))) {
+            $query->where('martyrs.force', $request->query('force'));
         }
 
         if (!empty($request->query('status')) && $request->query('status') != 'all') {

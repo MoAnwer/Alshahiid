@@ -17,6 +17,10 @@
         <div id="printArea">
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4>احصائية الأيتام</h4>
+            <button class="mx-4 btn  btn-primary active" onclick="printTable()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
         </div>
 
         <hr>
@@ -26,7 +30,7 @@
 
             <div class="row px-1 mt-4">
 
-              <div class="col-2">
+              <div class="col-9">
                 <label>الفئة العمرية  :</label>
                 <div class="form-group">
                     <select name="age" class="form-select">
@@ -39,7 +43,7 @@
                   </div>
               </div>
 
-              <div class="col-3">
+              <!-- <div class="col-3">
                 <label>القطاع :</label>
                 <div class="form-group">
                     <select name="sector" class="form-select">
@@ -49,9 +53,9 @@
                       <option value="القطاع الغربي"  @selected(request('sector') == 'القطاع الغربي')>القطاع الغربي</option>
                     </select>
                   </div>
-              </div>
+              </div> -->
 
-              <div class="col-5">
+              <!-- <div class="col-5">
                   <label>المحلية: </label>
                   <div class="form-group">
                     <select name="locality" class="form-select">
@@ -62,7 +66,7 @@
                       </select>
                   </div>
               </div>
-              
+               -->
               <div class="col-1 mt-3 d-flex align-items-center flex-column justify-content-center">
                 <button class="btn py-4 btn-primary active form-control " title="بحث ">
                   <i class="bi bi-search ml-2"></i>
@@ -131,7 +135,7 @@
 
               <caption>
                 احصائية الأيتام   
-                @if(request()->query('sector') !== 'all' && !is_null(request()->query('sector')))
+               <!--  @if(request()->query('sector') !== 'all' && !is_null(request()->query('sector')))
                   {{ request()->query('sector') }}
                   @else 
                   {{ 'كل القطاعات' }}
@@ -144,7 +148,7 @@
                   @endif
                 @else
                 {{ request()->query('locality') ?? 'كل المحليات'}}
-                @endif
+                @endif -->
               </caption>
           </x-slot:body>
         </x-table>

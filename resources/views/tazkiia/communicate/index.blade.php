@@ -29,11 +29,23 @@
 
         <hr>
 
+ @php
+          $totalBudget = 0;
+          $totalBudgetFromOrg = 0;
+          $totalBudgetOutOfOrg = 0;
+          $totalMoney = 0;
+        @endphp
 
 
 
         <div class="d-flex justify-content-between align-items-center px-3">
           <h4> تواصل مع اسر الشهداء </h4>
+          <div class="d-flex justify-content-between align-items-center px-3">
+             <button class="mx-4 btn btn-primary active" onclick="printContainer()">
+                <i class="bi bi-printer ml-2"></i>
+                طباعة 
+              </button>
+          </div>
         </div>
        <hr>
 
@@ -137,18 +149,19 @@
         </div>
 
 
-
+      <div id="printArea">
         <x-table>
           <x-slot:head>
             <th> اسرة الشهيد </th>
+            @if (request()->query('force') == 'all' || is_null(request()->query('force')))
+              <th>القوة</th>
+            @endif
             <th>رقم الهاتف</th>
             <th>اتمام التواصل</th>
             <th>الحالة</th>
             <th>التقديري</th>
             <th>من  داخل المنظمة</th>
             <th>من  خارج المنظمة</th>
-            <!-- <th>ملاحظات</th>
-            <th>عمليات</th> -->
           </x-slot:head>
 
         <x-slot:body>
@@ -157,21 +170,22 @@
 			      @foreach($coms as $communicate)
               <tr>
                <td>{{ $communicate->martyr_name }}</td>
+               @if (request()->query('force') == 'all' || is_null(request()->query('force')))
+                  <td>{{ $communicate->force }}</td>
+               @endif
                <td>{{ $communicate->phone }}</td>
                <td>{{ $communicate->isCom }}</td>
                <td>{{ $communicate->status }}</td>
-               <td>{{ number_format($communicate->budget) }}</td>                
+               <td>{{ number_format($communicate->budget) }}</td>   
+               @php($totalBudget += $communicate->budget)             
+
                <td>{{ number_format($communicate->budget_from_org) }}</td>
+               @php($totalBudgetFromOrg += $communicate->budget_from_org)
+
                <td>{{ number_format($communicate->budget_out_of_org) }}</td>
-               <!-- <td>{{ $communicate->notes }}</td> -->
-               <!-- <td>
-                  <a href="{{ route('tazkiia.communicate.edit', $communicate->id) }}" class="btn btn-success p-2 fa-sm">
-                    <i class="bi bi-pen" title="تعديل"></i>
-                  </a>
-                  <a href="{{ route('tazkiia.communicate.delete', $communicate->id) }}" class="btn btn-danger p-2 fa-sm">
-                    <i class="bi bi-trash-fill" title="حذف"></i>
-                  </a>
-              </td> -->
+               @php($totalBudgetFromOrg += $communicate->budget_from_org)
+               @php($totalMoney += $communicate->budget_from_org + $communicate->budget_out_of_org)
+
             </tr>
 			     @endforeach
             @else
@@ -185,8 +199,13 @@
            <caption>
               تواصل مع اسر الشهداء
 
+              @if(!is_null(request()->query('force')) && request()->query('force') != 'all')
+                {{ request()->query('force') }}
+              @endif
+
+
               @if (request()->query('search') == 'martyr_name')
-                - اشر الشهيد {{ request()->query('needel') }}
+                - اسر الشهيد {{ request()->query('needel') }}
               @endif
 
                @if(request()->query('sector') == 'all' || is_null(request()->query('sector')))
@@ -210,9 +229,42 @@
 
         </x-slot:body>
 
+        
+
       </x-table>
 
-        {{ $coms->links('vendor.pagination.bootstrap-5') }}
+
+        {{ $coms->withQueryString()->appends(['searching' => 1])->links('vendor.pagination.bootstrap-5') }}
+
+
+        
+        <hr>
+
+        <div class="d-flex align-items-center justify-content-between  py-4 mb-5">
+            <h5>
+              العدد الكلي :
+              <span><b>{{ number_format($coms->total()) }}</b></span>
+          </h5>
+          <h5>
+              اجمالي التقديري :
+              <span><b>{{ number_format($totalBudget) }}</b></span>
+          </h5>
+          <h5>
+              اجمالي من داخل المنظمة :
+              <span><b>{{ number_format($totalBudgetFromOrg) }}</b></span>
+          </h5>
+          <h5>
+            اجمالي من خارج المنظمة :
+            <span><b>{{ number_format($totalBudgetOutOfOrg) }}</b></span>
+          </h5>
+          <h5>
+            اجمالي المؤمن :
+            <span><b>{{ number_format($totalMoney) }}</b></span>
+          </h5>
+        </div>
+
+    </div>
+
 		
         </div>
       </div>

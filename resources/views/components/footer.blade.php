@@ -19,7 +19,7 @@
             'useCORS': true,
         }).then(canvas => {
             let imageDate = canvas.toDataURL('image/png');
-            let newWindow = window.open("");
+            let newWindow = window.open(document.title);
             newWindow.document.write('<img src="' + imageDate + '" style="width:100%; ">')
             newWindow.document.close();
             setTimeout(() => {

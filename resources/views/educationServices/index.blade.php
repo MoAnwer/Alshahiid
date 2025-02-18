@@ -75,6 +75,10 @@
               {{--/ Show btns --}}
 
             @endif
+             <button class="mx-4 btn  btn-primary active" onclick="printContainer()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+            </button>
 
           </div>
 
@@ -96,7 +100,6 @@
                       <option value="martyr_name" @selected(request('search') == 'martyr_name')>اسم الشهيد</option>
                       <option value="militarism_number" @selected(request('search') == 'militarism_number')>النمرة العسكرية</option>
                       <option value="force" @selected(request('search') == 'force')>قوة الشهيد</option>
-                      <option value="class" @selected(request('search') == 'class')>الصف</option>
                     </select>
                   </div>
               </div>
@@ -237,7 +240,7 @@
         <hr>
 
       @if (request()->query('show') == 'true' || !empty(request()->query('search')))
-
+      <div id="printArea">
         <x-table>
           <x-slot:head>
             <th>اسم المستفيد</th>
@@ -370,7 +373,7 @@
             @endforelse
             
             <caption class="text-primary">
-
+               الخدمات التعليمية
                 @if(request()->query('search') == 'martyr_name')
                 اسرة الشهيد {{ request()->query('needel') }}
                 @endif
@@ -487,10 +490,11 @@
           </h5>
         </div>
 
+        </div>
         
           @else
             <div class="text-center p-5 mx-auto my-5">
-              <h3>قم بالبحث عن سام المستفيد او الشهيد في حقل البحث لعرضه, او اضغط على عرض الكل لعرض كل الخدمات المقدمة لكل الطلاب</h3>
+              <h3>قم بالبحث عن   اسم المستفيد او الشهيد في حقل البحث لعرضه, او اضغط على عرض الكل لعرض كل الخدمات المقدمة لكل الطلاب</h3>
             </div>
           
           @endif
