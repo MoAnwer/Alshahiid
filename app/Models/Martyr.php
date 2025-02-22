@@ -20,7 +20,8 @@ class Martyr extends Model
         'rank', 
         'marital_status',
         'militarism_number',
-        'rights'
+        'rights',
+        'family_id'
     ];
 
     public function family() {
@@ -36,9 +37,12 @@ class Martyr extends Model
         parent::boot();
 
         static::deleting(function ($martyr) {
-            $martyr->family()->delete();
+            // $martyr->family()->delete();
             $martyr->martyrDoc()->delete();
         });
     }
 
+    public function belongToFamily() {
+        return $this->belongsTo(Family::class, 'family_id');
+    }
 }

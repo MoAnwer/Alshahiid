@@ -319,5 +319,13 @@ class FamilyController extends Controller
     {
         return view('reports.categoriesReport', $this->familyService->categoriesReport());
     }    
+
+    public function relatedMartyrs(int $family)
+    {
+        $martyrs = $this->martyr->where('family_id', $family)->get();
+        $family  = $this->family->findOrFail($family)->loadMissing(['martyr', 'address']);
+
+        return view('families.relatedMartyrs', compact('martyrs', 'family'));
+    }
     
 }

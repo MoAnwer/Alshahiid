@@ -288,9 +288,15 @@ class InjuredController extends Controller
 
     $request = request();
                                                                                           // 2030-01-01 < 2025-02-09
-    $hasTamiin = DB::table('injureds')->where('health_insurance_number', '!=', null)->where('health_insurance_end_date', '>=', now());
+    $hasTamiin = DB::table('injureds')->where(function ($q) {
+      $q->whereNotNull('health_insurance_number')
+        ->whereDate('health_insurance_end_date', '>', now());
+    });
     
-    $hasNoTamiin = DB::table('injureds')->where('health_insurance_number', '=',null);
+    $hasNoTamiin = DB::table('injureds')->where(function ($q) {
+      $q->whereNull('health_insurance_number')
+        ->OrWhereDate('health_insurance_end_date', '<', now());
+    });
 
     if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
 

@@ -7,7 +7,7 @@
   <script type="text/javascript">
       function printTable() 
       {
-        let table = document.querySelector('.table-responsive');
+        let table = document.querySelector('.table-responsive table');
         // let th = document.querySelectorAll('.table-responsive thead th');
 
         // th.foreach(th => {
@@ -15,12 +15,14 @@
         // });
 
         html2canvas(table, {
-            'scale': 2,
+            'scale': 4,
             'useCORS': true,
         }).then(canvas => {
             let imageDate = canvas.toDataURL('image/png');
             let newWindow = window.open(document.title);
-            newWindow.document.write('<img src="' + imageDate + '" style="width:100%; ">')
+            newWindow.document.write(
+                `<img src="${imageDate}" style="width:100% !important; margin: -10px 0px !important">`
+            );
             newWindow.document.close();
             setTimeout(() => {
                 newWindow.print();

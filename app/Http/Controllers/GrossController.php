@@ -225,7 +225,7 @@ class GrossController extends Controller
                 SUM(budget) as budget,
                 SUM(budget_from_org) as budget_from_org,
                 SUM(budget_out_of_org) as budget_out_of_org,
-                SUM(budget_out_of_org + budget_from_org) as totalBudget,
+                SUM(budget_out_of_org + budget_from_org) as totalMoney,
                 count(id) as count
                 '
         )->groupBy(['status']);
@@ -257,15 +257,15 @@ class GrossController extends Controller
     public function martyrDocs()
     {
         $report = DB::table('martyr_docs')
-                  ->join('martyrs', 'martyr_docs.martyr_id', 'martyrs.id')
-                  ->join('families', 'families.martyr_id', '=', 'martyrs.id')
+                  ->leftJoin('martyrs', 'martyr_docs.martyr_id', 'martyrs.id')
+                  ->leftJoin('families', 'families.martyr_id', '=', 'martyrs.id')
                   ->leftJoin('addresses', 'addresses.family_id', 'families.id')
                   ->selectRaw('
                     martyr_docs.status,
                     SUM(martyr_docs.budget) as budget,
                     SUM(martyr_docs.budget_from_org) as budget_from_org,
                     SUM(martyr_docs.budget_out_of_org) as budget_out_of_org,
-                    SUM(martyr_docs.budget_out_of_org + budget_from_org) as totalBudget,
+                    SUM(martyr_docs.budget_out_of_org + budget_from_org) as totalMoney,
                     count(*) as count
                 ')->groupBy('martyr_docs.status');
 
@@ -304,7 +304,7 @@ class GrossController extends Controller
                     SUM(hags.budget) as budget,
                     SUM(hags.budget_from_org) as budget_from_org,
                     SUM(hags.budget_out_of_org) as budget_out_of_org,
-                    SUM(hags.budget_out_of_org + budget_from_org) as totalBudget,
+                    SUM(hags.budget_out_of_org + budget_from_org) as totalMoney,
                     count(*) as count
                 ')->groupBy('hags.status');
 
@@ -342,7 +342,7 @@ class GrossController extends Controller
                     SUM(communicates.budget) as budget,
                     SUM(communicates.budget_from_org) as budget_from_org,
                     SUM(communicates.budget_out_of_org) as budget_out_of_org,
-                    SUM(communicates.budget_out_of_org + budget_from_org) as totalBudget,
+                    SUM(communicates.budget_out_of_org + budget_from_org) as totalMoney,
                     count(*) as count
                 ')->groupBy('communicates.status');
 

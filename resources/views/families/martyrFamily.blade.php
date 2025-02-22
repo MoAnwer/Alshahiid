@@ -11,7 +11,6 @@
       <div id="content">
 
       @include('components.navbar')
-      
 
       <div class="container-fluid mt-4">
 
@@ -24,7 +23,7 @@
             <li class="breadcrumb-item mx-1">
               <a href="{{ route('families.list') }}">قائمة اسر الشهداء</a>
             </li>
-            <li class="breadcrumb-item active " >
+            <li class="breadcrumb-item active">
               اسرة الشهيد {{ $family->martyr->name}}
             </li>
           </ol>
@@ -36,16 +35,21 @@
 
         <div class="d-flex justify-content-between align-items-center px-3">
           <div>
-            <h4>اسرة الشهيد {{ $family->martyr->name }} <span class="text-primary text-bold">[ {{ $family->category }} ]</span></h4>
-            <span>عدد افراد الاسرة {{ $family->family_size }} , و تم اضافة {{ $family->familyMembers->count() }} منهم الى النظام</span>
+            <h4>
+                <span class="text-primary text-bold">[{{ $family->id }}#]</span>
+                اسرة الشهيد
+                {{ $family->martyr->name }} 
+                <span class="text-primary text-bold">[ {{ $family->category }} ]</span>
+            </h4>
+              <span>عدد افراد الاسرة {{ $family->family_size }} , و تم اضافة {{ $family->familyMembers->count() }} منهم الى النظام</span>
             <div>
               <span>[تم اضافة الاسرة الى النظام في  {{ date('Y-m-d', strtotime($family->created_at) )}} ]</span>
-              <a href="{{ route('families.edit', $family->id) }}" class="btn btn-success p-2 fa-sm">
-              <i class="bi bi-pen" title="تعديل"></i>
-            </a>
-            <a href="{{ route('families.delete', $family->id) }}" class="btn btn-danger p-2 fa-sm">
-              <i class="bi bi-trash-fill" title="حذف"></i>
-            </a>
+                <a href="{{ route('families.edit', $family->id) }}" class="btn btn-success p-2 fa-sm">
+                <i class="bi bi-pen" title="تعديل" ></i>
+              </a>
+              <a href="{{ route('families.delete', $family->id) }}" class="btn btn-danger p-2 fa-sm">
+                <i class="bi bi-trash-fill" title="حذف"></i>
+              </a>
             </div>
 
           </div>
@@ -256,10 +260,11 @@
       <!--/ Address  -->
 
       <hr>
+
       <div class="row mb-3 py-3">
 
-        <div class="col-sm-12 col-6  col-lg-3">
-          <a href="{{ route('tazkiia.martyrDocs.index', $family->martyr->id) }}" target="_blank">
+        <div class="col-sm-12 col-6 col-lg-3">
+          <a href="{{ route('tazkiia.martyrDocs.index', $family->martyr->id) }}">
           <div class="card text-center py-3 border border-warning">
             <div class="card-body">
               <i class="bi bi-star-fill fs-1 text-warning mb-5"></i>
@@ -271,22 +276,19 @@
         </div>
 
         <div class="col-lg-3 col-6 col-sm-12">
-
-          <a href="{{ route('documents.show', $family->id) }}" target="_blank">
+          <a href="{{ route('documents.show', $family->id) }}">
           <div class="card text-center py-3 border border-info">
             <div class="card-body">
               <i class="bi bi-file-pdf-fill fs-1 text-info mb-5"></i>
               <h5 class="card-title mb-3 mt-3"> خطابات اسرة </h5>
               <p class="card-text mb-3"> تأكيد الاستشهاد، الاعلام الشرعي، التوكيل ...</p>
-
               </div>
             </div>
           </a>
-
         </div>
 
         <div class="col-lg-3 col-6 col-sm-12">
-          <a href="{{ route('families.socialServices', $family->id)}}" target="_blank">
+          <a href="{{ route('families.socialServices', $family->id)}}">
           <div class="card text-center py-3 border border-danger">
             <div class="card-body">
               <i class="bi bi-person-hearts fs-1 text-danger mb-5"></i>
@@ -298,7 +300,7 @@
         </div>
 
         <div class="col-lg-3 col-6 col-sm-12">
-          <a href="{{ route('families.bails', $family->id)}}" target="_blank">
+          <a href="{{ route('families.bails', $family->id)}}">
           <div class="card text-center py-3 border border-success">
             <div class="card-body">
               <i class="bi bi-cash-coin fs-1 text-success mb-5"></i>
@@ -308,9 +310,23 @@
               </div>
             </a>
         </div>
-        
+
+        <div class="col-lg-3 col-6 col-sm-12 mt-3">
+          <a href="{{ route('families.relatedMartyrs', $family->id)}}">
+          <div class="card text-center py-3 border border-success">
+
+            <div class="card-body">
+                <i class="bi bi-person fs-1 text-success mb-5"></i>
+                <h5 class="card-title mb-3 mt-3"> الشهداء الذين قدمتهم الاسرة </h5>
+                <p class="card-text mb-3"> الشهداء الذين قدمتهم الاسرة بالإضافة الى  {{ $family->martyr->name }} </p>
+              </div>
+            </div>
+            </a>
+
+          </div>
+
         </div>
-      </div>      
+      </div>
     </div>
 
   @include('components.footer')

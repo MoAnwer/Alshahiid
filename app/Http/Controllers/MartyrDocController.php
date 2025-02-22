@@ -182,7 +182,7 @@ class MartyrDocController extends Controller
             $doc = MartyrDoc::findOrFail($id);
             $martyrName = $doc->martyr->name;
             $doc->delete();
-            unlink(public_path('uploads/documents/'.$doc->storage_path));
+            @unlink(public_path('uploads/documents/'.$doc->storage_path));
             return to_route('tazkiia.martyrsDocsList')->with('success', 'تم حذف السيرة الشخصية للشهيد ' . $martyrName);
         } catch (Exception $e) {
             return $e->getMessage();

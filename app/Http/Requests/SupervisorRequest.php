@@ -24,7 +24,8 @@ class SupervisorRequest extends FormRequest
         return [
             'name'  => 'الاسم المشرف مطلوب',
             'phone.unique' => 'رقم الهاتف موجود بالفعل',
-            'phone.numeric'   => 'الرجاء ادخال صيغة صحيحة لرقم الهاتف'
+            'phone.numeric'   => 'الرجاء ادخال صيغة صحيحة لرقم الهاتف',
+            'phone.required'   => ' رقم الهاتف مطلوب',
         ];
     }
 }

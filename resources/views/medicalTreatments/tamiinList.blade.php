@@ -247,6 +247,15 @@
                 افراد اسر {{ request()->query('needel') }}
                 @endif
 
+                 @if(!is_null(request()->query('hasTamiin')) && request()->query('hasTamiin') != 'all')
+
+                  @if(request()->query('hasTamiin') == 'no') 
+                    غير مؤمن 
+                  @else
+                    مؤمن
+                  @endif
+
+                @endif
                 
                 @if(!is_null(request()->query('relation')) && request()->query('relation') != 'all')
                  - {{ request()->query('relation') }} - 

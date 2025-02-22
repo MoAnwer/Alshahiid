@@ -15,8 +15,6 @@
 
       <div class="container-fluid mt-4">
 
-
-        
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb breadcrumb-style">
             <li class="breadcrumb-item">
@@ -30,7 +28,6 @@
         <hr>
 
         <x-alert />
-        
 
 
         <div class="d-flex justify-content-between align-items-center pl-3">
@@ -78,7 +75,7 @@
             <button class="mx-4 btn  btn-primary active" onclick="printTable()">
               <i class="bi bi-printer ml-2"></i>
                 طباعة 
-              </button>
+            </button>
             <!-- </div> -->
 
 
@@ -88,13 +85,11 @@
 
         </div>
 
-        <x-alert/>
-
         <hr />
 
 
 
-          <div class="search-form px-3">
+        <div class="search-form px-3">
           <form action="{{ URL::current() }}" method="GET">
 
             <div class="row">
@@ -207,9 +202,6 @@
 
         <hr />
 
-
-        <x-alert />
-
         @if (request()->query('show') == 'true' || !empty(request()->query('search')))
 
         
@@ -320,17 +312,25 @@
                   @endisset
                   </td>
                   <td>
-                    <a href="{{ route('martyrs.edit', $martyr->id) }}" class="btn btn-success px-2">
+                    <a href="{{ route('martyrs.edit', $martyr->id) }}" class="btn btn-success px-2" titla="تعديل">
                       <i class="bi bi-pen fa-sm"></i>
                     </a>
-                    <a href="{{ route('martyrs.delete', $martyr->id) }}" class="btn btn-danger px-2">
-                      <i class="bi bi-trash-fill" title="حذف"></i>
+                    <a href="{{ route('martyrs.delete', $martyr->id) }}" class="btn btn-danger px-2"  title="حذف">
+                      <i class="bi bi-trash-fill"></i>
                     </a>
+                    <a href="{{ route('tazkiia.martyrDocs.index', $martyr->id) }}" class="btn btn-info px-2"  title="السيرة الذاتية للشهيد" >
+                        <i class="bi bi-book"></i>
+                      </a>
+                    @empty ($martyr->martyr_family_id)
+                      <a href="{{ route('martyrs.relateToFamilyPage', $martyr->id) }}" class="btn btn-primary active px-2"  title="ربط الشهيد باسرة اخرى">
+                        <i class="bi bi-link"></i>
+                      </a>
+                    @endempty
                   </td>
                   @endif
                 </tr>
               @empty
-                <tr><td colspan="12"> لا توجد نتائج </td></tr>
+                <tr><td colspan="14"> لا توجد نتائج </td></tr>
               @endforelse
 
             <caption>
@@ -350,9 +350,7 @@
               @else
                 {{ request()->query('force') }}
               @endif
-
-
-
+              
                @if(request()->query('rank') == 'all')
                كل الرتب 
               @elseif (!is_null(request()->query('rank')))

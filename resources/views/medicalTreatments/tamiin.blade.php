@@ -14,7 +14,13 @@
       
 
       <div class="container-fluid mt-4">
-        <h4>التأمين الصحي</h4>
+        <div class="d-flex align-items-center">
+            <h4>التأمين الصحي</h4>
+              <button class="mx-4 btn  btn-primary active" onclick="printTable()">
+              <i class="bi bi-printer ml-2"></i>
+                طباعة 
+              </button>
+        </div>
         <hr>
 
       <div class="search-form">

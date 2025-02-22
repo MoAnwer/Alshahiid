@@ -285,32 +285,16 @@
 
               <caption class="text-primary">
 
-               @if(request()->query('martyr_name'))
-                اسرة الشهيد {{ request()->query('martyr_name') }} -
+               @if(request()->query('search') == 'martyr_name')
+                اسرة الشهيد  {{ request()->query('needel') }} -
                 @endif
                 
-               @if(request()->query('category') != 'all')
+               @if(request()->query('category') != 'all' && !is_null(request()->query('category')))
                 الشريحة {{ request()->query('category') }}
                 @else
                   كل الشرائح
                 @endif
-                
-                @if(!is_null(request()->query('type')) && request()->query('type') != 'all')
-
-                  خدمات {{  request()->query('type') }} 
-                    @if (!is_null(request()->query('status')) && request()->query('status') != 'all')
-
-                    {{ ' ' . request()->query('status') != 'all' ? request()->query('status'). 'ة' : '' }} 
-
-                  @endif
-                @endif
-                
-                @if (request()->query('type') == 'all' && !is_null(request()->query('status')) && request()->query('status') != 'all')
-
-                  خدمات {{ ' ' . request()->query('status') != 'all' ? request()->query('status'). 'ة' : '' }} 
-
-                @endif
-
+               
                 @if(request()->query('sector') == 'all' && !is_null(request()->query('sector')))
 
                   @if (request()->query('locality') != 'all')

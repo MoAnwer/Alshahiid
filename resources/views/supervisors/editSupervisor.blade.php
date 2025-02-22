@@ -32,7 +32,7 @@
             </div>
 
             <div class="form-group">
-              <input name="phone" type="text" class="p-4 form-control" placeholder="رقم الهاتف" value="{{ $supervisor->phone }}"/>
+              <input name="phone" type="text" class="p-4 form-control" placeholder="رقم الهاتف [{{ $supervisor->phone }}] دعه فارغ اذا لم ترغب بالتعديل عليه"/>
             </div>
 
             <button type="submit" class="btn btn-success py-2 mt-3">

@@ -265,7 +265,7 @@
             @endforelse
 
             <caption class="text-primary">
-
+الكفالات الشهرية 
                 @if(request()->query('search') == 'category')
                   شريحة {{ request()->query('needel') }}
                 @endif

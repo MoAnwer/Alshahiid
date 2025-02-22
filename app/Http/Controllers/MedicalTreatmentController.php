@@ -136,12 +136,17 @@ class MedicalTreatmentController extends Controller
             
             if ($request->query('hasTamiin') == 'yes') {
 
-                $query->where('family_members.health_insurance_number', '!=', null)->where('health_insurance_end_date', '>', now()); // 2030-01-01 > 2025-02-11
+                $query->where(function ($q) {
+                  $q->whereNotNull('family_members.health_insurance_number')
+                    ->whereDate('family_members.health_insurance_end_date', '>', now());
+                });
 
             } else if ($request->query('hasTamiin') == 'no') {
 
-                $query->where('family_members.health_insurance_number', null); // 2025-01-01 < 2025-02-11
-                // something here
+               $query->where(function ($q) {
+                  $q->whereNull('family_members.health_insurance_number')
+                    ->OrWhereDate('family_members.health_insurance_end_date', '<=', now());
+                });
             }
         }
         

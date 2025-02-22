@@ -6,6 +6,7 @@ use Exception;
 use App\Http\Requests\SupervisorRequest;
 use App\Models\{Supervisor, Family};
 use Illuminate\Support\Facades\{Log, DB};
+use Illuminate\Http\Request;
 
 class SupervisorController extends Controller
 {
@@ -111,9 +112,18 @@ class SupervisorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(SupervisorRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        $data = $request->validated();
+        $data = [];
+
+        if (!empty($request->phone)) {
+            $data['name']  = 'string|required';
+            $data['phone'] =  'required|numeric|unique:supervisors,phone';
+        } else {
+            $data['name']  = 'string|required';
+        }
+
+        $data = $request->validate($data);
 
         try {
             $this->supervisor->findOrFail($id)->update($data);
@@ -156,22 +166,19 @@ class SupervisorController extends Controller
         $needel = trim($request->query('needel'));
 
         $query = DB::table('families')
-                ->leftJoin('addresses', 'addresses.family_id', 'families.id')
-                ->join('supervisors', 'supervisors.id', '=', 'families.supervisor_id')
+                ->join('addresses', 'addresses.family_id', 'families.id')
                 ->join('martyrs', 'martyrs.id', '=', 'families.martyr_id')
                 ->selectRaw(
-                    'supervisors.name as name,
-                    martyrs.name as martyr_name,
+                    'martyrs.name as martyr_name,
                     families.family_size as family_size,
                     families.id as family_id,
                     families.category as category,
-                    supervisors.phone as phone,
                     addresses.sector as sector,
                     addresses.locality as locality,
                     COUNT(families.id) as families_count'
                 )->groupBy([
-                        'name', 'family_size', 'category', 'phone', 'sector', 'locality', 'martyr_name', 'families.id'
-                ]);
+                         'family_size', 'category', 'sector', 'locality', 'martyr_name', 'families.id'
+                ])->where('families.supervisor_id', [$supervisor]);
 
 
         if($request->query('search') == 'name') {

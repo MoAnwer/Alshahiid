@@ -19,6 +19,10 @@ class Family extends Model
         return $this->belongsTo(Martyr::class);
     }
 
+    public function martyrs () {
+        return $this->hasMany(Martyr::class, 'family_id');
+    }
+
     public function address() {
         return $this->hasOne(Address::class);
     }

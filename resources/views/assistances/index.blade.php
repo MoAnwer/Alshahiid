@@ -282,7 +282,7 @@
 
 
               <caption class="text-primary">
-
+قائمة المساعدات 
                 @if(request()->query('search') == 'martyr_name')
                 اسرة الشهيد {{ request()->query('needel') }}
                 @endif

@@ -19,7 +19,7 @@ class MartyrController extends Controller
         $query = DB::table('martyrs')
                 ->leftJoin('families', 'families.martyr_id', 'martyrs.id')
                 ->leftJoin('addresses', 'addresses.family_id', 'families.id')
-                ->select('martyrs.id', 'families.id as family_id', 'families.category as category', 'martyrs.name', 'martyrs.force', 'martyrs.unit', 'martyrs.militarism_number', 'martyrs.martyrdom_date', 'martyrs.martyrdom_place', 'martyrs.record_date', 'martyrs.rights', 'martyrs.record_number', 'martyrs.rank', 'addresses.sector', 'addresses.locality');
+                ->select('martyrs.id', 'families.id as family_id', 'families.category as category', 'martyrs.name', 'martyrs.force', 'martyrs.unit', 'martyrs.militarism_number', 'martyrs.martyrdom_date', 'martyrs.martyrdom_place', 'martyrs.record_date', 'martyrs.rights', 'martyrs.record_number', 'martyrs.rank', 'martyrs.family_id as martyr_family_id', 'addresses.sector', 'addresses.locality');
 
         if($request->query('search') == 'name') {
             $query->where('name', 'LIKE', "%$needel%");
@@ -69,7 +69,7 @@ class MartyrController extends Controller
             $query->selectRaw('YEAR(martyrs.created_at) as year')->whereYear('martyrs.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $martyrs = $query->latest('martyrs.id')->paginate(10);
+        $martyrs = $query->latest('martyrs.id')->paginate();
         
         return view('martyrs.martyrs', ['martyrs' => $martyrs]);
 
@@ -189,7 +189,6 @@ class MartyrController extends Controller
              if(isset($martyr->family) && $martyr->family->documents->isNotEmpty()) {
                 foreach ($martyr->family->documents as $doc)
                 {
-             
                     @unlink('uploads/documents/'.$doc->storage_path);
                 }
              }  
@@ -212,7 +211,7 @@ class MartyrController extends Controller
 
 
             if(isset($martyr->martyrDoc->storage_path)) {
-                unlink(public_path("uploads/documents/{$martyr->martyrDoc->storage_path}"));
+                @unlink(public_path("uploads/documents/{$martyr->martyrDoc->storage_path}"));
                 $martyr->martyrDoc()->delete();
             }
 
@@ -225,13 +224,36 @@ class MartyrController extends Controller
         }
     }
 
+
+    public function relateToFamilyPage(int $martyr) 
+    {
+        $martyr = Martyr::findOrFail($martyr);
+        return view('martyrs.relateToFamily', compact('martyr'));
+    }
+
+    public function relateToFamilyAction(Request $request, int $martyr) 
+    {
+        $data = $request->validate([
+            'family_id' => 'required|numeric|exists:families,id'
+        ], [
+            'family_id.required' => 'معرف الاسرة مطلوب لعملية الربط',
+            'family_id.exists' => 'معرف الاسرة المدخل غير موجود !'
+        ]);
+
+        try {
+
+            Martyr::findOrFail($martyr)->update(['family_id' => $data['family_id']]);
+            return back()->with('success', 'تم ربط الشهيد بالاسرة ذات المعرف ' . $data['family_id'] . ' بنجاح ');
+
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+
     public function report() 
     {
         $request = request();
-
-        // $report = Martyr::selectRaw('force, COUNT(*) as count')->groupBy('force')->get();
-
-        // $report = $report->groupBy('force');
 
         $query = DB::table('martyrs')
                 ->leftJoin('families', 'families.martyr_id', 'martyrs.id')
@@ -262,5 +284,24 @@ class MartyrController extends Controller
         return view('martyrs.report', compact('report'));
     }
 
+    public function moreOneMartyrList()
+    {
+        $request = request();
+
+        $query = DB::table('families')
+                ->leftJoin('martyrs', 'families.martyr_id', 'martyrs.id')
+                ->leftJoin('addresses', 'families.id', 'addresses.family_id')
+                ->selectRaw('
+                    martyrs.name,
+                    martyrs.force,
+                    martyrs.militarism_number,
+                    COUNT(martyrs.family_id)
+                ')->whereNotNull('martyrs.family_id')
+                ->groupBy(['martyrs.name', 'martyrs.force', 'martyrs.militarism_number']);
+
+        $list = $query->get();
+
+        dd($list);
+    }
 
 }

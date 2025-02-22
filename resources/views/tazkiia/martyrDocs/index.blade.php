@@ -15,28 +15,13 @@
       
       <div class="container-fluid mt-4">
 
-       <nav aria-label="breadcrumb">
-          <ol class="breadcrumb breadcrumb-style">
-            <li class="breadcrumb-item">
-              <a href="{{ route('martyrs.index') }}">الشهداء</a>
-              / 
-            </li>
-            <li class="breadcrumb-item  mr-1">
-              <a href="{{ route('families.show', $martyr->family->id) }}"> اسرة الشهيد {{ $martyr->name}} </a>
-            </li>
-            <li  class="breadcrumb-item active  mr-1"> السيرة الذاتية للشهيد {{ $martyr->name}} </li>
-          </ol>
-        </nav>
-
-        <hr />
-
         <div class="d-flex justify-content-between align-items-center px-3">
         <h4> السيرة الذاتية للشهيد {{ $martyr->name}} </h4>
         @empty($martyr->martyrDoc)
           <a href="{{ route('tazkiia.martyrDocs.create', $martyr->id) }}" class="btn btn-primary active">
             <i class="fa fas-file-plus"></i>
             اضافة سيرة الذاتية
-          </a>          
+          </a>
         @endempty
         </div>
         <hr />

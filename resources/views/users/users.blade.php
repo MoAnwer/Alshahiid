@@ -61,7 +61,7 @@
             @endforeach
             @else
               <tr>
-                <td colspan="4">لا يوجد مستخدمين بعد</td>
+                <td colspan="5">لا يوجد مستخدمين بعد</td>
               </tr>
             @endif
           </x-slot:body>

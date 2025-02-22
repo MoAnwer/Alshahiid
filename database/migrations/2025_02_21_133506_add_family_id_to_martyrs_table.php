@@ -13,13 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('woundeds', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('type');
-            $table->date('wounded_date');
-            $table->decimal('wounded_percentage', 5, 2)->default(0);
-            $table->timestamps();
+        Schema::table('martyrs', function (Blueprint $table) {
+            $table->foreignId('family_id')->nullable()->constrained('families')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
@@ -30,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('woundeds');
+        Schema::table('martyrs', function (Blueprint $table) {
+            //
+        });
     }
 };

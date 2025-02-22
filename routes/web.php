@@ -31,7 +31,6 @@ Route::controller(AuthController::class)->group(function() {
 
 Route::middleware('auth')->group(function() {
 
-
 	Route::view('home', 'home')->name('home');
 
 	Route::controller(UserController::class)->prefix('users-management')->group(function(){
@@ -53,7 +52,9 @@ Route::middleware('auth')->group(function() {
 		Route::put('update/{id}', 'update')->name('martyrs.update');
 		Route::get('delete/{id}', 'delete')->name('martyrs.delete');
 		Route::delete('destroy/{id}', 'destroy')->name('martyrs.destroy');
-
+		Route::get('{martyr}/relate-to-family', 'relateToFamilyPage')->name('martyrs.relateToFamilyPage');
+		Route::get('more-one-martyr-family-list', 'moreOneMartyrList')->name('martyrs.moreOneMartyrList');
+		Route::post('{martyr}/relate-to-family-action', 'relateToFamilyAction')->name('martyrs.relateToFamilyAction');
 		Route::get('report', 'report')->name('reports.martyrs');
 	});
 	
@@ -69,6 +70,7 @@ Route::middleware('auth')->group(function() {
 		Route::delete('destroy/{id}', 'destroy')->name('families.destroy');
 		
 		Route::get('{id}/social-services', 'socialServices')->name('families.socialServices');
+		Route::get('{id}/relatedMartyrs', 'relatedMartyrs')->name('families.relatedMartyrs');
 
 		Route::get('supervisor/create/{id}', 'createSupervisor')->name('families.createSupervisor');
 		Route::post('supervisor/store/{id}', 'storeSupervisor')->name('families.storeSupervisor');
@@ -379,7 +381,7 @@ Route::middleware('auth')->group(function() {
 		});
 
 
-		Route::get('tazkiia/martyrs-documnentions', 'TaskiiaController@martyrsDocsList')->name('tazkiia.martyrsDocsList');
+		Route::get('tazkiia/martyrs-documention', 'TaskiiaController@martyrsDocsList')->name('tazkiia.martyrsDocsList');
 		Route::get('tazkiia/hag-services', 'TaskiiaController@hagsMembersList')->name('tazkiia.hagsMembersList');
 		Route::get('tazkiia/report', 'TaskiiaController@report')->name('tazkiia.report');
 

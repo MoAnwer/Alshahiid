@@ -55,7 +55,7 @@
                 <td>{{ number_format($report['budget']) }} </td>
                 <td>{{ number_format($report['budgetFromOrg']) }} </td>
                 <td>{{ number_format($report['budgetOurOfOrg']) }} </td>
-                <td>{{ number_format($report['totalMoney']) }} </td>
+                <td>{{ number_format($report['budgetOurOfOrg'] + $report['budgetFromOrg']) }} </td>
               </tr>
 
               <caption class="text-primary">

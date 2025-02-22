@@ -107,6 +107,17 @@
           </a>
         </div>
 
+        <div class="col-md-6 col-lg-2 mt-3">
+          <a href="{{ route('martyrs.moreOneMartyrList') }}">
+            <div class="card text-center py-2 border border-warning">
+              <div class="card-body">
+                <i class="bi bi-people-fill text-warning mb-4" style="font-size: 60px !important"></i>
+                <h5 class="card-title mb-3">الأسر التي لها اكثر من شهيد</h5>
+              </div>
+            </div>
+          </a>
+        </div>
+
         
       </div>
 

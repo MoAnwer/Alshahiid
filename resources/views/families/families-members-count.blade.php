@@ -252,12 +252,14 @@
               @endforelse
 
               <caption class="text-primary">
-
-               @if(request()->query('martyr_name') && is_numeric(request()->query('martyr_name')))
+                عدد افراد اسر الشهداء
+               @if (!is_null(request()->query('martyr_name')))
+                 @if(request()->query('martyr_name') && is_numeric(request()->query('martyr_name')))
                   اسرة الشهيد  صاحب النمرة العسكرية  {{ request()->query('martyr_name') }}
-                @else
-                اسرة الشهيد {{ request()->query('martyr_name') }}
-                @endif
+                  @else
+                  اسرة الشهيد {{ request()->query('martyr_name') }}
+                  @endif
+               @endif
                 
                 @if(!is_null(request()->query('type')) && request()->query('type') != 'all')
 

@@ -9,8 +9,7 @@
 
       <!-- Main Content -->
       <div id="content">
-	  
-
+				
       @include('components.navbar')
       
       <div class="container-fluid mt-4">
