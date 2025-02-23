@@ -107,7 +107,7 @@
           </a>
         </div>
 
-        <div class="col-md-6 col-lg-2 mt-3">
+        {{-- <div class="col-md-6 col-lg-2 mt-3">
           <a href="{{ route('martyrs.moreOneMartyrList') }}">
             <div class="card text-center py-2 border border-warning">
               <div class="card-body">
@@ -116,7 +116,7 @@
               </div>
             </div>
           </a>
-        </div>
+        </div> --}}
 
         
       </div>

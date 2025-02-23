@@ -284,24 +284,25 @@ class MartyrController extends Controller
         return view('martyrs.report', compact('report'));
     }
 
+
+    /**
+     * moreOneMartyrList 
+     */
     public function moreOneMartyrList()
     {
-        $request = request();
+    //     $request = request();
 
-        $query = DB::table('families')
-                ->leftJoin('martyrs', 'families.martyr_id', 'martyrs.id')
-                ->leftJoin('addresses', 'families.id', 'addresses.family_id')
-                ->selectRaw('
-                    martyrs.name,
-                    martyrs.force,
-                    martyrs.militarism_number,
-                    COUNT(martyrs.family_id)
-                ')->whereNotNull('martyrs.family_id')
-                ->groupBy(['martyrs.name', 'martyrs.force', 'martyrs.militarism_number']);
+    //     $query = DB::table('martyrs')
+    //             ->join('families', 'families.martyr_id', 'martyrs.id')
+    //             ->selectRaw('
+    //                 martyrs.name,
+    //                 martyrs.force,
+    //                 martyrs.militarism_number
+    //             ')->groupBy(['martyrs.name', 'martyrs.force', 'martyrs.militarism_number']);
 
-        $list = $query->get();
+    //     $list = $query->get();        
 
-        dd($list);
+    //     dd($list);
     }
 
 }
