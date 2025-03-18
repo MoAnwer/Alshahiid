@@ -35,7 +35,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <input type="password" class="form-control form-control-user" id="exampleInputPassword" name="password"  placeholder="كلمة السر">
+                            <input type="password" class="form-control form-control-user" id="exampleInputPassword" name="password"  placeholder="كلمة السر" autocomplete="off">
                             </div>
                         <button type="submit" class="btn btn-primary active btn-user btn-block">
                            تسجيل دخول
