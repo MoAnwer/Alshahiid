@@ -26,6 +26,6 @@ class Project extends Model
     ];
 
     public function family() {
-        return $this->belongsTo(Family::class);
+        return $this->belongsTo(Family::class)->withDefault();
     }
 }

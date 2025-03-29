@@ -13,6 +13,6 @@ class Injured extends Model
 	
 	public function injuredServices()
 	{
-		return $this->hasMany(InjuredService::class)->orderByDESC('id');
+		return $this->hasMany(InjuredService::class)->orderByDESC('id')->withDefault();
 	}	
 }

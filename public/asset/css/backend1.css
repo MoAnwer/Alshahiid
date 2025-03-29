@@ -41702,3 +41702,78 @@ form.user .btn-user {
   background-color: #2d4373;
   border-color: #dfdfdf
 }
+
+
+//
+th {
+  all: unset !important;
+  display: table-cell !important;
+  padding: 25px 10px !important;
+  font-size: 22px !important;
+  font-weight: bold !important;
+  background-color: #4b4b4b !important;
+}
+
+.table-responsive {
+  padding: 0 !important;
+  margin: 10px 0px !important;
+  width: 100% !important;
+}
+
+.table-responsive table {
+  padding: 0 !important;
+  margin: 10px 0px !important;
+  width: 100% !important;
+}
+
+#printArea {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+caption {
+  font-size: 22px !important;
+  font-weight: bold !important;
+}
+
+td {
+  padding: 25px 10px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  color: black !important;
+}
+
+@media print {
+
+  th {
+    font-weight: normal;
+    background-color: dark;
+    padding: 20px 0px;
+    /*font-family: 'monospace' !important;*/
+  }
+
+  .table-responsive,
+  .table-responsive * {
+    /*font-family: 'cairo' !important;*/
+    visibility: visible !important;
+    width: 100% !important;
+  }
+
+  .table-responsive {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100% !important;
+    font-size: 14px !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+  }
+
+  .table-responsive tr {
+    page-break-inside: avoid;
+  }
+
+}

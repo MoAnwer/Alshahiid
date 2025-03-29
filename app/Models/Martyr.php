@@ -43,6 +43,6 @@ class Martyr extends Model
     }
 
     public function belongToFamily() {
-        return $this->belongsTo(Family::class, 'family_id');
+        return $this->belongsTo(Family::class, 'family_id')->withDefault();
     }
 }

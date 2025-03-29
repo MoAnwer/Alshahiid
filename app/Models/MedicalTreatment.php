@@ -22,6 +22,6 @@ class MedicalTreatment extends Model
     ];
 
     public function familyMember() {
-        return $this->belongsTo(FamilyMember::class);
+        return $this->belongsTo(FamilyMember::class)->withDefault();
     }
 }

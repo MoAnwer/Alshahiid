@@ -22,4 +22,5 @@ class Assistance extends Model
     public function family() {
         return $this->belongsTo(Family::class);
     }
+
 }

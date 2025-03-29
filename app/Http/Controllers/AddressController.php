@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Address;
 use App\Models\Family;
 use App\Services\AddressService;
-use Illuminate\Support\Facades\Log;
 
 class AddressController extends Controller
 {
@@ -21,7 +20,6 @@ class AddressController extends Controller
         $this->family   = new Family;
         $this->address  = new Address;
         $this->addressService  = new AddressService;
-        $this->log      = Log::stack(['stack' => Log::build(['driver' => 'single', 'path' => storage_path('logs/alshahiid.log')]) ]);
     }
 
     public function create(int $family) 
@@ -59,7 +57,6 @@ class AddressController extends Controller
 		try {
 			return view('address.edit', ['address' => $this->address->findOrFail($id)]);
 		} catch (Exception $e) {
-            $this->log->error('Edit address id='.$id, ['exception' =>  $e->getMessage()]);
             return $e->getMessage();
         }
     }
@@ -83,7 +80,6 @@ class AddressController extends Controller
             return back()->with('success', 'تم تعديل بيانات السكن بنجاح');
 
         } catch(Exception $e) {
-            $this->log->error('Update address id='.$id, ['exception' =>  $e->getMessage()]);
             return $e->getMessage();
 
         }
@@ -95,7 +91,6 @@ class AddressController extends Controller
         try {
             return view('address.delete', ['address' => $this->address->findOrFail($id)]);
         } catch (Exception $e) {
-            $this->log->error('Delete address id='.$id, ['exception' =>  $e->getMessage()]);
             return $e->getMessage();
         }
     }
@@ -111,7 +106,7 @@ class AddressController extends Controller
             return to_route('families.show', $familyId)->with('success', 'تم حذف بيانات السكن بنجاح');
 
         } catch (Exception $e) {
-            $this->log->error('Destroy address id='.$id, ['exception' =>  $e->getMessage()]);
+
             return $e->getMessage();
         }
     }

@@ -13,6 +13,6 @@ class Wife extends Model
 
     public function martyr() 
     {
-        return $this->belongsTo(Martyr::class);
+        return $this->belongsTo(Martyr::class)->withDefault();
     }
 }

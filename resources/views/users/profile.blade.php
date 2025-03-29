@@ -41,11 +41,11 @@
               @method('PUT')
 
               <label>اسم المستخدم</label>
-              <input name="username" type="text" class="p-4 mb-3 form-control" placeholder="{{ auth()->user()->username }} (دعه فارغ اذا لم ترغب بالتعديل عليه)"/>
+              <input name="username" type="text" class="p-4 mb-3 form-control" placeholder="{{ auth()->user()->username }} (دعه فارغ اذا لم ترغب بالتعديل عليه)" autocomplete="off"/>
               <label>الاسم رباعي</label>
-              <input name="full_name" type="text" maxlength="60" class="p-4 mb-3 form-control" placeholder="{{ auth()->user()->full_name }}"/>
+              <input name="full_name" type="text" maxlength="60" class="p-4 mb-3 form-control" placeholder="{{ auth()->user()->full_name }}" autocomplete="off"/>
               <label>كلمة السر (دعها فارغة اذا لم ترغب بالتعديل عليها)</label>
-              <input name="password" type="password" class="p-4 mb-3 form-control" placeholder="******"/>
+              <input name="password" type="password" class="p-4 mb-3 form-control" placeholder="******" autocomplete="off"/>
               <button type="submit" class="btn btn-success py-2 mt-3" maxlength="17">
                 تعديل
               </button>

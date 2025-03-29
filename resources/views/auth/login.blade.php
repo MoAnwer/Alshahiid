@@ -3,9 +3,9 @@
 
 <style>
     .bg-gradient-primary {
-        background-color: #7b60ad;
-        background-image: linear-gradient(80deg, #7b60ad 100%, #7b60ad 23%);
-        background-size: cover;
+      background-color: #7b60ad;
+      background-image: linear-gradient(80deg, #7b60ad 100%, #7b60ad 23%);
+      background-size: cover;
     }
 </style>
 
@@ -35,7 +35,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <input type="password" class="form-control form-control-user" id="exampleInputPassword" name="password"  placeholder="كلمة السر">
+                            <input type="password" class="form-control form-control-user" id="exampleInputPassword" name="password"  placeholder="كلمة السر" autocomplete="off">
                             </div>
                         <button type="submit" class="btn btn-primary active btn-user btn-block">
                            تسجيل دخول

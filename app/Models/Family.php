@@ -12,19 +12,19 @@ class Family extends Model
     protected $fillable = ['category', 'family_size', 'supervisor_id', 'martyr_id'];
 
     public function supervisor() {
-        return $this->belongsTo(Supervisor::class);
+        return $this->belongsTo(Supervisor::class)->withDefault();
     }
 
     public function martyr() {
-        return $this->belongsTo(Martyr::class);
+        return $this->belongsTo(Martyr::class)->withDefault();
     }
 
     public function martyrs () {
-        return $this->hasMany(Martyr::class, 'family_id');
+        return $this->hasMany(Martyr::class, 'family_id')->withDefault();
     }
 
     public function address() {
-        return $this->hasOne(Address::class);
+        return $this->hasOne(Address::class)->withDefault();
     }
 	
 	public function addresses() {
@@ -60,7 +60,7 @@ class Family extends Model
     }
 
     public function communicate() {
-        return $this->hasMany(Communicate::class);
+        return $this->hasMany(Communicate::class)->withDefault();
     }
 
     public static function boot()

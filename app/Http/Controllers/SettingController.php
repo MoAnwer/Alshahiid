@@ -52,7 +52,7 @@ class SettingController extends Controller
             File::makeDirectory($backupDir, 0775, true);
         }
 
-        $mysqldumpPath = '"C:\\xampp\\mysql\\bin\\mysqldump.exe"';
+        $mysqldumpPath = '"D:\\xampp\\mysql\\bin\\mysqldump.exe"';
 
         $backupFile = $backupDir . '\alshahiid.sql';
 
@@ -92,7 +92,7 @@ class SettingController extends Controller
 
         
         // تحديد المسار الصحيح لـ mysql في XAMPP
-        $mysqlPath = 'C:\xampp\mysql\bin\mysql.exe';
+        $mysqlPath = 'D:\xampp\mysql\bin\mysql.exe';
         
         // أمر الاستيراد
         $command = "{$mysqlPath} --user={$dbUser} --database={$dbName} < {$backupPath}";

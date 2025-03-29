@@ -11,7 +11,8 @@ class Address extends Model
 
     protected $fillable = ['sector', 'locality', 'neighborhood', 'type', 'family_id'];
 
-    public function family() {
-        return $this->belongsTo(Family::class);
+    public function family() 
+    {
+        return $this->belongsTo(Family::class)->withDefault();
     }
 }
