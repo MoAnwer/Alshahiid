@@ -249,7 +249,7 @@ class AssistancesController extends Controller
             $query->selectRaw('YEAR(assistances.created_at) as year')->whereYear('assistances.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('assistances.created_at')->get()->groupBy(['status', 'type']);
+        $report = $query->get()->groupBy(['status', 'type']);
         
         return view('reports.assistancesReport', compact('report'));
     }

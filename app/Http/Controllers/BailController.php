@@ -243,7 +243,7 @@ class BailController extends Controller
             $query->selectRaw('YEAR(bails.created_at) as year')->whereYear('bails.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('bails.created_at')->get()->groupBy(['type', 'status']); 
+        $report = $query->get()->groupBy(['type', 'status']); 
         
         return view('reports.bails', compact('report'));
     }

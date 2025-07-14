@@ -34,7 +34,7 @@ class MarryAssistanceController extends Controller
             $member->marryAssistances()->create($data);
             return back()->with('success', 'تم اضافة الخدمة بنجاح');
         } catch (Exception $e) {
-            $this->log->error('Storing marray assistances of ' . $member->name, ['exception' => $e->getMessage()]);
+            $this->log->error('Storing marray assistances of id' . $member, ['exception' => $e->getMessage()]);
             return $e->getMessage();
         }
     }
@@ -53,7 +53,7 @@ class MarryAssistanceController extends Controller
             $assit = MarryAssistance::findOrFail($id)->update($data);
             return back()->with('success', 'تم تعديل الخدمة بنجاح');
         } catch (Exception $e) {
-            $this->log->error('Updating marray assistances ' . $assit->loadMissing('familyMember')->familyMember->name, ['exception' => $e->getMessage()]);
+            // $this->log->error('Updating marray assistances ' . $assit->loadMissing('familyMember')->familyMember->name, ['exception' => $e->getMessage()]);
             return $e->getMessage();
         }
     }   
@@ -129,7 +129,7 @@ class MarryAssistanceController extends Controller
             $query->selectRaw('YEAR(marry_assistances.created_at) as year')->whereYear('marry_assistances.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('marry_assistances.created_at')->get()->groupBy(['relation', 'status']);
+        $report = $query->get()->groupBy(['relation', 'status']);
 
         return view('reports.marriesAssistancesReport', compact('report'));
     }

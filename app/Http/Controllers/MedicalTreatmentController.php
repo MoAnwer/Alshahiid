@@ -376,7 +376,7 @@ class MedicalTreatmentController extends Controller
             'total'     => @$hasTamiin  + @$hasNoTamiin
         ]);
 
-        return view('MedicalTreatments.tamiin', compact('report'));
+        return view('medicalTreatments.tamiin', compact('report'));
 
     }
 

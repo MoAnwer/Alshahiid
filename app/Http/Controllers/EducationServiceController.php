@@ -246,7 +246,7 @@ class EducationServiceController extends Controller
             $query->selectRaw('YEAR(education_services.created_at) as year')->whereYear('education_services.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('education_services.created_at')->get()->groupBy(['type', 'status']); 
+        $report = $query->get()->groupBy(['type', 'status']); 
 
         return view('reports.eduction', compact('report'));
     }

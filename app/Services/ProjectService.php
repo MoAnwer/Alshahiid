@@ -50,7 +50,7 @@ class ProjectService
             $query->selectRaw('YEAR(projects.created_at) as year')->whereYear('projects.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('projects.created_at')->get()->groupBy(['project_type', 'status']); 
+        $report = $query->get()->groupBy(['project_type', 'status']); 
         
         return $report;
     }
@@ -91,7 +91,7 @@ class ProjectService
             $query->selectRaw('YEAR(projects.created_at) as year')->whereYear('projects.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('projects.created_at')->get()->groupBy('work_status');
+        $report = $query->get()->groupBy('work_status');
 
       return $report;        
     }

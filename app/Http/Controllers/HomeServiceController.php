@@ -226,8 +226,7 @@ class HomeServiceController extends Controller
             $query->selectRaw('YEAR(home_services.created_at) as year')->whereYear('home_services.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $homeServicesReport = $query->latest('home_services.created_at')->get()->groupBy(['type', 'status']); 
-        // dd($homeServicesReport);
+        $homeServicesReport = $query->get()->groupBy(['type', 'status']); 
 
         return view('reports.homeServices', compact('homeServicesReport'));
     }

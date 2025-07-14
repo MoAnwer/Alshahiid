@@ -279,7 +279,7 @@ class MartyrController extends Controller
             $query->selectRaw('YEAR(martyrs.created_at) as year')->whereYear('martyrs.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('martyrs.created_at')->get()->groupBy('force'); 
+        $report = $query->get()->groupBy('force'); 
 
         return view('martyrs.report', compact('report'));
     }

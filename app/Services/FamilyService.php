@@ -41,7 +41,7 @@ class FamilyService
             $query->selectRaw('YEAR(families.created_at) as year')->whereYear('families.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('families.created_at')->get()->groupBy('category'); 
+        $report = $query->get()->groupBy('category'); 
 
         $totalCount = Family::count();
 

@@ -11,11 +11,6 @@ use Illuminate\Support\Facades\DB;
 class InjuredServiceController extends Controller
 {
 
-    public function index()
-    {
-        //
-    }
-
     public function create($injured)
     {
 		$injured = Injured::findOrFail($injured);
@@ -140,7 +135,7 @@ class InjuredServiceController extends Controller
             $query->selectRaw('YEAR(injured_services.created_at) as year')->whereYear('injured_services.created_at',  $request->query('year'))->groupBy('year');
         } 
 
-        $report = $query->latest('injured_services.created_at')->get()->groupBy(['type', 'status']); 
+        $report = $query->get()->groupBy(['type', 'status']); 
 
 		// dd($report);
 
