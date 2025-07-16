@@ -400,11 +400,11 @@ Route::middleware('auth')->group(function() {
 	});
 	
 	Route::controller(SettingController::class)->prefix('settings')->group(function () {
-		Route::get('', 'settingPage')->name('settings.index')->can('isModerate');
-		Route::post('backup', 'backup')->name('settings.backup')->can('isModerate');
-		Route::get('/backup/download', 'downloadBackup')->name('settings.downloadBackup')->can('isModerate');
+		Route::get('', 'settingPage')->name('settings.index')->can('isAdmin');
+		Route::post('backup', 'backup')->name('settings.backup')->can('isAdmin');
+		Route::get('/backup/download', 'downloadBackup')->name('settings.downloadBackup')->can('isAdmin');
 	});
 	
-	Route::post('/backup/restore', 'SettingController@importBackup')->name('backup.restore')->can('isModerate');
+	Route::post('/backup/restore', 'SettingController@importBackup')->name('backup.restore')->can('isAdmin');
 	
 });
