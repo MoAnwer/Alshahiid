@@ -18,7 +18,7 @@ class FamilyMemberRequest extends FormRequest
             "age" => 'integer|required',
             "gender" => "in:ذكر,أنثى",
             "relation" => "in:اب,ام,اخ,اخت,زوجة,ابن,ابنة",
-            "national_number" => "required|numeric|unique:family_members,national_number",
+            // "national_number" => "numeric|unique:family_members,national_number",
             "phone_number" => "string|nullable",
             "birth_date" => "date|required",
             "health_insurance_number" => "numeric|nullable|unique:family_members,health_insurance_number",
