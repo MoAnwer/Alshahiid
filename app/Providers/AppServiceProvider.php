@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         Gate::define('isModerate', fn ($user) => $user->role == 'moderate');
+        Gate::define('admin-or-moderate', fn ($user) => $user->role == 'moderate' || $user->role == 'admin');
     }
 
     /**
