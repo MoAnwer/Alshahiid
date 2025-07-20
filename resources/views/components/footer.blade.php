@@ -15,13 +15,13 @@
         // });
 
         html2canvas(table, {
-            'scale': 4,
+            'scale': 2,
             'useCORS': true,
         }).then(canvas => {
             let imageDate = canvas.toDataURL('image/png');
             let newWindow = window.open(document.title);
             newWindow.document.write(
-                `<img src="${imageDate}" style="width:100% !important; margin: -10px 0px !important">`
+                `<img src="${imageDate}" style="width:100vw !important; margin: -12px -10px 0px -9px !important; height: fit-content !important">`
             );
             newWindow.document.close();
             setTimeout(() => {

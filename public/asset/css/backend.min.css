@@ -43,7 +43,9 @@ td {
 }
 
 @media print {
-
+	body {
+		zoom: 170% !important;
+	}
  	th {
  		font-weight: normal;
  		background-color: dark;
