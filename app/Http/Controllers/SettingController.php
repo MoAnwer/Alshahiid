@@ -9,7 +9,23 @@ use Illuminate\Support\Facades\File;
 
 class SettingController extends Controller
 {
-    protected $backupFile = 'backups/alshahiid.sql';
+    protected $mysqldumpPath;
+    protected $mysqlPath;
+    protected $backupFile;
+    protected $dbHost;
+    protected $dbUser;
+    protected $dbName;
+    protected $dbPassword;
+
+    public function __construct() {
+        $this->mysqldumpPath =  config('database.mysqldump_path');
+        $this->mysqlPath = config('database.mysql_path');
+        $this->backupFile = 'backups/alshahiid.sql';
+        $this->dbHost = config('database.connections.mysql.host');
+        $this->dbUser = config('database.connections.mysql.username');
+        $this->dbName = config('database.connections.mysql.database');
+        $this->dbPassword = config('database.connections.mysql.password');
+    }
 
     public function settingPage() 
     {
@@ -24,41 +40,35 @@ class SettingController extends Controller
     }
 
     /**
-     * getFileSize 
-     * @param string filename
+     * Get the size of file 
+     * @param string file name
      **/
     
     function getFileSize($file) {
         if (($file) >= 24 && ($file) <= 1024*1024 ) {
-        return round(($file) / 1024 , 1) + 1 . "KB";
+            return round(($file) / 1024 , 1) + 1 . "KB";
         } elseif (($file) >= 1024*1024 && ($file) <= 1024*1024*1024) {
-        return round(($file) / 1024 / 1024 , 1) . "MB";
+            return round(($file) / 1024 / 1024 , 1) . "MB";
         } elseif (($file) >= 1024*1024*1024) {
-        return round(($file) / 1024 / 1024 / 1024, 1) . "GB";
+            return round(($file) / 1024 / 1024 / 1024, 1) . "GB";
         } else {
-        return "0kb";
+            return "0kb";
         }
     }
 
     public function backup()
     {
-        $dbHost = env('DB_HOST', '127.0.0.1');
-        $dbUser = env('DB_USERNAME', 'root');
-        $dbDatabase = env('DB_DATABASE', 'alshahiid');
-
         $backupDir = storage_path('app/backups');
 
         if (!File::exists($backupDir)) {
             File::makeDirectory($backupDir, 0775, true);
         }
 
-        $mysqldumpPath = '"D:\\xampp\\mysql\\bin\\mysqldump.exe"';
+        $backupFilePath = $backupDir . '\alshahiid.sql';
 
-        $backupFile = $backupDir . '\alshahiid.sql';
-
-        ini_set('max_execution_time', 1800);
+        ini_set('max_execution_time', 2800);
         
-        $command = "{$mysqldumpPath} --user=$dbUser --host=$dbHost $dbDatabase > $backupFile";
+        $command = "{$this->mysqldumpPath} --user=$this->dbUser --host=$this->dbHost $this->dbName > $backupFilePath";
 
         $output = null;
         $resultCode = null;
@@ -67,38 +77,27 @@ class SettingController extends Controller
         if ($resultCode === 0) {
             return back()->with('success', 'تم إنشاء نسخة احتياطية بنجاح');
         } else {
-            return back()->with('error', 'حدث خطأ');
+            return back()->with('error', 'حدث خطأ ' . $command);
         }
     }
 
 
     public function importBackup(Request $request)
     {
-        // التحقق من أن الملف تم رفعه
+        // Check if the fle uploaded
         if (!$request->hasFile('backup_file')) {
             return response()->json(['message' => 'يرجى رفع ملف النسخة الاحتياطية!'], 400);
         }
 
-        // جلب بيانات قاعدة البيانات من .env
-        $dbHost = env('DB_HOST', '127.0.0.1');
-        $dbUser = env('DB_USERNAME', 'root');
-        $dbPassword = env('DB_PASSWORD', '');
-        $dbName = env('DB_DATABASE', 'testingBackup');
-
-        // حفظ الملف في مجلد التخزين
+        // Save file in storage path
         $backupFile = $request->file('backup_file');
         $backupPath = storage_path('app/imported_backups/' . $backupFile->getClientOriginalName());
         $backupFile->move(storage_path('app/imported_backups/'), $backupFile->getClientOriginalName());
 
-        
-        // تحديد المسار الصحيح لـ mysql في XAMPP
-        $mysqlPath = 'D:\xampp\mysql\bin\mysql.exe';
-        
-        // أمر الاستيراد
-        $command = "{$mysqlPath} --user={$dbUser} --database={$dbName} < {$backupPath}";
-        // dd($command);
+        // import backup command
+        $command = "{$this->mysqlPath} --user={$this->dbUser} --database={$this->dbName} < {$backupPath}";
 
-        ini_set('max_execution_time', 1800);
+        ini_set('max_execution_time', 2800);
 
         $output = null;
         $resultCode = null;
@@ -107,7 +106,7 @@ class SettingController extends Controller
         if ($resultCode === 0) {
             return back()->with('success', 'تم استيراد قاعدة البيانات بنجاح');
         } else {
-            return back()->with('error', 'حدث خطأ');
+            return back()->with('error', 'حدث خطأ ' . $command);
         }
 
         return response()->json(['message' => 'تم استيراد قاعدة البيانات بنجاح!']);
@@ -119,9 +118,7 @@ class SettingController extends Controller
         $file_path = storage_path('app/public/'.$this->backupFile);
         $originalName = pathinfo($file_path, PATHINFO_FILENAME);
         $EXTENSION = pathinfo($file_path, PATHINFO_EXTENSION);
-
         $date = now()->format('Y-m-d_H:i:s');
-
         $newFileName = "{$originalName}_{$date}.{$EXTENSION}";
 
         return Storage::download($this->backupFile, $newFileName);
