@@ -53,7 +53,6 @@ Route::middleware('auth')->group(function() {
 		Route::get('delete/{id}', 'delete')->name('martyrs.delete');
 		Route::delete('destroy/{id}', 'destroy')->name('martyrs.destroy');
 		Route::get('{martyr}/relate-to-family', 'relateToFamilyPage')->name('martyrs.relateToFamilyPage');
-		Route::get('more-one-martyr-family-list', 'moreOneMartyrList')->name('martyrs.moreOneMartyrList');
 		Route::post('{martyr}/relate-to-family-action', 'relateToFamilyAction')->name('martyrs.relateToFamilyAction');
 		Route::get('report', 'report')->name('reports.martyrs');
 	});

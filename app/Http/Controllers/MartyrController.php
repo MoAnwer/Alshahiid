@@ -283,26 +283,5 @@ class MartyrController extends Controller
 
         return view('martyrs.report', compact('report'));
     }
-
-
-    /**
-     * moreOneMartyrList 
-     */
-    public function moreOneMartyrList()
-    {
-    //     $request = request();
-
-    //     $query = DB::table('martyrs')
-    //             ->join('families', 'families.martyr_id', 'martyrs.id')
-    //             ->selectRaw('
-    //                 martyrs.name,
-    //                 martyrs.force,
-    //                 martyrs.militarism_number
-    //             ')->groupBy(['martyrs.name', 'martyrs.force', 'martyrs.militarism_number']);
-
-    //     $list = $query->get();        
-
-    //     dd($list);
-    }
-
+    
 }
