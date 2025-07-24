@@ -8,12 +8,6 @@
       function printTable() 
       {
         let table = document.querySelector('.table-responsive table');
-        // let th = document.querySelectorAll('.table-responsive thead th');
-
-        // th.foreach(th => {
-        //     th.style.direction = "ltr";
-        // });
-
         html2canvas(table, {
             'scale': 2,
             'useCORS': true,
@@ -32,20 +26,23 @@
 
       function  printContainer() 
       {
-            let container = document.querySelector('#printArea');
+        let container = document.querySelector('#printArea');
+        const title = document.title;
 
-            html2canvas(container, {
-                'scale': 2,
-                'useCORS': true,
-            }).then(canvas => {
-                let imageDate = canvas.toDataURL('image/png');
-                let newWindow = window.open("");
-                newWindow.document.write('<img src="' + imageDate + '" style="width:100%; ">')
-                newWindow.document.close();
-                setTimeout(() => {
-                    newWindow.print();
-                }, 200);
-            });
+        html2canvas(container, {
+            'scale': 2,
+            'useCORS': true,
+        }).then(canvas => {
+            let imageDate = canvas.toDataURL('image/png');
+            let newWindow = window.open(document.title);
+            newWindow.document.write(
+                `<img src="${imageDate}" style="width:100vw !important; margin: -20px -10px 0px -9px !important; height: fit-content !important">
+            `);
+            newWindow.document.close();
+            setTimeout(() => {
+                newWindow.print();
+            }, 200);
+        });
       }
   </script>
 </body>
