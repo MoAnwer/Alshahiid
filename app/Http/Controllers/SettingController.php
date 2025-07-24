@@ -20,7 +20,7 @@ class SettingController extends Controller
     public function __construct() {
         $this->mysqldumpPath =  config('database.mysqldump_path');
         $this->mysqlPath = config('database.mysql_path');
-        $this->backupFile = 'backups/alshahiid.sql';
+        $this->backupFile = 'backup.sql';
         $this->dbHost = config('database.connections.mysql.host');
         $this->dbUser = config('database.connections.mysql.username');
         $this->dbName = config('database.connections.mysql.database');
@@ -58,17 +58,17 @@ class SettingController extends Controller
 
     public function backup()
     {
-        $backupDir = storage_path('app/backups');
+        $backupDir = storage_path('app');
 
         if (!File::exists($backupDir)) {
             File::makeDirectory($backupDir, 0775, true);
         }
 
-        $backupFilePath = $backupDir . '\alshahiid.sql';
+        $backupFilePath = $backupDir . '/backup.sql';
 
-        ini_set('max_execution_time', 2800);
+        ini_set('max_execution_time', 4800);
         
-        $command = "{$this->mysqldumpPath} --user=$this->dbUser --host=$this->dbHost $this->dbName > $backupFilePath";
+        $command = "{$this->mysqldumpPath} --user=$this->dbUser --host=$this->dbHost -p{$this->dbPassword} $this->dbName > $backupFilePath";
 
         $output = null;
         $resultCode = null;
@@ -95,7 +95,7 @@ class SettingController extends Controller
         $backupFile->move(storage_path('app/imported_backups/'), $backupFile->getClientOriginalName());
 
         // import backup command
-        $command = "{$this->mysqlPath} --user={$this->dbUser} --database={$this->dbName} < {$backupPath}";
+        $command = "{$this->mysqlPath} --user={$this->dbUser} --database={$this->dbName} -p{$this->dbPassword} < {$backupPath}";
 
         ini_set('max_execution_time', 2800);
 
