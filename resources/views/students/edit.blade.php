@@ -1,4 +1,4 @@
-@include('components.header', ['page_title' => 'إنشاء ملف تعليمي'])
+@include('components.header', ['page_title' => 'تعديل ملف تعليمي'])
 
  <div id="wrapper">
 
@@ -13,7 +13,7 @@
       @include('components.navbar')
       
       <div class="container-fluid mt-4">
-        <h4>إنشاء ملف تعليمي  {{  $student->familyMember->name }} </h4>
+        <h4>تعديل ملف تعليمي  - {{  $student->familyMember->name }} </h4>
         <hr />
         
         @if($errors->any())
@@ -41,9 +41,10 @@
             </div>
 
             <button type="submit" class="btn btn-success py-2 mt-3">
-              انشاء
+              تعديل
             </button>
-            <a class="btn btn-info py-2 mt-3" href="{{ route('familyMembers.show', $student->familyMember->id) }}">رجوع</a>
+            {{-- <a class="btn btn-info py-2 mt-3" href="{{ route('familyMembers.show', $student->familyMember->id) }}">رجوع</a> --}}
+            <button class="btn btn-info py-2 mt-3" onclick="window.history.back()">رجوع</button>
         </form>
       </div>
       
