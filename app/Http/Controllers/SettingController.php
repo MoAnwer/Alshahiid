@@ -97,7 +97,7 @@ class SettingController extends Controller
         // import backup command
         $command = "{$this->mysqlPath} --user={$this->dbUser} --database={$this->dbName} -p{$this->dbPassword} < {$backupPath}";
 
-        ini_set('max_execution_time', 2800);
+        ini_set('max_execution_time', 5800);
 
         $output = null;
         $resultCode = null;

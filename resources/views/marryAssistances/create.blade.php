@@ -13,7 +13,7 @@
       @include('components.navbar')
       
       <div class="container-fluid mt-4">
-        <h3>اضافة  خدمة زواج {{ $member->name }}</h3>
+        <h3>اضافة  خدمة زواج - {{ $member->name }}</h3>
         <hr />
         
         @if($errors->any())
@@ -21,6 +21,7 @@
             <div class="alert alert-danger"> {{ $error }} </div>
           @endforeach
         @endif
+        
         <x-alert />
         <form action="{{ route('marryAssistances.store', $member->id) }}" method="POST">
           @csrf

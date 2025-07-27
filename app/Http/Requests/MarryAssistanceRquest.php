@@ -17,15 +17,17 @@ class MarryAssistanceRquest extends FormRequest
             'budget' => 'required|numeric', 
             'status'  => 'required',
             'notes' => 'nullable', 
-            'budget_from_org' => 'nullable|numeric', 
-            'budget_out_of_org' => 'nullable|numeric'
+            'budget_from_org' => 'numeric', 
+            'budget_out_of_org' => 'numeric'
         ];
     }
 
-    public function message() 
+    public function messages() 
     {
         return [
-            'budget'    => 'حقل البلغ مطلوب'
+            'budget'    => 'حقل المبلغ مطلوب',
+            'budget_from_org' => 'حقل المبلغ المقدم من المنظمة مطلوب',
+            'budget_out_of_org' => 'حقل المبلغ المقدم من خارج المنظمة مطلوب'
         ];
     }
 }

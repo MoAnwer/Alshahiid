@@ -20,7 +20,7 @@ class BailRequest extends FormRequest
         ];
     }
 
-    public function message() 
+    public function messages() 
     {
         return [
             'budget'    => 'حقل البلغ مطلوب'
