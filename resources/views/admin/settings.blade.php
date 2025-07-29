@@ -66,36 +66,33 @@
             </div>
               <!-- Export backup -->
 
-
-            <!-- import backup -->
-            <div class="col-lg-6 col-12 ">
-              <div class="card shadow-sm mb-3">
-                <div class="card-header py-3 m-0 font-weight-bold text-primary">
-                  <i class='bi bi-database-down'></i> استيراد نسخة الإحتياطية 
-                </div>
-                <div class="card-body py-3">
-                  <form action="{{ route('backup.restore') }}" enctype="multipart/form-data"  method="POST">
-                    @csrf
-                    <div class="form-group py-2">
-                      <input type="file" name="backup_file"  class="form-control" accept=".sql" required>
-                    </div>
-                    <hr>
-                    <div class="d-flex justify-content-end">
-                      <button type="submit" class="btn btn-primary active ml-2">
-                        <i class="bi bi-database-down mx-1 mb-1"></i>
-                          بدء استيراد
-                        </button>
+            @can('isModerate')
+              <!-- import backup -->
+              <div class="col-lg-6 col-12 ">
+                <div class="card shadow-sm mb-3">
+                  <div class="card-header py-3 m-0 font-weight-bold text-primary">
+                    <i class='bi bi-database-down'></i> استيراد نسخة الإحتياطية 
+                  </div>
+                  <div class="card-body py-3">
+                    <form action="{{ route('backup.restore') }}" enctype="multipart/form-data"  method="POST">
+                      @csrf
+                      <div class="form-group py-2">
+                        <input type="file" name="backup_file"  class="form-control" accept=".sql" required>
                       </div>
-                    </form> 
-                    
+                      <hr>
+                      <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary active ml-2">
+                          <i class="bi bi-database-down mx-1 mb-1"></i>
+                            بدء استيراد
+                          </button>
+                        </div>
+                      </form> 
+                    </div>
                   </div>
                 </div>
-                
               </div>
-              
-            </div>
-            
             <!-- import backup -->
+            @endcan
             
             <hr>
             <span><span class="text-danger">ملاحظة:</span> قد تأخذ عمليات النسخ الاحتياطي وقتاً </span>
