@@ -29,7 +29,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $this->authorize('isModerate');
+        $this->authorize('admin-or-moderate');
 
         return view('users.users', ['users' => User::orderByDESC('id')->paginate()]);
     }
@@ -41,7 +41,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $this->authorize('isModerate');
+        $this->authorize('admin-or-moderate');
         return view('users.create');
     }
 
@@ -53,7 +53,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $this->authorize('isModerate');
+        $this->authorize('admin-or-moderate');
 
         $data = $request->validated();
         $data['password'] = bcrypt($request->password);
@@ -75,7 +75,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-       $this->authorize('isModerate');
+       $this->authorize('admin-or-moderate');
     }
 
     /**
@@ -86,7 +86,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $this->authorize('isModerate');
+        $this->authorize('admin-or-moderate');
         return view('users.edit', ['user' => User::findOrFail($id)]);
     }
 
@@ -99,7 +99,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('isModerate');
+        $this->authorize('admin-or-moderate');
 
         $data     =  [];
         $messages =  [];
@@ -138,6 +138,7 @@ class UserController extends Controller
 
     public function delete($id)
     {
+        $this->authorize('isModerate');
         return view('users.delete', ['user' => User::findOrFail($id)]);
     }
 
@@ -167,15 +168,16 @@ class UserController extends Controller
         }
     }
 
+
+
+    /**
+     * show how many martyrs and families that added by this user today
+     */
     public function userLog(int $user)
     {
         try {
-
                 
-            if (auth()->user()->role != 'moderate' && auth()->id() != $user) 
-            {
-                abort(403);
-            }
+            $this->authorize('admin-or-moderate');
 
             // this method show the count of families & martyr that added by "$user" in this day
 
@@ -184,12 +186,10 @@ class UserController extends Controller
             $user = $this->user->findOrFail($user);
             $printType = 'userLog';
 
-            // dd($martyrsStats);
-
             return view('users.userLog', compact('user', 'martyrsStats', 'familiesStats', 'printType'));
             
-        } catch (Exception $e) {
-            
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 }
