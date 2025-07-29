@@ -200,20 +200,25 @@
     
     <hr class="sidebar-divider mb-1">
 
-    @can('isModerate')
-    <li class="nav-item mb-0">
-        	<a class="nav-link pb-2" href="{{ route('users.index') }}">
-            	<i class="bi bi-people text-light ml-2"></i>
-            	<span>ادارة المستخدمين</span>
-			</a>
-        </a>
-    </li>
-    <li class="nav-item mb-0">
-    	<a class="nav-link pb-2" href="{{ route('settings.index') }}">
-        	<i class="bi bi-menu-button-wide text-success ml-2"></i>
-        	<span>الاعدادات</span>
-	    </a>
-    </li>
+    @can('admin-or-moderate')
+
+        <li class="nav-item mb-0">
+        	    <a class="nav-link pb-2" href="{{ route('users.index') }}">
+            	    <i class="bi bi-people text-light ml-2"></i>
+            	    <span>ادارة المستخدمين</span>
+    			</a>
+            </a>
+        </li>
+
+        @can('isModerate')
+        <li class="nav-item mb-0">
+        	<a class="nav-link pb-2" href="{{ route('settings.index') }}">
+        	    <i class="bi bi-menu-button-wide text-success ml-2"></i>
+        	    <span>الاعدادات</span>
+	        </a>
+        </li>
+        @endcan
+    
     @endcan
 
    
