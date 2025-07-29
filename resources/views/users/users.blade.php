@@ -17,13 +17,15 @@
 
         <div class="d-flex justify-content-between align-items-center pl-3">
           <h3>
-            <i class="fas fa-pepole"></i>
+            <i class="bi bi-people-fill text-primary"></i>
             ادارة المستخدمين
           </h3>
-          <a class="btn btn-primary active" href="{{ route('users.create')}}" >
-            <i class="fas fa-plus ml-2"></i>
-            اضافة مستخدم
-          </a>
+          @can('admin-or-moderate')
+            <a class="btn btn-primary active" href="{{ route('users.create')}}" >
+              <i class="bi bi-plus-circle ml-2"></i>
+              اضافة مستخدم
+            </a>
+          @endcan
         </div>
 
         <x-alert />
@@ -34,29 +36,35 @@
             <td>الاسم رباعي</td>
             <td>اسم المستخدم</td>
             <td>الوظيفة</td>
-            <td>عمليات</td>
+            @can('admin-or-moderate')
+              <td>عمليات</td>
+            @endcan
           </x-slot:head>
 
           <x-slot:body>
           @if($users->count() > 1)
             @foreach ($users as $user)
-              @continue($user->id == auth()->id())
+              @continue($user->id == auth()->id() || $user->role == 'moderate')
               <tr>
-                <td>{{ $user->id }}</td>
-                <td>{{ $user->full_name }}</td>
-                <td>{{ $user->username }}</td>
-                <td>{{ $user->role }}</td>
+                <td style="color: while !important">{{ $user->id }}</td>
+                <td style="color: while !important">{{ $user->full_name }}</td>
+                <td style="color: while !important">{{ $user->username }}</td>
+                <td style="color: while !important">{{ $user->role }}</td>
+                @can('admin-or-moderate', $user)
                 <td>
                   <a href="{{ route('users.edit', $user->id) }}" class="btn btn-success px-2">
                     <i class="bi bi-pen fa-sm"></i>
                   </a>
-                  <a href="{{ route('users.delete', $user->id) }}" class="btn btn-danger px-2">
-                    <i class="bi bi-trash-fill" title="حذف""></i>
-                  </a>
                   <a href="{{ route('users.userLog', $user->id) }}" class="btn btn-primary active px-2">
                     <i class="bi bi-person-fill" title="ملف المستخدم"></i>
                   </a>
+                 @can('isModerate', $user)
+                    <a href="{{ route('users.delete', $user->id) }}" class="btn btn-danger px-2">
+                      <i class="bi bi-trash-fill" title="حذف"></i>
+                    </a>
+                 @endcan
                 </td>
+                @endcan
               </tr>
             @endforeach
             @else
