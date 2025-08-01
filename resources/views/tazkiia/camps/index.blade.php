@@ -132,9 +132,7 @@
       <div id="printArea">
         <x-table>
           <x-slot:head>
-            @if (empty(request()->query('name')) || is_null(request()->query('name')))
-              <th>اسم المعسكر</th>
-            @endif
+            <th>اسم المعسكر</th>
               <th>تاريخ البداية</th>
               <th>تاريخ النهاية</th>
               @if (request()->query('status') == 'all'|| is_null(request()->query('status')) )
@@ -161,9 +159,7 @@
         <x-slot:body>
 			     @forelse($camps as $camp)
               <tr>
-               @if (empty(request()->query('name')) || is_null(request()->query('name')))
-                  <td>{{ $camp->name }}</td>
-                @endif
+                <td>{{ $camp->name }}</td>
                 
                 <td>{{ $camp->start_at }}</td>
                 <td>{{ $camp->end_at }}</td>
@@ -204,7 +200,7 @@
               @endif
               </tr>
             @empty
-			        <tr><td colspan="9">لا توجد حلقات </td></tr>
+			        <tr><td colspan="11">لا توجد معسكرات تربوية </td></tr>
 			      @endforelse
 
             <caption class="text-primary">
