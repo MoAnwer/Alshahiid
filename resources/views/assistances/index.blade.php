@@ -348,7 +348,7 @@
           
           <hr>
 
-          <div class="d-flex align-items-center justify-content-between  py-4 mb-5">
+          <div class="d-flex align-items-center px-5 justify-content-between  py-4 mb-5">
              <h5>
                 العدد الكلي :
                 <span><b>{{ number_format($assistances->total()) }}</b></span>

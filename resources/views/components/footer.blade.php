@@ -36,7 +36,7 @@
             let imageDate = canvas.toDataURL('image/png');
             let newWindow = window.open(document.title);
             newWindow.document.write(
-                `<img src="${imageDate}" style="width:100vw !important; margin: -20px -10px 0px -9px !important; height: fit-content !important">
+                `<img src="${imageDate}" style="width:100vw !important; margin: -20px 0 0px 0 !important; height: fit-content !important">
             `);
             newWindow.document.close();
             setTimeout(() => {
