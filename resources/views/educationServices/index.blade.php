@@ -244,9 +244,6 @@
         <x-table>
           <x-slot:head>
             <th>اسم المستفيد</th>
-            @if (request()->query('gender') == 'all' || is_null(request()->query('gender')) )
-              <th>النوع</th>
-            @endif
             @if (request()->query('search') !== 'martyr_name')
               <th>الشهيد</th>
             @endif
@@ -292,11 +289,6 @@
             @forelse ($educationServices as $service)
               <tr>
                 <td>{{ $service->name }}</td>
-
-                @if (request()->query('gender') == 'all' || is_null(request()->query('gender')) )
-                  <td>{{ $service->gender }}</td>
-                @endif
-
                 @if (request()->query('search') !== 'martyr_name')
                   <td>{{ $service->martyr_name }}</td>
                 @endif
