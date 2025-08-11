@@ -18,14 +18,14 @@ class FamilyController extends Controller
     protected Supervisor $supervisor;
     protected FamilyService $familyService;
 
-    public function __construct() 
+    public function __construct()
     {
         $this->family  = new Family;
         $this->martyr   = new Martyr;
         $this->supervisor  = new Supervisor;
         $this->familyService = new FamilyService;
 
-        $this->log  = Log::stack(['stack' => Log::build(['driver' => 'single', 'path' => storage_path('logs/alshahiid.log')]) ]);
+        $this->log  = Log::stack(['stack' => Log::build(['driver' => 'single', 'path' => storage_path('logs/alshahiid.log')])]);
     }
 
     public function index()
@@ -36,11 +36,11 @@ class FamilyController extends Controller
         $needel = trim($request->query('needel'));
 
         $query = DB::table('families')
-                ->leftJoin('supervisors', 'families.supervisor_id', '=', 'supervisors.id')
-                ->leftJoin('addresses', 'addresses.family_id', 'families.id')
-                ->leftJoin('family_members', 'family_members.family_id', 'families.id')
-                ->join('martyrs', 'families.martyr_id', 'martyrs.id')
-                ->selectRaw('
+            ->leftJoin('supervisors', 'families.supervisor_id', '=', 'supervisors.id')
+            ->leftJoin('addresses', 'addresses.family_id', 'families.id')
+            ->leftJoin('family_members', 'family_members.family_id', 'families.id')
+            ->join('martyrs', 'families.martyr_id', 'martyrs.id')
+            ->selectRaw('
                     families.id as family_id,
                     families.category as category,
                     families.family_size as family_size,
@@ -51,30 +51,37 @@ class FamilyController extends Controller
                     addresses.locality as locality,
                     COUNT(family_members.id) as real_members_count
                 ')->groupBy([
-                    'martyrs.name', 'families.category', 'families.id', 'families.family_size', 'supervisors.name', 'addresses.sector', 'locality', 'martyrs.force'
-                ]);
+                'martyrs.name',
+                'families.category',
+                'families.id',
+                'families.family_size',
+                'supervisors.name',
+                'addresses.sector',
+                'locality',
+                'martyrs.force'
+            ]);
 
-                
-        if($request->query('search') == 'martyr_name') {
+
+        if ($request->query('search') == 'martyr_name') {
             $query->where('martyrs.name', 'LIKE', "%$needel%");
         }
 
-        if($request->query('search') == 'militarism_number') {
+        if ($request->query('search') == 'militarism_number') {
             $query->where('martyrs.militarism_number', $needel);
         }
 
-        if($request->query('search') == 'force') {
+        if ($request->query('search') == 'force') {
             $query->where('martyrs.force', $needel);
         }
 
 
         if (!empty($request->query('category')) && $request->query('category') != 'all') {
             $query->where('families.category', $request->query('category'))->groupBy('families.category');
-        } 
+        }
 
         if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
             $query->where('addresses.sector', $request->query('sector'))->groupBy('addresses.sector');
-        } 
+        }
 
         if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
             $query->where('addresses.locality', $request->query('locality'))->groupBy(['addresses.sector', 'addresses.locality']);
@@ -82,16 +89,15 @@ class FamilyController extends Controller
 
         if (!empty($request->query('year')) && $request->query('year') != 'all') {
             $query->whereYear('families.created_at', $request->query('year'));
-        } 
+        }
 
-         if (!empty($request->query('month')) && $request->query('month') != 'all') {
+        if (!empty($request->query('month')) && $request->query('month') != 'all') {
             $query->whereMonth('families.created_at', $request->query('month'));
-        } 
+        }
 
         $families = $query->latest('families.id')->paginate();
 
         return view('families.familiesList', compact('families'));
-
     }
 
 
@@ -103,11 +109,11 @@ class FamilyController extends Controller
         $request = request();
 
         $query = DB::table('families')
-                ->leftJoin('supervisors', 'families.supervisor_id', '=', 'supervisors.id')
-                ->join('addresses', 'addresses.family_id', 'families.id')
-                ->leftJoin('family_members', 'family_members.family_id', 'families.id')
-                ->join('martyrs', 'families.martyr_id', 'martyrs.id')
-                ->selectRaw('
+            ->leftJoin('supervisors', 'families.supervisor_id', '=', 'supervisors.id')
+            ->join('addresses', 'addresses.family_id', 'families.id')
+            ->leftJoin('family_members', 'family_members.family_id', 'families.id')
+            ->join('martyrs', 'families.martyr_id', 'martyrs.id')
+            ->selectRaw('
                     families.id as family_id,
                     families.category as category,
                     families.family_size as family_size,
@@ -122,21 +128,27 @@ class FamilyController extends Controller
                     COUNT(CASE WHEN family_members.gender = "ذكر" THEN 1 END) AS male_count,
                     COUNT(CASE WHEN family_members.gender = "أنثى" THEN 1 END) AS female_count
                 ')->groupBy([
-                    'martyrs.name', 'families.category', 'families.id', 'families.family_size', 'supervisors.name', 'addresses.sector', 'locality'
-                ]);
+                'martyrs.name',
+                'families.category',
+                'families.id',
+                'families.family_size',
+                'supervisors.name',
+                'addresses.sector',
+                'locality'
+            ]);
 
-                
-        if ( $martyr_name = $request->query('martyr_name') ) {
+
+        if ($martyr_name = $request->query('martyr_name')) {
             $query->where('martyrs.name',  'LIKE', "%{$martyr_name}%")->orWhere('martyrs.militarism_number', $martyr_name);
         }
 
         if (!empty($request->query('category')) && $request->query('category') != 'all') {
             $query->where('families.category', $request->query('category'))->groupBy('families.category');
-        } 
+        }
 
         if (!empty($request->query('sector')) && $request->query('sector') != 'all') {
             $query->where('addresses.sector', $request->query('sector'))->groupBy('addresses.sector');
-        } 
+        }
 
         if (!empty($request->query('locality')) && $request->query('locality') != 'all') {
             $query->where('addresses.locality', $request->query('locality'))->groupBy(['addresses.sector', 'addresses.locality']);
@@ -144,18 +156,18 @@ class FamilyController extends Controller
 
         if (!empty($request->query('year')) && $request->query('year') != 'all') {
             $query->whereYear('families.created_at', $request->query('year'));
-        } 
+        }
 
-         if (!empty($request->query('month')) && $request->query('month') != 'all') {
+        if (!empty($request->query('month')) && $request->query('month') != 'all') {
             $query->whereMonth('families.created_at', $request->query('month'));
-        } 
+        }
 
         $families = $query->latest('families.id')->paginate();
 
         return view('families.families-members-count', compact('families'));
     }
 
- 
+
     public function create(int $martyr)
     {
         return view('families.create', ['martyr' => $this->martyr->findOrFail($martyr)]);
@@ -184,7 +196,6 @@ class FamilyController extends Controller
             $family->address()->create($address);
 
             return to_route('families.show', $family->id)->with('success', 'تمت اضافة بيانات الاسرة بنجاح ✅👍🏼');
-
         } catch (Exception $e) {
             $this->log->error('Store family martyr id=' . $martyr, ['exception' => $e->getMessage()]);
             return $e->getMessage();
@@ -194,7 +205,7 @@ class FamilyController extends Controller
     public function show($id)
     {
         return view('families.martyrFamily', [
-            'family' => $this->family->findOrFail($id)->loadMissing(['martyr', 'familyMembers', 'supervisor', 'addresses', 'communicate'])    
+            'family' => $this->family->findOrFail($id)->loadMissing(['martyr', 'familyMembers', 'supervisor', 'addresses', 'communicate'])
         ]);
     }
 
@@ -224,13 +235,13 @@ class FamilyController extends Controller
     }
 
 
-	public function delete(int $id) 
-	{
+    public function delete(int $id)
+    {
         return view('families.delete', ['family' => $this->family->findOrFail($id)]);
-	}
-	
+    }
 
-	 
+
+
     public function destroy($id)
     {
         try {
@@ -246,7 +257,7 @@ class FamilyController extends Controller
         }
     }
 
-    public function createSupervisor($family) 
+    public function createSupervisor($family)
     {
         return view('families.createSupervisor', ['family' => $this->family->findOrFail($family), 'supervisors' => $this->supervisor->selectRaw('id, name')->get()]);
     }
@@ -263,7 +274,6 @@ class FamilyController extends Controller
 
 
             return to_route('families.show', $family)->with('success', 'تم إضافة المشرف بنجاح');
-
         } catch (Exception $e) {
             $this->log->error('Store supervisor to family id=' . $family, ['exception' => $e->getMessage()]);
             return $e->getMessage();
@@ -274,17 +284,16 @@ class FamilyController extends Controller
     public function editSupervisor(int $family)
     {
         return view('families.editSupervisor', [
-            'family' => $this->family->findOrFail($family)->loadMissing(['martyr','supervisor']), 
+            'family' => $this->family->findOrFail($family)->loadMissing(['martyr', 'supervisor']),
             'supervisors' => $this->supervisor->selectRaw('id, name')->get()
         ]);
-
     }
 
 
     public function deleteSupervisor(int $family)
     {
         return view('families.deleteSupervisor', [
-            'family' => $this->family->findOrFail($family)->loadMissing(['martyr','supervisor'])
+            'family' => $this->family->findOrFail($family)->loadMissing(['martyr', 'supervisor'])
         ]);
 
 
@@ -298,27 +307,27 @@ class FamilyController extends Controller
 
             return to_route('families.show', $family)->with('success', 'تم الغاء ارتباط المشرف بالاسرة بنجاح');
         } catch (Exception $e) {
-            $this->log->error('Unlink supervisor with family id='.$family, ['exception' =>  $e->getMessage()]);
+            $this->log->error('Unlink supervisor with family id=' . $family, ['exception' =>  $e->getMessage()]);
             return $e->getMessage();
         }
     }
 
 
-    public function socialServices($family) 
+    public function socialServices($family)
     {
         try {
             return view('families.socialServices', [
                 'family' => $this->family->findOrFail($family)->loadMissing(['assistances', 'projects', 'homeServices'])
             ]);
         } catch (Exception $e) {
-         $e->getMessage();
-        }   
+            $e->getMessage();
+        }
     }
 
-    public function categoriesReport() 
+    public function categoriesReport()
     {
         return view('reports.categoriesReport', $this->familyService->categoriesReport());
-    }    
+    }
 
     public function relatedMartyrs(int $family)
     {
@@ -327,5 +336,4 @@ class FamilyController extends Controller
 
         return view('families.relatedMartyrs', compact('martyrs', 'family'));
     }
-    
 }
