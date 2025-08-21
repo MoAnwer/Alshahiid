@@ -114,10 +114,10 @@ class MartyrController extends Controller
                 'marital_status'         => 'in:أعزب,متزوج,مطلق,منفصل',
                 'martyrdom_date'         => 'date|required',
                 'martyrdom_place'        => 'string|required',
-                'militarism_number'      => 'sometimes|numeric|unique:martyrs,militarism_number',
+                'militarism_number'      => 'sometimes|numeric|', // unique:martyrs,militarism_number
                 'rank'                   => 'in:جندي,جندي أول,عريف,وكيل عريف,رقيب,رقيب أول,مساعد,مساعد أول,ملازم,ملازم أول,نقيب,رائد,مقدم,عقيد,عميد,لواء,فريق,فريق أول,مشير',
                 'force'                  => 'required',
-                'record_number'          => 'sometimes|numeric|unique:martyrs,record_number',
+                'record_number'          => 'sometimes|numeric', // unique:martyrs,record_number
                 'record_date'            => 'date',
                 'unit'                   => 'required|string',
                 'rights'                 => 'required|numeric',
